@@ -1,0 +1,463 @@
+{
+  "info": {
+    "name": "Albasheer Electricals API",
+    "_postman_id": "albasheer-electricals-api-v1",
+    "description": "Complete API collection for the Albasheer Electricals Django REST Framework backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Request OTP Code",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+963999999999\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/request-code/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "request-code", ""]
+            },
+            "description": "Request an OTP code to be sent to the provided phone number."
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP Code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.access) {",
+                  "    pm.collectionVariables.set('access_token', json.access);",
+                  "}",
+                  "if (json.refresh) {",
+                  "    pm.collectionVariables.set('refresh_token', json.refresh);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+963999999999\",\n  \"code\": \"1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-code/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-code", ""]
+            },
+            "description": "Verify the OTP code. On success, automatically saves access_token and refresh_token to collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.access) {",
+                  "    pm.collectionVariables.set('access_token', json.access);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "token", "refresh", ""]
+            },
+            "description": "Refresh the JWT access token using a valid refresh token. Automatically saves the new access_token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me", ""]
+            },
+            "description": "Get the authenticated user's profile. Requires a valid Bearer token."
+          },
+          "response": []
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me", ""]
+            },
+            "description": "Partially update the authenticated user's profile. Requires a valid Bearer token."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/categories/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", "categories", ""]
+            },
+            "description": "Retrieve all product categories."
+          },
+          "response": []
+        },
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", ""],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "",
+                  "description": "Search by product name or description",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "",
+                  "description": "Filter by category slug or ID",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Retrieve all products. Supports optional ?search= and ?category= query parameters."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by Slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/:slug/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", ":slug", ""],
+              "variable": [
+                {
+                  "key": "slug",
+                  "value": "example-product-slug",
+                  "description": "The product's URL slug"
+                }
+              ]
+            },
+            "description": "Retrieve a single product by its slug."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"product\": 1,\n      \"quantity\": 2\n    }\n  ],\n  \"branch\": 1,\n  \"notes\": \"Please deliver in the morning\",\n  \"deposit_percent\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ""]
+            },
+            "description": "Create a new order. Requires a valid Bearer token."
+          },
+          "response": []
+        },
+        {
+          "name": "List My Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ""]
+            },
+            "description": "Retrieve all orders for the authenticated user. Requires a valid Bearer token."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "The order's ID"
+                }
+              ]
+            },
+            "description": "Retrieve a single order by its ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Receipt Image",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "receipt_image",
+                  "type": "file",
+                  "description": "The receipt image file to upload"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id/upload-receipt/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id", "upload-receipt", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "The order's ID"
+                }
+              ]
+            },
+            "description": "Upload a deposit receipt image for an order. Uses multipart form data with field 'receipt_image'. Requires a valid Bearer token."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"confirmed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id/status/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id", "status", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "The order's ID"
+                }
+              ]
+            },
+            "description": "Update an order's status. Requires branch_manager role. Valid statuses: pending → confirmed → preparing → shipping → delivered (or cancelled)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Branches",
+      "item": [
+        {
+          "name": "List Branches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/branches/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branches", ""]
+            },
+            "description": "Retrieve all store branch locations."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Branch by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/branches/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branches", ":id", ""],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "1",
+                  "description": "The branch's ID"
+                }
+              ]
+            },
+            "description": "Retrieve a single branch by its ID."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
