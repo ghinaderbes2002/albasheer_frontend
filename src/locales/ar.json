@@ -7,7 +7,7 @@
     "cancel": "إلغاء",
     "delete": "حذف",
     "edit": "تعديل",
-    "back": "رجوع",
+    "back": "السابق",
     "search": "بحث",
     "filter": "تصفية",
     "all": "الكل",
@@ -16,7 +16,8 @@
     "language": "اللغة",
     "arabic": "العربية",
     "english": "English",
-    "currency": "ل.س"
+    "currency": "ل.س",
+    "required": "هذا الحقل مطلوب"
   },
   "nav": {
     "home": "الرئيسية",
@@ -40,6 +41,151 @@
       "title": "البشير لتجارة الأدوات المنزلية",
       "subtitle": "أحدث الأجهزة الكهربائية المنزلية بأفضل الأسعار وضمان حقيقي",
       "cta": "تصفّح المنتجات"
+    },
+    "categories": {
+      "title": "تصفّح حسب التصنيف",
+      "empty": "لا توجد تصنيفات حالياً"
+    },
+    "featured": {
+      "title": "أحدث المنتجات",
+      "viewAll": "عرض الكل"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "تسجيل الدخول",
+      "subtitle": "أدخل رقم موبايلك ليصلك رمز تحقق على واتساب",
+      "phoneLabel": "رقم الموبايل",
+      "phoneHint": "أرسل رمز التحقق إلى رقمك على واتساب",
+      "phoneTooShort": "الرقم قصير جداً",
+      "phoneTooLong": "الرقم طويل جداً",
+      "phoneInvalid": "رقم غير صحيح",
+      "sendCode": "إرسال رمز التحقق",
+      "codeSent": "تم إرسال رمز التحقق"
+    },
+    "verify": {
+      "title": "أدخل رمز التحقق",
+      "subtitle": "أرسلنا رمزاً مكوناً من 5 أرقام إلى {{phone}}",
+      "codeLabel": "رمز التحقق",
+      "codeInvalid": "الرمز يجب أن يكون 5 أرقام",
+      "verify": "تحقّق من الرمز",
+      "resend": "إعادة إرسال الرمز",
+      "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية"
+    },
+    "completeProfile": {
+      "title": "أكمل بياناتك",
+      "subtitle": "نحتاج اسمك وعنوانك لإكمال طلباتك",
+      "submit": "حفظ ومتابعة"
+    },
+    "profile": {
+      "title": "الملف الشخصي",
+      "subtitle": "بياناتك الشخصية وعنوان التوصيل الافتراضي",
+      "phone": "رقم الموبايل",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "address": "العنوان",
+      "addressTooShort": "العنوان قصير جداً",
+      "saved": "تم حفظ التغييرات"
+    }
+  },
+  "catalog": {
+    "searchPlaceholder": "ابحث عن منتج...",
+    "totalCount": "{{count}} منتج",
+    "empty": "لا توجد منتجات تطابق بحثك",
+    "next": "التالي",
+    "specs": "المواصفات",
+    "addToCart": "أضف إلى السلة",
+    "addedToCart": "تمت الإضافة إلى السلة",
+    "outOfStock": "غير متوفر"
+  },
+  "branches": {
+    "subtitle": "زورنا في أقرب فرع — كل فروعنا تخدمك بنفس الجودة",
+    "empty": "لا توجد فروع متاحة حالياً",
+    "inactive": "غير نشط"
+  },
+  "cart": {
+    "clear": "إفراغ السلة",
+    "checkout": "إتمام الشراء",
+    "empty": {
+      "title": "سلتك فارغة",
+      "subtitle": "أضف بعض المنتجات وابدأ التسوّق",
+      "cta": "تصفّح المنتجات"
+    },
+    "summary": {
+      "title": "ملخص الطلب",
+      "items": "عدد القطع",
+      "subtotal": "المجموع الفرعي",
+      "depositSuggestion": "العربون المقترح (10%)",
+      "total": "الإجمالي"
+    }
+  },
+  "checkout": {
+    "title": "إتمام الطلب",
+    "submit": "تأكيد الطلب",
+    "created": "تم إنشاء طلبك بنجاح",
+    "selectBranch": "اختر فرعاً",
+    "branch": {
+      "title": "فرع الاستلام",
+      "label": "الفرع"
+    },
+    "delivery": {
+      "title": "بيانات التوصيل",
+      "address": "عنوان التوصيل",
+      "note": "ملاحظات إضافية (اختياري)",
+      "notePlaceholder": "مثال: اتصل قبل التوصيل"
+    },
+    "deposit": {
+      "title": "العربون",
+      "label": "مبلغ العربون",
+      "hint": "المقترح: {{amount}} {{currency}} (10% من الإجمالي)"
+    },
+    "summary": {
+      "title": "ملخص الطلب"
+    },
+    "errors": {
+      "branchRequired": "يجب اختيار فرع",
+      "depositInvalid": "أدخل مبلغاً صحيحاً"
+    }
+  },
+  "orders": {
+    "subtitle": "جميع طلباتك السابقة والحالية",
+    "orderNumber": "طلب رقم #{{id}}",
+    "itemCount_one": "{{count}} منتج",
+    "itemCount_other": "{{count}} منتجات",
+    "itemCount_zero": "بدون منتجات",
+    "empty": "لا توجد طلبات حتى الآن",
+    "emptyForFilter": "لا توجد طلبات بهذه الحالة",
+    "total": "الإجمالي",
+    "deposit": "العربون المدفوع",
+    "depositPercent": "نسبة العربون",
+    "branch": "الفرع",
+    "address": "العنوان",
+    "note": "ملاحظتك",
+    "deliveryStaff": "موظف التوصيل",
+    "estimatedDelivery": "موعد التوصيل المتوقع",
+    "rejectionReason": "سبب الإلغاء",
+    "itemsTitle": "المنتجات",
+    "deliveryTitle": "بيانات التوصيل",
+    "totalsTitle": "ملخص الدفع",
+    "timelineTitle": "تاريخ الحالات",
+    "noLogs": "لا توجد تحديثات حالة بعد",
+    "receipt": {
+      "title": "إيصال الدفع",
+      "pickFile": "اختر صورة الإيصال",
+      "hint": "JPG أو PNG، حتى {{mb}} ميغا",
+      "upload": "رفع الإيصال",
+      "uploaded": "تم رفع الإيصال",
+      "invalidType": "نوع الملف غير مدعوم",
+      "tooLarge": "حجم الملف أكبر من {{mb}} ميغا",
+      "notUploaded": "لا يمكن رفع الإيصال في هذه الحالة"
+    }
+  },
+  "status": {
+    "pending": "بانتظار التأكيد",
+    "confirmed": "تم التأكيد",
+    "preparing": "قيد التحضير",
+    "shipping": "قيد التوصيل",
+    "delivered": "تم التسليم",
+    "cancelled": "ملغي"
   }
 }

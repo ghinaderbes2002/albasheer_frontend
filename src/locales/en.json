@@ -7,7 +7,7 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
-    "back": "Back",
+    "back": "Previous",
     "search": "Search",
     "filter": "Filter",
     "all": "All",
@@ -16,7 +16,8 @@
     "language": "Language",
     "arabic": "العربية",
     "english": "English",
-    "currency": "SYP"
+    "currency": "SYP",
+    "required": "This field is required"
   },
   "nav": {
     "home": "Home",
@@ -40,6 +41,151 @@
       "title": "Al Basheer Home Appliances",
       "subtitle": "Top-quality home appliances at the best prices, with a genuine warranty",
       "cta": "Browse products"
+    },
+    "categories": {
+      "title": "Shop by category",
+      "empty": "No categories yet"
+    },
+    "featured": {
+      "title": "Latest products",
+      "viewAll": "View all"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Enter your mobile number — we'll send a verification code over WhatsApp",
+      "phoneLabel": "Mobile number",
+      "phoneHint": "We'll send the verification code to your WhatsApp",
+      "phoneTooShort": "Number is too short",
+      "phoneTooLong": "Number is too long",
+      "phoneInvalid": "Invalid number",
+      "sendCode": "Send verification code",
+      "codeSent": "Verification code sent"
+    },
+    "verify": {
+      "title": "Enter the verification code",
+      "subtitle": "We sent a 5-digit code to {{phone}}",
+      "codeLabel": "Verification code",
+      "codeInvalid": "Code must be 5 digits",
+      "verify": "Verify code",
+      "resend": "Resend code",
+      "resendIn": "Resend in {{seconds}}s"
+    },
+    "completeProfile": {
+      "title": "Complete your profile",
+      "subtitle": "We need your name and address to complete your orders",
+      "submit": "Save and continue"
+    },
+    "profile": {
+      "title": "Profile",
+      "subtitle": "Your personal info and default delivery address",
+      "phone": "Mobile number",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "address": "Address",
+      "addressTooShort": "Address is too short",
+      "saved": "Changes saved"
+    }
+  },
+  "catalog": {
+    "searchPlaceholder": "Search products...",
+    "totalCount": "{{count}} products",
+    "empty": "No products match your search",
+    "next": "Next",
+    "specs": "Specifications",
+    "addToCart": "Add to cart",
+    "addedToCart": "Added to cart",
+    "outOfStock": "Out of stock"
+  },
+  "branches": {
+    "subtitle": "Visit your nearest branch — every store offers the same quality service",
+    "empty": "No branches available right now",
+    "inactive": "Inactive"
+  },
+  "cart": {
+    "clear": "Clear cart",
+    "checkout": "Checkout",
+    "empty": {
+      "title": "Your cart is empty",
+      "subtitle": "Add some products to start shopping",
+      "cta": "Browse products"
+    },
+    "summary": {
+      "title": "Order summary",
+      "items": "Items",
+      "subtotal": "Subtotal",
+      "depositSuggestion": "Suggested deposit (10%)",
+      "total": "Total"
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "submit": "Place order",
+    "created": "Your order was created successfully",
+    "selectBranch": "Select a branch",
+    "branch": {
+      "title": "Pickup branch",
+      "label": "Branch"
+    },
+    "delivery": {
+      "title": "Delivery details",
+      "address": "Delivery address",
+      "note": "Additional notes (optional)",
+      "notePlaceholder": "e.g. Call before delivery"
+    },
+    "deposit": {
+      "title": "Deposit",
+      "label": "Deposit amount",
+      "hint": "Suggested: {{amount}} {{currency}} (10% of total)"
+    },
+    "summary": {
+      "title": "Order summary"
+    },
+    "errors": {
+      "branchRequired": "A branch is required",
+      "depositInvalid": "Enter a valid amount"
+    }
+  },
+  "orders": {
+    "subtitle": "All your past and current orders",
+    "orderNumber": "Order #{{id}}",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items",
+    "itemCount_zero": "No items",
+    "empty": "No orders yet",
+    "emptyForFilter": "No orders with this status",
+    "total": "Total",
+    "deposit": "Deposit paid",
+    "depositPercent": "Deposit %",
+    "branch": "Branch",
+    "address": "Address",
+    "note": "Your note",
+    "deliveryStaff": "Delivery agent",
+    "estimatedDelivery": "Estimated delivery",
+    "rejectionReason": "Cancellation reason",
+    "itemsTitle": "Items",
+    "deliveryTitle": "Delivery details",
+    "totalsTitle": "Payment summary",
+    "timelineTitle": "Status history",
+    "noLogs": "No status updates yet",
+    "receipt": {
+      "title": "Payment receipt",
+      "pickFile": "Pick a receipt image",
+      "hint": "JPG or PNG, up to {{mb}} MB",
+      "upload": "Upload receipt",
+      "uploaded": "Receipt uploaded",
+      "invalidType": "Unsupported file type",
+      "tooLarge": "File is larger than {{mb}} MB",
+      "notUploaded": "Receipt cannot be uploaded for this status"
+    }
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "shipping": "Shipping",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
   }
 }

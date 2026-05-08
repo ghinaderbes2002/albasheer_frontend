@@ -6,22 +6,27 @@ import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/shared/Logo'
 import { LangSwitcher } from '@/components/shared/LangSwitcher'
 import { useAuthStore } from '@/store/auth'
+import { useCartCount } from '@/store/cart'
 import { cn } from '@/lib/utils'
 
 export function Header() {
   const { t } = useTranslation()
   const accessToken = useAuthStore((s) => s.accessToken)
   const logout = useAuthStore((s) => s.logout)
+  const cartCount = useCartCount()
   const isAuthed = !!accessToken
 
   const links = [
     { to: '/', label: t('nav.home'), end: true },
     { to: '/products', label: t('nav.products') },
     { to: '/branches', label: t('nav.branches') },
+    ...(isAuthed
+      ? [{ to: '/orders', label: t('nav.myOrders'), end: false }]
+      : []),
   ]
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4">
         <Link to="/" className="shrink-0">
           <Logo />
@@ -50,18 +55,25 @@ export function Header() {
         <div className="flex items-center gap-1">
           <LangSwitcher />
 
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            aria-label={t('nav.cart')}
+            className="relative"
+          >
+            <Link to="/cart">
+              <ShoppingCart />
+              {cartCount > 0 && (
+                <span className="absolute -end-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+          </Button>
+
           {isAuthed ? (
             <>
-              <Button
-                asChild
-                variant="ghost"
-                size="icon"
-                aria-label={t('nav.cart')}
-              >
-                <Link to="/cart">
-                  <ShoppingCart />
-                </Link>
-              </Button>
               <Button
                 asChild
                 variant="ghost"

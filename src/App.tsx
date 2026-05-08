@@ -7,11 +7,13 @@ import '@/lib/i18n'
 import { queryClient } from '@/lib/queryClient'
 import { router } from '@/routes'
 import { useDirectionSync } from '@/hooks/useDirection'
+import { AuthBootstrap } from '@/components/shared/AuthBootstrap'
 
 function App() {
   useDirectionSync()
   return (
     <QueryClientProvider client={queryClient}>
+      <AuthBootstrap />
       <RouterProvider router={router} />
       <Toaster
         position="top-center"

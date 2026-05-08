@@ -24,7 +24,13 @@ export const useAuthStore = create<AuthState>()(
       role: null,
 
       setTokens: ({ access, refresh }) =>
-        set({ accessToken: access, refreshToken: refresh }),
+        set((state) => ({
+          accessToken: access,
+          refreshToken: refresh,
+          // Default to customer until /me (or backend role claim) tells us
+          // otherwise. Staff users are reassigned by AuthBootstrap.
+          role: state.role ?? 'customer',
+        })),
       setAccessToken: (access) => set({ accessToken: access }),
       setUser: (user) =>
         set((state) => ({
