@@ -24,13 +24,10 @@ export const useAuthStore = create<AuthState>()(
       role: null,
 
       setTokens: ({ access, refresh }) =>
-        set((state) => ({
+        set({
           accessToken: access,
           refreshToken: refresh,
-          // Default to customer until /me (or backend role claim) tells us
-          // otherwise. Staff users are reassigned by AuthBootstrap.
-          role: state.role ?? 'customer',
-        })),
+        }),
       setAccessToken: (access) => set({ accessToken: access }),
       setUser: (user) =>
         set((state) => ({
@@ -60,3 +57,13 @@ export const useAuthStore = create<AuthState>()(
 )
 
 export const isAuthenticated = () => !!useAuthStore.getState().accessToken
+
+/**
+ * Default landing page for a given role — used after login or when an
+ * already-authenticated user lands on `/login`.
+ */
+export function defaultHomeForRole(role: Role | null): string {
+  if (role === 'branch_manager') return '/dashboard/branch'
+  if (role === 'delivery') return '/dashboard/delivery'
+  return '/'
+}

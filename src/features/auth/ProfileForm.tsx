@@ -2,7 +2,12 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
-import { Loader2 } from 'lucide-react'
+import {
+  Loader2,
+  MapPin,
+  Phone as PhoneIcon,
+  User as UserIcon,
+} from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -20,6 +25,8 @@ interface ProfileFormProps {
   initial?: Partial<User>
   submitLabel: string
   onSuccess?: (user: User) => void
+  /** Optional cancel handler — renders a Cancel button next to Save. */
+  onCancel?: () => void
   /** Disable inputs until `initial` arrives. */
   loading?: boolean
 }
@@ -39,6 +46,7 @@ export function ProfileForm({
   initial,
   submitLabel,
   onSuccess,
+  onCancel,
   loading,
 }: ProfileFormProps) {
   const { t } = useTranslation()
@@ -84,23 +92,33 @@ export function ProfileForm({
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       {initial?.phone && (
         <div className="flex flex-col gap-2">
-          <Label>{t('auth.profile.phone')}</Label>
+          <Label className="text-muted-foreground">
+            <PhoneIcon className="size-3.5" />
+            {t('auth.profile.phone')}
+          </Label>
           <Input
             value={initial.phone}
             readOnly
             disabled
             dir="ltr"
-            className="opacity-80"
+            className="bg-muted/50 text-muted-foreground"
           />
+          <p className="text-xs text-muted-foreground">
+            {t('auth.profile.phoneLocked')}
+          </p>
         </div>
       )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="first_name">{t('auth.profile.firstName')}</Label>
+          <Label htmlFor="first_name">
+            <UserIcon className="size-3.5" />
+            {t('auth.profile.firstName')}
+          </Label>
           <Input
             id="first_name"
             disabled={busy}
+            placeholder={t('auth.profile.firstName')}
             aria-invalid={!!errors.first_name || undefined}
             {...register('first_name')}
           />
@@ -112,10 +130,14 @@ export function ProfileForm({
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="last_name">{t('auth.profile.lastName')}</Label>
+          <Label htmlFor="last_name">
+            <UserIcon className="size-3.5" />
+            {t('auth.profile.lastName')}
+          </Label>
           <Input
             id="last_name"
             disabled={busy}
+            placeholder={t('auth.profile.lastName')}
             aria-invalid={!!errors.last_name || undefined}
             {...register('last_name')}
           />
@@ -128,29 +150,50 @@ export function ProfileForm({
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="address">{t('auth.profile.address')}</Label>
+        <Label htmlFor="address">
+          <MapPin className="size-3.5" />
+          {t('auth.profile.address')}
+        </Label>
         <Input
           id="address"
           disabled={busy}
+          placeholder={t('auth.profile.addressPlaceholder')}
           aria-invalid={!!errors.address || undefined}
           {...register('address')}
         />
-        {errors.address && (
+        {errors.address ? (
           <p className="text-xs text-destructive">
-            {t(errorKey(errors.address.message) ?? 'common.required')}
+            {t(errorKey(errors.address.message) ?? 'auth.profile.addressTooShort')}
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            {t('auth.profile.addressHint')}
           </p>
         )}
       </div>
 
-      <Button
-        type="submit"
-        size="lg"
-        disabled={busy || !isDirty}
-        className="mt-2"
-      >
-        {busy && <Loader2 className="animate-spin" />}
-        {submitLabel}
-      </Button>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <Button type="submit" size="lg" disabled={busy || !isDirty}>
+          {busy && <Loader2 className="animate-spin" />}
+          {submitLabel}
+        </Button>
+        {onCancel && (
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={onCancel}
+            disabled={busy}
+          >
+            {t('common.cancel')}
+          </Button>
+        )}
+        {isDirty && !busy && (
+          <span className="text-xs text-muted-foreground">
+            {t('auth.profile.unsaved')}
+          </span>
+        )}
+      </div>
     </form>
   )
 }

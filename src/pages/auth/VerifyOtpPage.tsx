@@ -14,6 +14,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { OtpForm } from '@/features/auth/OtpForm'
+import { defaultHomeForRole } from '@/store/auth'
 
 export function VerifyOtpPage() {
   const { t } = useTranslation()
@@ -24,9 +25,9 @@ export function VerifyOtpPage() {
 
   if (!phone) return <Navigate to="/login" replace />
 
-  const from =
-    (location.state as { from?: { pathname?: string } } | null)?.from
-      ?.pathname ?? '/'
+  const fromExplicit = (
+    location.state as { from?: { pathname?: string } } | null
+  )?.from?.pathname
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6 px-4 py-12">
@@ -43,9 +44,12 @@ export function VerifyOtpPage() {
             onSuccess={(data) => {
               if (data.is_new) {
                 navigate('/complete-profile', { replace: true })
-              } else {
-                navigate(from, { replace: true })
+                return
               }
+              // Role-based redirect: staff goes straight to their dashboard.
+              const target =
+                fromExplicit ?? defaultHomeForRole(data.user.role)
+              navigate(target, { replace: true })
             }}
           />
         </CardContent>

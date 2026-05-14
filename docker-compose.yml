@@ -1,0 +1,28 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Public URLs the browser will use to reach the backend.
+        # Override per environment via a `.env` file next to this compose file.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://161.97.156.42:8000}
+        VITE_MEDIA_BASE_URL: ${VITE_MEDIA_BASE_URL:-http://161.97.156.42:8000}
+        VITE_DEFAULT_LANG: ${VITE_DEFAULT_LANG:-ar}
+    image: albasheer-frontend:latest
+    container_name: albasheer-frontend
+    restart: unless-stopped
+    ports:
+      # host:container — exposes the SPA on the server's port 3012.
+      - "3012:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "-T", "3", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

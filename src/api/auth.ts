@@ -15,6 +15,17 @@ export interface VerifyCodePayload {
   code: string
 }
 
+export interface StaffLoginPayload {
+  phone: string
+  password: string
+}
+
+export interface StaffAuthResponse {
+  access: string
+  refresh: string
+  user: User
+}
+
 export async function requestCode(payload: RequestCodePayload): Promise<void> {
   await api.post('/api/auth/request-code/', payload)
 }
@@ -46,5 +57,15 @@ export async function getMe(): Promise<User> {
 
 export async function updateMe(patch: ProfilePatch): Promise<User> {
   const { data } = await api.patch<User>('/api/auth/me/', patch)
+  return data
+}
+
+export async function staffLogin(
+  payload: StaffLoginPayload,
+): Promise<StaffAuthResponse> {
+  const { data } = await api.post<StaffAuthResponse>(
+    '/api/auth/staff/login/',
+    payload,
+  )
   return data
 }

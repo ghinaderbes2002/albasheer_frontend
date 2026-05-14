@@ -3,22 +3,37 @@ import { cn } from '@/lib/utils'
 interface LogoProps {
   className?: string
   showText?: boolean
+  /**
+   * `default` — solid wordmark (uses parent text color). Best on light surfaces.
+   * `shimmer` — gold metallic gradient with a slow shimmer. Best on dark surfaces.
+   */
+  tone?: 'default' | 'shimmer'
 }
 
 /**
- * Brand mark — gold "B" badge on dark surface, with optional bilingual wordmark.
- * Replace the badge with the real logo image once `src/assets/logo.png` is added.
+ * Brand mark — gold "B" badge + bilingual wordmark.
  */
-export function Logo({ className, showText = true }: LogoProps) {
+export function Logo({
+  className,
+  showText = true,
+  tone = 'default',
+}: LogoProps) {
   return (
-    <div className={cn('flex items-center gap-2', className)}>
-      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-primary text-lg font-extrabold ring-2 ring-primary/40">
+    <div className={cn('flex items-center gap-2.5', className)}>
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary text-lg font-extrabold ring-2 ring-primary/40 shadow-[0_0_14px_rgba(212,175,55,0.35)]">
         B
       </div>
       {showText && (
         <div className="leading-tight text-start">
-          <div className="text-base font-bold text-foreground">البشير</div>
-          <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div
+            className={cn(
+              'text-lg font-extrabold tracking-tight',
+              tone === 'shimmer' ? 'logo-shimmer' : 'text-foreground',
+            )}
+          >
+            البشير
+          </div>
+          <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-current opacity-60">
             Al Basheer
           </div>
         </div>

@@ -18,13 +18,23 @@ export function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 py-20 text-center">
-        <div className="mb-4 inline-flex size-16 items-center justify-center rounded-full bg-muted text-muted-foreground">
-          <ShoppingCart className="size-8" />
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 py-20 text-center animate-in fade-in slide-in-from-bottom-2 duration-500">
+        <div className="relative mb-6">
+          <span
+            aria-hidden
+            className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/20 blur-2xl"
+          />
+          <div className="inline-flex size-24 items-center justify-center rounded-full bg-accent text-primary ring-4 ring-primary/10">
+            <ShoppingCart className="size-10" />
+          </div>
         </div>
-        <h1 className="text-2xl font-bold md:text-3xl">{t('cart.empty.title')}</h1>
-        <p className="mt-2 text-muted-foreground">{t('cart.empty.subtitle')}</p>
-        <Button asChild className="mt-6" size="lg">
+        <h1 className="text-2xl font-bold md:text-3xl">
+          {t('cart.empty.title')}
+        </h1>
+        <p className="mt-3 max-w-md text-muted-foreground">
+          {t('cart.empty.subtitle')}
+        </p>
+        <Button asChild className="mt-8 shadow-lg shadow-primary/20" size="lg">
           <Link to="/products">
             {t('cart.empty.cta')}
             <Arrow />

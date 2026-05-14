@@ -136,3 +136,31 @@
     background: var(--color-brand-500);
   }
 }
+
+/* Slow metallic shimmer used on the wordmark logo */
+@keyframes logo-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.logo-shimmer {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-brand-200) 0%,
+    var(--color-brand-400) 25%,
+    var(--color-brand-300) 50%,
+    var(--color-brand-500) 75%,
+    var(--color-brand-700) 100%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: logo-shimmer 5s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.25));
+}

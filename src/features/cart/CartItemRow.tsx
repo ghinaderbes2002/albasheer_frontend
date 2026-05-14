@@ -1,6 +1,13 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ImageOff, Minus, Plus, Trash2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  ArrowRight,
+  ImageOff,
+  Minus,
+  Plus,
+  Trash2,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { useCartStore, type CartItem } from '@/store/cart'
@@ -13,8 +20,10 @@ interface CartItemRowProps {
 
 export function CartItemRow({ item }: CartItemRowProps) {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const updateQuantity = useCartStore((s) => s.updateQuantity)
   const removeItem = useCartStore((s) => s.removeItem)
+  const Arrow = i18n.language.startsWith('ar') ? ArrowLeft : ArrowRight
 
   const name = pickLang(item.name, item.name_ar, i18n.language)
   const image = resolveMediaUrl(item.image)
@@ -104,6 +113,19 @@ export function CartItemRow({ item }: CartItemRowProps) {
               {t('common.currency')}
             </span>
           </div>
+        </div>
+
+        <div className="mt-1 flex justify-end border-t border-border pt-2">
+          <button
+            type="button"
+            onClick={() =>
+              navigate(`/checkout?product=${item.product_id}`)
+            }
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:underline"
+          >
+            {t('cart.buyNow')}
+            <Arrow className="size-3" />
+          </button>
         </div>
       </div>
     </div>

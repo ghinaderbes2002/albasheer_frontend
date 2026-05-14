@@ -1,0 +1,53 @@
+# Dependencies (rebuilt inside the image)
+node_modules
+
+# Build outputs
+dist
+dist-ssr
+.vite
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Editor / OS
+.vscode
+.idea
+.DS_Store
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# CI / Docker meta (don't include in build context)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Project docs (no need in image)
+README.md
+DEPLOY.md
+PROJECT_ROADMAP.md
+FRONTEND_API_GUIDE.md
+FRONTEND_DASHBOARDS_GUIDE.md
+albasheer_postman_collection.json
+
+# Test / coverage
+coverage
+.nyc_output
+
+# TS build info
+*.tsbuildinfo
+
+# Cache
+.eslintcache

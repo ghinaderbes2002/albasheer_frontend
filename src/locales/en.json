@@ -28,7 +28,9 @@
     "profile": "Profile",
     "login": "Login",
     "logout": "Logout",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "bundles": "Bundles",
+    "addresses": "Delivery addresses"
   },
   "errors": {
     "notFound": "Page not found",
@@ -42,6 +44,11 @@
       "subtitle": "Top-quality home appliances at the best prices, with a genuine warranty",
       "cta": "Browse products"
     },
+    "trust": {
+      "warranty": "Real warranty",
+      "delivery": "Fast delivery",
+      "quality": "Guaranteed quality"
+    },
     "categories": {
       "title": "Shop by category",
       "empty": "No categories yet"
@@ -50,6 +57,15 @@
       "title": "Latest products",
       "viewAll": "View all"
     }
+  },
+  "footer": {
+    "warranty": "Genuine warranty on every product",
+    "quickLinks": "Quick links",
+    "visit": "Visit us",
+    "visitText": "Available in branches across multiple cities — find your nearest one",
+    "findBranch": "Find a branch",
+    "followUs": "Follow us",
+    "rights": "All rights reserved"
   },
   "auth": {
     "login": {
@@ -61,7 +77,17 @@
       "phoneTooLong": "Number is too long",
       "phoneInvalid": "Invalid number",
       "sendCode": "Send verification code",
-      "codeSent": "Verification code sent"
+      "codeSent": "Verification code sent",
+      "staffLink": "Staff?"
+    },
+    "staffLogin": {
+      "title": "Staff login",
+      "subtitle": "For branch managers and delivery staff only",
+      "passwordLabel": "Password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "submit": "Sign in",
+      "customerLink": "Customer?"
     },
     "verify": {
       "title": "Enter the verification code",
@@ -80,12 +106,18 @@
     "profile": {
       "title": "Profile",
       "subtitle": "Your personal info and default delivery address",
+      "detailsTitle": "Personal information",
+      "editTitle": "Edit details",
       "phone": "Mobile number",
+      "phoneLocked": "Mobile number cannot be changed",
       "firstName": "First name",
       "lastName": "Last name",
       "address": "Address",
+      "addressPlaceholder": "e.g. Damascus - Mazzeh - Street 5",
+      "addressHint": "Used as the default delivery address for new orders",
       "addressTooShort": "Address is too short",
-      "saved": "Changes saved"
+      "saved": "Changes saved",
+      "unsaved": "Unsaved changes"
     }
   },
   "catalog": {
@@ -96,16 +128,35 @@
     "specs": "Specifications",
     "addToCart": "Add to cart",
     "addedToCart": "Added to cart",
-    "outOfStock": "Out of stock"
+    "outOfStock": "Out of stock",
+    "view": "View"
   },
   "branches": {
     "subtitle": "Visit your nearest branch — every store offers the same quality service",
     "empty": "No branches available right now",
     "inactive": "Inactive"
   },
+  "bundles": {
+    "label": "Bundle",
+    "subtitle": "Curated bundles at a discounted price — complementary products for less",
+    "empty": "No bundles available right now",
+    "addToCart": "Add bundle to cart",
+    "productsCount_one": "{{count}} product",
+    "productsCount_other": "{{count}} products",
+    "includes": "What's included",
+    "savings": "Save {{amount}} {{currency}} vs buying separately"
+  },
+  "ads": {
+    "title": "Promotions",
+    "prev": "Previous slide",
+    "next": "Next slide",
+    "goToSlide": "Go to slide {{index}}",
+    "slideOf": "Slide {{current}} of {{total}}"
+  },
   "cart": {
     "clear": "Clear cart",
     "checkout": "Checkout",
+    "buyNow": "Buy this item",
     "empty": {
       "title": "Your cart is empty",
       "subtitle": "Add some products to start shopping",
@@ -117,6 +168,10 @@
       "subtotal": "Subtotal",
       "depositSuggestion": "Suggested deposit (10%)",
       "total": "Total"
+    },
+    "sections": {
+      "bundles": "Bundles ({{count}})",
+      "products": "Products ({{count}})"
     }
   },
   "checkout": {
@@ -124,27 +179,43 @@
     "submit": "Place order",
     "created": "Your order was created successfully",
     "selectBranch": "Select a branch",
+    "city": {
+      "title": "Delivery city",
+      "label": "City",
+      "placeholder": "Select your city"
+    },
     "branch": {
       "title": "Pickup branch",
       "label": "Branch"
     },
     "delivery": {
       "title": "Delivery details",
+      "city": "City",
+      "cityPlaceholder": "e.g. Damascus",
       "address": "Delivery address",
       "note": "Additional notes (optional)",
       "notePlaceholder": "e.g. Call before delivery"
     },
     "deposit": {
       "title": "Deposit",
-      "label": "Deposit amount",
-      "hint": "Suggested: {{amount}} {{currency}} (10% of total)"
+      "autoHint": "Calculated automatically by management — estimated: {{amount}} {{currency}}",
+      "requiredTitle": "Advance deposit required",
+      "requiredHint": "This city requires an estimated deposit of {{amount}} {{currency}} before order confirmation — upload a receipt after placing the order",
+      "codTitle": "Cash on delivery",
+      "codHint": "No advance payment needed — order is confirmed immediately and you pay upon delivery"
     },
     "summary": {
       "title": "Order summary"
     },
     "errors": {
       "branchRequired": "A branch is required",
+      "cityRequired": "Enter the delivery city",
       "depositInvalid": "Enter a valid amount"
+    },
+    "singleItem": {
+      "title": "Checking out a single item",
+      "hint": "The rest of your cart stays untouched — you can buy them later.",
+      "checkoutAll": "Checkout the whole cart instead"
     }
   },
   "orders": {
@@ -161,14 +232,38 @@
     "branch": "Branch",
     "address": "Address",
     "note": "Your note",
+    "shippingFee": "Shipping fee",
+    "paymentMethod": "Payment method",
     "deliveryStaff": "Delivery agent",
     "estimatedDelivery": "Estimated delivery",
     "rejectionReason": "Cancellation reason",
     "itemsTitle": "Items",
+    "bundleItemsTitle": "Bundles in this order",
     "deliveryTitle": "Delivery details",
     "totalsTitle": "Payment summary",
     "timelineTitle": "Status history",
+    "tracking": {
+      "title": "Track order",
+      "stagesTitle": "Order stages",
+      "current": "Current",
+      "link": "Track order",
+      "viewDetails": "View order details"
+    },
     "noLogs": "No status updates yet",
+    "cancel": {
+      "button": "Cancel order",
+      "confirm": "Are you sure you want to cancel?",
+      "yes": "Yes, cancel",
+      "success": "Order cancelled"
+    },
+    "rate": {
+      "title": "Rate your experience",
+      "commentLabel": "Comment (optional)",
+      "commentPlaceholder": "Share your thoughts on the service and delivery...",
+      "submit": "Submit rating",
+      "success": "Thanks for your feedback!",
+      "submitted": "Thank you! Your rating has been received"
+    },
     "receipt": {
       "title": "Payment receipt",
       "pickFile": "Pick a receipt image",
@@ -187,5 +282,96 @@
     "shipping": "Shipping",
     "delivered": "Delivered",
     "cancelled": "Cancelled"
+  },
+  "addresses": {
+    "title": "Delivery addresses",
+    "subtitle": "Your saved addresses for faster checkout",
+    "add": "Add address",
+    "empty": "No saved addresses yet",
+    "default": "Default",
+    "setDefault": "Set as default",
+    "setDefaultSuccess": "Default address updated",
+    "deleted": "Address deleted",
+    "created": "Address added",
+    "updated": "Address updated",
+    "addTitle": "Add new address",
+    "editTitle": "Edit address",
+    "form": {
+      "label": "Label",
+      "labelPlaceholder": "e.g. Home, Work",
+      "city": "City",
+      "cityPlaceholder": "Select a city",
+      "fullAddress": "Full address",
+      "fullAddressPlaceholder": "e.g. Mazzeh district, Street 5, Building 12"
+    }
+  },
+  "dashboard": {
+    "branch": {
+      "short": "Branch panel",
+      "title": "Branch orders",
+      "subtitle": "Manage incoming orders for your branch — confirm, prepare, assign delivery, and ship",
+      "empty": "No orders on your branch yet",
+      "emptyForFilter": "No orders with this status",
+      "unnamedCustomer": "Unnamed",
+      "customer": "Customer details",
+      "noReceipt": "Customer hasn't uploaded a receipt yet",
+      "actionsTitle": "Available actions",
+      "remaining": "Remaining amount",
+      "actions": {
+        "confirm": "Confirm order",
+        "confirmed": "Order confirmed",
+        "reject": "Reject order",
+        "confirmReject": "Confirm rejection",
+        "rejected": "Order rejected",
+        "prepare": "Start preparing",
+        "preparing": "Order moved to preparing",
+        "assign": "Assign delivery",
+        "confirmAssign": "Assign",
+        "assigned": "Delivery agent assigned",
+        "ready": "Ready to ship",
+        "readied": "Order marked ready for shipping",
+        "noActions": "No actions available for this order right now",
+        "setShippingFee": "Set shipping fee",
+        "shippingFeeSet": "Shipping fee updated"
+      },
+      "shippingFee": {
+        "label": "Shipping fee (SYP)",
+        "hint": "Enter 0 for free delivery. A WhatsApp notification will be sent to the customer.",
+        "confirm": "Confirm fee"
+      },
+      "reject": {
+        "reasonLabel": "Rejection reason",
+        "reasonPlaceholder": "Write a reason that will be visible to the customer..."
+      },
+      "assign": {
+        "label": "Delivery agent",
+        "placeholder": "Select a delivery agent",
+        "noStaff": "No delivery staff found for this branch",
+        "hint": "The agent must belong to the same branch."
+      }
+    },
+    "delivery": {
+      "short": "Delivery panel",
+      "title": "Delivery orders",
+      "subtitle": "Orders assigned to you — call the customer, head to the address, and collect the balance",
+      "empty": "No orders assigned to you yet",
+      "emptyForFilter": "No orders with this status",
+      "amountToCollect": "Amount to collect",
+      "openMap": "Open in map",
+      "actionsTitle": "Actions",
+      "actions": {
+        "start": "Start shipping",
+        "started": "Shipping started — WhatsApp message sent to customer",
+        "complete": "Confirm delivery",
+        "confirmComplete": "Yes, delivered",
+        "completed": "Delivery confirmed",
+        "delivered": "Order delivered successfully",
+        "noActions": "No actions available right now"
+      },
+      "confirmComplete": {
+        "question": "Did you actually hand over the order and collect the amount?",
+        "hint": "This action is final and cannot be undone."
+      }
+    }
   }
 }

@@ -2,9 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   getMe,
   requestCode,
+  staffLogin,
   updateMe,
   verifyCode,
   type RequestCodePayload,
+  type StaffLoginPayload,
   type VerifyCodePayload,
 } from '@/api/auth'
 import { useAuthStore } from '@/store/auth'
@@ -30,10 +32,12 @@ export function useRequestCode() {
 
 export function useVerifyCode() {
   const setTokens = useAuthStore((s) => s.setTokens)
+  const setUser = useAuthStore((s) => s.setUser)
   return useMutation({
     mutationFn: (payload: VerifyCodePayload) => verifyCode(payload),
     onSuccess: (data) => {
       setTokens({ access: data.access, refresh: data.refresh })
+      setUser(data.user)
     },
   })
 }
@@ -46,6 +50,18 @@ export function useUpdateProfile() {
     onSuccess: (user) => {
       setUser(user)
       queryClient.setQueryData(meQueryKey, user)
+    },
+  })
+}
+
+export function useStaffLogin() {
+  const setTokens = useAuthStore((s) => s.setTokens)
+  const setUser = useAuthStore((s) => s.setUser)
+  return useMutation({
+    mutationFn: (payload: StaffLoginPayload) => staffLogin(payload),
+    onSuccess: (data) => {
+      setTokens({ access: data.access, refresh: data.refresh })
+      setUser(data.user)
     },
   })
 }

@@ -39,8 +39,10 @@ api.interceptors.response.use(
 
     const isAuthEndpoint =
       original?.url?.includes('/api/auth/token/refresh/') ||
+      original?.url?.includes('/api/auth/staff/refresh/') ||
       original?.url?.includes('/api/auth/verify-code/') ||
-      original?.url?.includes('/api/auth/request-code/')
+      original?.url?.includes('/api/auth/request-code/') ||
+      original?.url?.includes('/api/auth/staff/login/')
 
     if (status === 401 && original && !original._retried && !isAuthEndpoint) {
       original._retried = true
@@ -52,11 +54,13 @@ api.interceptors.response.use(
 
       try {
         if (!refreshPromise) {
+          const role = useAuthStore.getState().role
+          const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin'
+          const refreshUrl = isStaff
+            ? `${API_BASE}/api/auth/staff/refresh/`
+            : `${API_BASE}/api/auth/token/refresh/`
           refreshPromise = axios
-            .post<{ access: string }>(
-              `${API_BASE}/api/auth/token/refresh/`,
-              { refresh },
-            )
+            .post<{ access: string }>(refreshUrl, { refresh })
             .then((r) => r.data.access)
             .catch(() => null)
             .finally(() => {

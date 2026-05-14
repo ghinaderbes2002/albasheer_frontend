@@ -24,6 +24,100 @@
   ],
   "item": [
     {
+      "name": "Staff Auth",
+      "item": [
+        {
+          "name": "Staff Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.access) {",
+                  "    pm.collectionVariables.set('access_token', json.access);",
+                  "}",
+                  "if (json.refresh) {",
+                  "    pm.collectionVariables.set('refresh_token', json.refresh);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"+963911000001\",\n  \"password\": \"admin1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/staff/login/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "staff", "login", ""]
+            },
+            "description": "Login for branch_manager, delivery, and admin roles. Returns access + refresh JWT tokens and user profile (id, phone, full_name, role, branch_id, branch_name). Tokens are auto-saved to collection variables. Returns 403 if role is customer."
+          },
+          "response": []
+        },
+        {
+          "name": "Staff Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json.access) {",
+                  "    pm.collectionVariables.set('access_token', json.access);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/staff/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "staff", "refresh", ""]
+            },
+            "description": "Exchange a refresh token for a new access token. New access_token is auto-saved to collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Staff Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/staff/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "staff", "me", ""]
+            },
+            "description": "Returns the authenticated staff user's profile: id, phone, full_name, role, branch_id, branch_name. Returns 401 if no/invalid token. Returns 403 if the token belongs to a customer."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
       "name": "Auth",
       "item": [
         {
@@ -31,26 +125,19 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phone\": \"+963999999999\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"phone\": \"0912345678\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/api/auth/request-code/",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "request-code", ""]
             },
-            "description": "Request an OTP code to be sent to the provided phone number."
+            "description": "Send a 5-digit OTP to the phone number via WhatsApp. Phone is normalized to E.164 (+963...)."
           },
           "response": []
         },
@@ -76,26 +163,19 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phone\": \"+963999999999\",\n  \"code\": \"1234\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"phone\": \"0912345678\",\n  \"code\": \"48219\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/api/auth/verify-code/",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "verify-code", ""]
             },
-            "description": "Verify the OTP code. On success, automatically saves access_token and refresh_token to collection variables."
+            "description": "Verify the 5-digit OTP code. Creates user account on first login. Returns access + refresh JWT tokens and is_new flag. Tokens are auto-saved to collection variables."
           },
           "response": []
         },
@@ -118,26 +198,19 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/api/auth/token/refresh/",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "token", "refresh", ""]
             },
-            "description": "Refresh the JWT access token using a valid refresh token. Automatically saves the new access_token."
+            "description": "Refresh the JWT access token. New access_token is auto-saved."
           },
           "response": []
         },
@@ -146,17 +219,14 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/api/auth/me/",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "me", ""]
             },
-            "description": "Get the authenticated user's profile. Requires a valid Bearer token."
+            "description": "Returns: id, phone, first_name, last_name, role, address."
           },
           "response": []
         },
@@ -165,30 +235,101 @@
           "request": {
             "method": "PATCH",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_name\": \"Test\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"first_name\": \"أحمد\",\n  \"last_name\": \"البشير\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/api/auth/me/",
               "host": ["{{base_url}}"],
               "path": ["api", "auth", "me", ""]
             },
-            "description": "Partially update the authenticated user's profile. Requires a valid Bearer token."
+            "description": "Partially update profile. Writable fields: first_name, last_name, address."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Addresses",
+      "item": [
+        {
+          "name": "List My Addresses",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/addresses/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "addresses", ""]
+            },
+            "description": "List all saved delivery addresses for the authenticated user."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"المنزل\",\n  \"city\": \"دمشق\",\n  \"full_address\": \"شارع الثورة، بناء 5، طابق 3\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/addresses/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "addresses", ""]
+            },
+            "description": "Create a new saved delivery address."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Address",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/addresses/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "addresses", ":id", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Address ID" }
+              ]
+            },
+            "description": "Delete a saved address. Returns 204 No Content."
+          },
+          "response": []
+        },
+        {
+          "name": "Set Default Address",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/addresses/:id/set-default/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "addresses", ":id", "set-default", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Address ID" }
+              ]
+            },
+            "description": "Mark an address as the default delivery address. No request body needed."
           },
           "response": []
         }
@@ -207,7 +348,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "products", "categories", ""]
             },
-            "description": "Retrieve all product categories."
+            "description": "All active product categories."
           },
           "response": []
         },
@@ -222,20 +363,34 @@
               "path": ["api", "products", ""],
               "query": [
                 {
-                  "key": "search",
+                  "key": "category",
                   "value": "",
-                  "description": "Search by product name or description",
+                  "description": "Filter by category slug (e.g. tvs)",
                   "disabled": true
                 },
                 {
-                  "key": "category",
+                  "key": "search",
                   "value": "",
-                  "description": "Filter by category slug or ID",
+                  "description": "Search by name or name_ar",
                   "disabled": true
                 }
               ]
             },
-            "description": "Retrieve all products. Supports optional ?search= and ?category= query parameters."
+            "description": "List available products. Optional query params: ?category=<slug> and ?search=<term>."
+          },
+          "response": []
+        },
+        {
+          "name": "Featured Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/featured/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", "featured", ""]
+            },
+            "description": "Products marked as is_featured=True. Used on the homepage."
           },
           "response": []
         },
@@ -249,70 +404,106 @@
               "host": ["{{base_url}}"],
               "path": ["api", "products", ":slug", ""],
               "variable": [
-                {
-                  "key": "slug",
-                  "value": "example-product-slug",
-                  "description": "The product's URL slug"
-                }
+                { "key": "slug", "value": "example-product", "description": "Product slug" }
               ]
             },
-            "description": "Retrieve a single product by its slug."
+            "description": "Full product detail including images and specs."
+          },
+          "response": []
+        },
+        {
+          "name": "List Bundles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/bundles/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", "bundles", ""]
+            },
+            "description": "All available product bundles."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bundle by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/products/bundles/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products", "bundles", ":id", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Bundle ID" }
+              ]
+            },
+            "description": "Single bundle detail with its included products."
           },
           "response": []
         }
       ]
     },
     {
-      "name": "Orders",
+      "name": "Orders — Customer",
       "item": [
-        {
-          "name": "Create Order",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"items\": [\n    {\n      \"product\": 1,\n      \"quantity\": 2\n    }\n  ],\n  \"branch\": 1,\n  \"notes\": \"Please deliver in the morning\",\n  \"deposit_percent\": 30\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ""]
-            },
-            "description": "Create a new order. Requires a valid Bearer token."
-          },
-          "response": []
-        },
         {
           "name": "List My Orders",
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/api/orders/",
               "host": ["{{base_url}}"],
               "path": ["api", "orders", ""]
             },
-            "description": "Retrieve all orders for the authenticated user. Requires a valid Bearer token."
+            "description": "All orders for the authenticated customer."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branch_id\": 1,\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 2 }\n  ],\n  \"bundle_items\": [],\n  \"address_id\": 1,\n  \"customer_note\": \"يرجى التوصيل صباحاً\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ""]
+            },
+            "description": "Create a new order. Must supply either address_id (saved address) or delivery_address (free-text). Must include at least one item or bundle_item. Deposit is calculated automatically from SiteSettings."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Order (new address)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"branch_id\": 1,\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 1 }\n  ],\n  \"bundle_items\": [],\n  \"delivery_address\": \"شارع النصر، بناء 12\",\n  \"customer_note\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ""]
+            },
+            "description": "Create order with a one-time delivery_address instead of a saved address_id."
           },
           "response": []
         },
@@ -321,44 +512,34 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
             ],
             "url": {
               "raw": "{{base_url}}/api/orders/:id/",
               "host": ["{{base_url}}"],
               "path": ["api", "orders", ":id", ""],
               "variable": [
-                {
-                  "key": "id",
-                  "value": "1",
-                  "description": "The order's ID"
-                }
+                { "key": "id", "value": "1", "description": "Order ID" }
               ]
             },
-            "description": "Retrieve a single order by its ID."
+            "description": "Full order detail including items, bundle_items, and status logs."
           },
           "response": []
         },
         {
-          "name": "Upload Receipt Image",
+          "name": "Upload Receipt",
           "request": {
-            "method": "PATCH",
+            "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              }
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
             ],
             "body": {
               "mode": "formdata",
               "formdata": [
                 {
-                  "key": "receipt_image",
+                  "key": "receipt",
                   "type": "file",
-                  "description": "The receipt image file to upload"
+                  "description": "Image file of the payment receipt"
                 }
               ]
             },
@@ -367,53 +548,333 @@
               "host": ["{{base_url}}"],
               "path": ["api", "orders", ":id", "upload-receipt", ""],
               "variable": [
-                {
-                  "key": "id",
-                  "value": "1",
-                  "description": "The order's ID"
-                }
+                { "key": "id", "value": "1", "description": "Order ID" }
               ]
             },
-            "description": "Upload a deposit receipt image for an order. Uses multipart form data with field 'receipt_image'. Requires a valid Bearer token."
+            "description": "Upload a deposit receipt image. Only works when order status is 'pending'. Multipart form field name: receipt."
           },
           "response": []
         },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id/cancel/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id", "cancel", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Cancel a pending order. Only allowed when status is 'pending'. No request body."
+          },
+          "response": []
+        },
+        {
+          "name": "Track Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id/tracking/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id", "tracking", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Returns current_status and a stages array (pending→confirmed→preparing→shipping→delivered) with timestamps."
+          },
+          "response": []
+        },
+        {
+          "name": "Rate Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"خدمة ممتازة وتوصيل سريع\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders/:id/rate/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", ":id", "rate", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Rate a delivered order (1–5). Only works when status is 'delivered'. Can only be rated once."
+          },
+          "response": []
+        },
+        {
+          "name": "List Delivery Orders (legacy)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/orders/delivery/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "delivery", ""]
+            },
+            "description": "Legacy endpoint. Delivery staff: list orders assigned to you. Use /api/delivery/orders/ instead."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders — Shared Status Update",
+      "item": [
         {
           "name": "Update Order Status",
           "request": {
             "method": "PATCH",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{access_token}}"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"confirmed\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
+              "raw": "{\n  \"status\": \"confirmed\",\n  \"delivery_staff_id\": null,\n  \"rejection_reason\": \"\",\n  \"estimated_delivery\": null,\n  \"note\": \"\"\n}",
+              "options": { "raw": { "language": "json" } }
             },
             "url": {
               "raw": "{{base_url}}/api/orders/:id/status/",
               "host": ["{{base_url}}"],
               "path": ["api", "orders", ":id", "status", ""],
               "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Generic status update (branch_manager or delivery role). Branch manager transitions: pending→confirmed/cancelled, confirmed→preparing/cancelled, preparing→cancelled. Delivery transitions: confirmed/preparing→shipping, shipping→delivered. Branch managers may also pass delivery_staff_id when transitioning."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders — Branch Manager",
+      "item": [
+        {
+          "name": "List Branch Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/branch/orders/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branch", "orders", ""],
+              "query": [
                 {
-                  "key": "id",
-                  "value": "1",
-                  "description": "The order's ID"
+                  "key": "status",
+                  "value": "pending",
+                  "description": "Filter by status: pending, confirmed, preparing, shipping, delivered, cancelled",
+                  "disabled": true
                 }
               ]
             },
-            "description": "Update an order's status. Requires branch_manager role. Valid statuses: pending → confirmed → preparing → shipping → delivered (or cancelled)."
+            "description": "List all orders for the manager's branch, newest first. Optional ?status= filter."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Branch Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/branch/orders/:id/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branch", "orders", ":id", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Full order detail for branch manager view, including items and receipt image."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/branch/orders/:id/confirm/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branch", "orders", ":id", "confirm", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Confirm a pending order. No request body."
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rejection_reason\": \"المنتج غير متوفر حالياً\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/branch/orders/:id/reject/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branch", "orders", ":id", "reject", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Reject a pending or confirmed order. rejection_reason is required."
+          },
+          "response": []
+        },
+        {
+          "name": "Prepare Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/branch/orders/:id/prepare/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branch", "orders", ":id", "prepare", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Move a confirmed order to 'preparing'. No request body."
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Delivery Staff",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"delivery_user_id\": 5\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/branch/orders/:id/assign-delivery/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branch", "orders", ":id", "assign-delivery", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Assign a delivery staff member to a preparing order. The user must have role='delivery' and belong to the same branch."
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Order Ready (Ship)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/branch/orders/:id/ready/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branch", "orders", ":id", "ready", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Mark a preparing order (with assigned delivery staff) as shipping. No request body."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders — Delivery Staff",
+      "item": [
+        {
+          "name": "List My Delivery Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery/orders/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "delivery", "orders", ""]
+            },
+            "description": "All orders assigned to the authenticated delivery staff member, newest first."
+          },
+          "response": []
+        },
+        {
+          "name": "Start Delivery (mark shipping)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery/orders/:id/start/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "delivery", "orders", ":id", "start", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Mark a preparing order as shipping. Order must be in 'preparing' status. No request body."
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Delivery (mark delivered)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/delivery/orders/:id/complete/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "delivery", "orders", ":id", "complete", ""],
+              "variable": [
+                { "key": "id", "value": "1", "description": "Order ID" }
+              ]
+            },
+            "description": "Mark a shipping order as delivered. Order must be in 'shipping' status. No request body."
           },
           "response": []
         }
@@ -432,7 +893,7 @@
               "host": ["{{base_url}}"],
               "path": ["api", "branches", ""]
             },
-            "description": "Retrieve all store branch locations."
+            "description": "All active store branches."
           },
           "response": []
         },
@@ -446,14 +907,29 @@
               "host": ["{{base_url}}"],
               "path": ["api", "branches", ":id", ""],
               "variable": [
-                {
-                  "key": "id",
-                  "value": "1",
-                  "description": "The branch's ID"
-                }
+                { "key": "id", "value": "1", "description": "Branch ID" }
               ]
             },
-            "description": "Retrieve a single branch by its ID."
+            "description": "Branch detail: name, city, address, phone."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ads",
+      "item": [
+        {
+          "name": "List Active Ads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/ads/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ads", ""]
+            },
+            "description": "All active ads sorted by display order. Used for homepage banners/promotions."
           },
           "response": []
         }

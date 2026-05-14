@@ -8,20 +8,27 @@ import { RoleGuard } from '@/routes/RoleGuard'
 import { HomePage } from '@/pages/public/HomePage'
 import { ProductsPage } from '@/pages/public/ProductsPage'
 import { ProductDetailPage } from '@/pages/public/ProductDetailPage'
+import { BundlesPage } from '@/pages/public/BundlesPage'
+import { BundleDetailPage } from '@/pages/public/BundleDetailPage'
 import { BranchesPage } from '@/pages/public/BranchesPage'
 
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { VerifyOtpPage } from '@/pages/auth/VerifyOtpPage'
 import { CompleteProfilePage } from '@/pages/auth/CompleteProfilePage'
+import { StaffLoginPage } from '@/pages/auth/StaffLoginPage'
 
 import { ProfilePage } from '@/pages/customer/ProfilePage'
+import { AddressesPage } from '@/pages/customer/AddressesPage'
 import { CartPage } from '@/pages/customer/CartPage'
 import { CheckoutPage } from '@/pages/customer/CheckoutPage'
 import { MyOrdersPage } from '@/pages/customer/MyOrdersPage'
 import { OrderDetailPage } from '@/pages/customer/OrderDetailPage'
+import { OrderTrackingPage } from '@/pages/customer/OrderTrackingPage'
 
 import { BranchOrdersPage } from '@/pages/dashboard/BranchOrdersPage'
+import { BranchOrderDetailPage } from '@/pages/dashboard/BranchOrderDetailPage'
 import { DeliveryOrdersPage } from '@/pages/dashboard/DeliveryOrdersPage'
+import { DeliveryOrderDetailPage } from '@/pages/dashboard/DeliveryOrderDetailPage'
 
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { ForbiddenPage } from '@/pages/ForbiddenPage'
@@ -34,9 +41,12 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'products/:slug', element: <ProductDetailPage /> },
+      { path: 'bundles', element: <BundlesPage /> },
+      { path: 'bundles/:id', element: <BundleDetailPage /> },
       { path: 'branches', element: <BranchesPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'login', element: <LoginPage /> },
+      { path: 'staff/login', element: <StaffLoginPage /> },
       { path: 'verify', element: <VerifyOtpPage /> },
       { path: '403', element: <ForbiddenPage /> },
 
@@ -45,6 +55,7 @@ export const router = createBrowserRouter([
         children: [
           { path: 'complete-profile', element: <CompleteProfilePage /> },
           { path: 'profile', element: <ProfilePage /> },
+          { path: 'addresses', element: <AddressesPage /> },
 
           {
             element: <RoleGuard allow={['customer']} />,
@@ -52,6 +63,7 @@ export const router = createBrowserRouter([
               { path: 'checkout', element: <CheckoutPage /> },
               { path: 'orders', element: <MyOrdersPage /> },
               { path: 'orders/:id', element: <OrderDetailPage /> },
+              { path: 'orders/:id/tracking', element: <OrderTrackingPage /> },
             ],
           },
         ],
@@ -70,12 +82,20 @@ export const router = createBrowserRouter([
             element: <RoleGuard allow={['branch_manager']} />,
             children: [
               { path: 'dashboard/branch', element: <BranchOrdersPage /> },
+              {
+                path: 'dashboard/branch/orders/:id',
+                element: <BranchOrderDetailPage />,
+              },
             ],
           },
           {
             element: <RoleGuard allow={['delivery']} />,
             children: [
               { path: 'dashboard/delivery', element: <DeliveryOrdersPage /> },
+              {
+                path: 'dashboard/delivery/orders/:id',
+                element: <DeliveryOrderDetailPage />,
+              },
             ],
           },
         ],

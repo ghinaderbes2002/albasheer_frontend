@@ -18,10 +18,21 @@ export interface AuthResponse {
   access: string
   refresh: string
   is_new: boolean
+  /**
+   * Backend returns the user object directly in the verify-code response
+   * since 2026-05-10 — `role` is read from here for instant role-based
+   * routing (no extra `/me` round-trip needed).
+   */
+  user: User
 }
 
 export interface RefreshResponse {
   access: string
+}
+
+export interface UserBranch {
+  id: number
+  name: string
 }
 
 export interface User {
@@ -30,12 +41,15 @@ export interface User {
   first_name: string
   last_name: string
   address: string
-  /**
-   * Role is not (yet) returned by `/api/auth/me/` per the current API guide.
-   * Kept optional so downstream guards still type-check; we will resolve
-   * the actual source (JWT claim, dedicated endpoint, …) in Phase 2.
-   */
-  role?: Role
+  role: Role
+  branch?: UserBranch
+}
+
+export interface DeliveryStaff {
+  id: number
+  phone: string
+  first_name: string
+  last_name: string
 }
 
 export interface ProfilePatch {
@@ -86,14 +100,51 @@ export interface ProductDetail extends ProductListItem {
   is_available: boolean
 }
 
+// ─── Bundles ──────────────────────────────────────────────────────────
+export interface Bundle {
+  id: number
+  name: string
+  name_ar: string
+  description: string
+  description_ar: string
+  image: string | null
+  price: string
+  is_available: boolean
+  products: ProductListItem[]
+}
+
 // ─── Branches ─────────────────────────────────────────────────────────
 export interface Branch {
   id: number
   name: string
+  name_ar: string
   city: string
   address: string
   phone: string
+  maps_url: string
   is_active: boolean
+}
+
+export interface City {
+  id: number
+  name: string
+  requires_deposit: boolean
+}
+
+// ─── Addresses ────────────────────────────────────────────────────────
+export interface Address {
+  id: number
+  label: string
+  city: string
+  full_address: string
+  is_default: boolean
+  created_at: string
+}
+
+export interface AddressPayload {
+  label: string
+  city: string
+  full_address: string
 }
 
 // ─── Orders ───────────────────────────────────────────────────────────
@@ -103,6 +154,7 @@ export interface OrderListItem {
   status_display: string
   total_price: string
   deposit_amount: string
+  shipping_fee: string
   branch_name: string
   item_count: number
   delivery_address: string
@@ -116,6 +168,14 @@ export interface OrderItem {
   unit_price: string
   quantity: number
   subtotal: string
+}
+
+export interface OrderBundleItem {
+  id: number
+  bundle_name: string
+  quantity: number
+  unit_price: string
+  total_price: string
 }
 
 export interface OrderLog {
@@ -135,6 +195,8 @@ export interface OrderDetail {
   total_price: string
   deposit_percent: string
   deposit_amount: string
+  shipping_fee: string
+  requires_deposit: boolean
   delivery_address: string
   customer_note: string
   rejection_reason: string
@@ -142,9 +204,22 @@ export interface OrderDetail {
   receipt_image: string | null
   delivery_staff_name: string | null
   items: OrderItem[]
+  bundle_items?: OrderBundleItem[]
   logs: OrderLog[]
   created_at: string
   updated_at: string
+}
+
+export interface TrackingStage {
+  status: OrderStatus
+  label: string
+  reached: boolean
+  timestamp: string | null
+}
+
+export interface OrderTracking {
+  current_status: OrderStatus
+  stages: TrackingStage[]
 }
 
 export interface CreateOrderItemPayload {
@@ -152,10 +227,16 @@ export interface CreateOrderItemPayload {
   quantity: number
 }
 
+export interface CreateOrderBundleItemPayload {
+  bundle_id: number
+  quantity: number
+}
+
 export interface CreateOrderPayload {
-  branch_id: number
-  items: CreateOrderItemPayload[]
-  deposit_amount: string
+  city: string
+  /** At least one of `items` / `bundle_items` must be non-empty. */
+  items?: CreateOrderItemPayload[]
+  bundle_items?: CreateOrderBundleItemPayload[]
   delivery_address: string
   customer_note?: string
 }
@@ -166,6 +247,64 @@ export interface UpdateOrderStatusPayload {
   rejection_reason?: string
   estimated_delivery?: string
   note?: string
+}
+
+// ─── Branch dashboard (staff) ─────────────────────────────────────────
+// `BranchOrderListSerializer` and `BranchOrderDetailSerializer` from the
+// backend — a slimmer shape than the customer's `OrderDetail`.
+export interface BranchOrderListItem {
+  id: number
+  customer_phone: string
+  customer_name: string
+  status: OrderStatus
+  total_price: string
+  deposit_amount: string
+  created_at: string
+}
+
+export interface BranchOrderItem {
+  id: number
+  product_name: string
+  quantity: number
+  unit_price: string
+  /** Note: the staff serializer names this `total_price`, not `subtotal`. */
+  total_price: string
+}
+
+export interface BranchOrderDetail {
+  id: number
+  customer_phone: string
+  customer_name: string
+  status: OrderStatus
+  total_price: string
+  deposit_amount: string
+  deposit_percent: string
+  delivery_address: string
+  receipt_image: string | null
+  items: BranchOrderItem[]
+  created_at: string
+}
+
+export interface RejectOrderPayload {
+  rejection_reason: string
+}
+
+export interface AssignDeliveryPayload {
+  delivery_user_id: number
+}
+
+// ─── Ads ──────────────────────────────────────────────────────────────
+export type AdMediaType = 'image' | 'video'
+
+export interface Ad {
+  id: number
+  title: string
+  media_type: AdMediaType
+  /** Relative or absolute URL — pass through `resolveMediaUrl`. */
+  file: string
+  /** Optional click target. Empty string means non-clickable. */
+  link: string
+  order: number
 }
 
 // ─── Pagination ───────────────────────────────────────────────────────

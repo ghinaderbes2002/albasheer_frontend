@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
-import { Controller, useForm } from 'react-hook-form'
+import { useEffect, useMemo } from 'react'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Info, Loader2, Banknote, CreditCard } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -16,25 +16,25 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { BranchSelect } from '@/features/orders/BranchSelect'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useCreateOrder } from '@/features/orders/queries'
 import {
   checkoutSchema,
   type CheckoutFormValues,
 } from '@/features/orders/validators'
 import { useMe } from '@/features/auth/queries'
-import { useCartStore, useCartSubtotal } from '@/store/cart'
+import { useCities } from '@/features/branches/queries'
+import { useCartStore } from '@/store/cart'
 import { extractApiError } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import { formatPrice, pickLang } from '@/lib/format'
 
 const errorKey = (msg?: string) => {
   switch (msg) {
-    case 'branch.required':
-      return 'checkout.errors.branchRequired'
+    case 'city.required':
+      return 'checkout.errors.cityRequired'
     case 'address.tooShort':
       return 'auth.profile.addressTooShort'
-    case 'deposit.invalid':
-      return 'checkout.errors.depositInvalid'
     default:
       return null
   }
@@ -43,28 +43,72 @@ const errorKey = (msg?: string) => {
 export function CheckoutPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const items = useCartStore((s) => s.items)
-  const subtotal = useCartSubtotal()
+  const [searchParams] = useSearchParams()
+  const allItems = useCartStore((s) => s.items)
+  const allBundles = useCartStore((s) => s.bundles)
+  const removeItem = useCartStore((s) => s.removeItem)
+  const removeBundle = useCartStore((s) => s.removeBundle)
+  const clearCart = useCartStore((s) => s.clear)
   const { data: me } = useMe()
+  const { data: cities, isLoading: citiesLoading } = useCities()
   const createOrder = useCreateOrder()
 
-  const depositSuggestion = String(Math.round(subtotal * 0.1))
+  // ── Single-item checkout via ?product=… or ?bundle=… ─────────────
+  const onlyProductId = searchParams.get('product')
+  const onlyBundleId = searchParams.get('bundle')
+  const isSingleItem = !!(onlyProductId || onlyBundleId)
+
+  const items = useMemo(() => {
+    if (onlyBundleId) return []
+    if (onlyProductId)
+      return allItems.filter(
+        (i) => String(i.product_id) === onlyProductId,
+      )
+    return allItems
+  }, [allItems, onlyProductId, onlyBundleId])
+
+  const bundles = useMemo(() => {
+    if (onlyProductId) return []
+    if (onlyBundleId)
+      return allBundles.filter(
+        (b) => String(b.bundle_id) === onlyBundleId,
+      )
+    return allBundles
+  }, [allBundles, onlyProductId, onlyBundleId])
+
+  const subtotal = useMemo(
+    () =>
+      items.reduce(
+        (sum, i) => sum + parseFloat(i.price) * i.quantity,
+        0,
+      ) +
+      bundles.reduce(
+        (sum, b) => sum + parseFloat(b.price) * b.quantity,
+        0,
+      ),
+    [items, bundles],
+  )
 
   const {
-    control,
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
-      branch_id: undefined as unknown as number,
+      city: '',
       delivery_address: '',
-      deposit_amount: depositSuggestion,
       customer_note: '',
     },
   })
+
+  const selectedCityName = watch('city')
+  const selectedCity = cities?.find((c) => c.name === selectedCityName)
+  const requiresDeposit = selectedCity?.requires_deposit ?? false
+
+  const depositSuggestion = String(Math.round(subtotal * 0.1))
 
   // Prefill address from /me when it arrives.
   useEffect(() => {
@@ -76,20 +120,36 @@ export function CheckoutPage() {
     }
   }, [me, reset])
 
-  if (items.length === 0) return <Navigate to="/cart" replace />
+  if (items.length === 0 && bundles.length === 0)
+    return <Navigate to="/cart" replace />
 
   const onSubmit = handleSubmit(async (values) => {
     try {
       const order = await createOrder.mutateAsync({
-        branch_id: values.branch_id,
+        city: values.city,
         delivery_address: values.delivery_address,
-        deposit_amount: values.deposit_amount,
         customer_note: values.customer_note || undefined,
-        items: items.map((i) => ({
-          product_id: i.product_id,
-          quantity: i.quantity,
-        })),
+        items: items.length
+          ? items.map((i) => ({
+              product_id: i.product_id,
+              quantity: i.quantity,
+            }))
+          : undefined,
+        bundle_items: bundles.length
+          ? bundles.map((b) => ({
+              bundle_id: b.bundle_id,
+              quantity: b.quantity,
+            }))
+          : undefined,
       })
+
+      if (isSingleItem) {
+        if (onlyProductId) removeItem(parseInt(onlyProductId, 10))
+        if (onlyBundleId) removeBundle(parseInt(onlyBundleId, 10))
+      } else {
+        clearCart()
+      }
+
       toast.success(t('checkout.created'))
       navigate(`/orders/${order.id}`, { replace: true })
     } catch (err) {
@@ -102,44 +162,106 @@ export function CheckoutPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold md:text-3xl">
+      <h1 className="mb-3 text-2xl font-bold md:text-3xl">
         {t('checkout.title')}
       </h1>
 
+      {isSingleItem && (
+        <div className="mb-6 flex items-start gap-2 rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm">
+          <Info className="mt-0.5 size-4 shrink-0 text-primary" />
+          <div className="flex-1">
+            <p className="font-medium text-foreground">
+              {t('checkout.singleItem.title')}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t('checkout.singleItem.hint')}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/checkout', { replace: true })}
+            className="text-xs font-semibold text-primary hover:underline"
+          >
+            {t('checkout.singleItem.checkoutAll')}
+          </button>
+        </div>
+      )}
+
       <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[1fr_360px]" noValidate>
         <div className="space-y-4">
+          {/* City selection */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
-                {t('checkout.branch.title')}
+                {t('checkout.city.title')}
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <Label htmlFor="branch">{t('checkout.branch.label')}</Label>
-              <Controller
-                control={control}
-                name="branch_id"
-                render={({ field }) => (
-                  <BranchSelect
-                    id="branch"
-                    value={field.value || null}
-                    onChange={field.onChange}
-                    disabled={busy}
-                    invalid={!!errors.branch_id}
-                  />
-                )}
-              />
-              {errors.branch_id && (
-                <p className="text-xs text-destructive">
-                  {t(
-                    errorKey(errors.branch_id.message) ??
-                      'checkout.errors.branchRequired',
+              <Label htmlFor="city">{t('checkout.city.label')}</Label>
+              {citiesLoading ? (
+                <Skeleton className="h-10 w-full rounded-md" />
+              ) : (
+                <select
+                  id="city"
+                  disabled={busy}
+                  aria-invalid={!!errors.city || undefined}
+                  className={cn(
+                    'flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm transition-colors',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                    'disabled:cursor-not-allowed disabled:opacity-50',
+                    errors.city && 'border-destructive ring-2 ring-destructive/30',
                   )}
+                  {...register('city')}
+                >
+                  <option value="">{t('checkout.city.placeholder')}</option>
+                  {cities?.map((c) => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              )}
+              {errors.city && (
+                <p className="text-xs text-destructive">
+                  {t(errorKey(errors.city.message) ?? 'checkout.errors.cityRequired')}
                 </p>
               )}
             </CardContent>
           </Card>
 
+          {/* Payment method banner — shown once city is selected */}
+          {selectedCityName && (
+            <div className={cn(
+              'flex items-start gap-3 rounded-xl border px-4 py-3 text-sm',
+              requiresDeposit
+                ? 'border-amber-500/30 bg-amber-500/5'
+                : 'border-green-500/30 bg-green-500/5',
+            )}>
+              {requiresDeposit ? (
+                <Banknote className="mt-0.5 size-4 shrink-0 text-amber-600" />
+              ) : (
+                <CreditCard className="mt-0.5 size-4 shrink-0 text-green-600" />
+              )}
+              <div className="flex-1">
+                <p className={cn(
+                  'font-medium',
+                  requiresDeposit ? 'text-amber-700 dark:text-amber-400' : 'text-green-700 dark:text-green-400',
+                )}>
+                  {requiresDeposit
+                    ? t('checkout.deposit.requiredTitle')
+                    : t('checkout.deposit.codTitle')}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {requiresDeposit
+                    ? t('checkout.deposit.requiredHint', {
+                        amount: formatPrice(depositSuggestion, i18n.language),
+                        currency: t('common.currency'),
+                      })
+                    : t('checkout.deposit.codHint')}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Delivery details */}
           <Card>
             <CardHeader>
               <CardTitle className="text-base">
@@ -181,45 +303,9 @@ export function CheckoutPage() {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">
-                {t('checkout.deposit.title')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <Label htmlFor="deposit_amount">
-                {t('checkout.deposit.label')}
-              </Label>
-              <Input
-                id="deposit_amount"
-                type="text"
-                inputMode="numeric"
-                dir="ltr"
-                disabled={busy}
-                aria-invalid={!!errors.deposit_amount || undefined}
-                {...register('deposit_amount')}
-              />
-              {errors.deposit_amount ? (
-                <p className="text-xs text-destructive">
-                  {t(
-                    errorKey(errors.deposit_amount.message) ??
-                      'checkout.errors.depositInvalid',
-                  )}
-                </p>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  {t('checkout.deposit.hint', {
-                    amount: formatPrice(depositSuggestion, i18n.language),
-                    currency: t('common.currency'),
-                  })}
-                </p>
-              )}
-            </CardContent>
-          </Card>
         </div>
 
+        {/* Order summary sidebar */}
         <Card className="sticky top-20 self-start">
           <CardHeader>
             <CardTitle className="text-base">
@@ -228,9 +314,29 @@ export function CheckoutPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="space-y-2">
+              {bundles.map((b) => (
+                <div
+                  key={`b-${b.bundle_id}`}
+                  className="flex items-baseline justify-between gap-2"
+                >
+                  <span className="line-clamp-1 flex-1 text-muted-foreground">
+                    <span className="me-1 inline-flex items-center gap-1 rounded bg-primary/15 px-1 text-[10px] font-semibold text-primary">
+                      {t('bundles.label')}
+                    </span>
+                    {pickLang(b.name, b.name_ar, i18n.language)}
+                    <span className="mx-1 text-xs">×{b.quantity}</span>
+                  </span>
+                  <span className="font-medium">
+                    {formatPrice(
+                      parseFloat(b.price) * b.quantity,
+                      i18n.language,
+                    )}
+                  </span>
+                </div>
+              ))}
               {items.map((i) => (
                 <div
-                  key={i.product_id}
+                  key={`p-${i.product_id}`}
                   className="flex items-baseline justify-between gap-2"
                 >
                   <span className="line-clamp-1 flex-1 text-muted-foreground">

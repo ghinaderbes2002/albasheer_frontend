@@ -26,3 +26,15 @@ export const profileSchema = z.object({
 })
 
 export type ProfileFormValues = z.infer<typeof profileSchema>
+
+export const staffLoginSchema = z.object({
+  phone: z
+    .string()
+    .min(9, 'phone.tooShort')
+    .max(20, 'phone.tooLong')
+    .regex(phoneRegex, 'phone.invalid')
+    .transform((v) => v.replace(/[\s-]/g, '')),
+  password: z.string().min(1, 'required'),
+})
+
+export type StaffLoginFormValues = z.infer<typeof staffLoginSchema>
