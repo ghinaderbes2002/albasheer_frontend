@@ -2,356 +2,138 @@
   "info": {
     "name": "Albasheer Electricals API",
     "_postman_id": "albasheer-electricals-api-v1",
-    "description": "Complete API collection for the Albasheer Electricals Django REST Framework backend.",
+    "description": "Complete API collection for Albasheer Electricals (البشير للكهربائيات) — Django REST Framework backend.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {
-      "key": "base_url",
-      "value": "http://127.0.0.1:8000",
-      "type": "string"
-    },
-    {
-      "key": "access_token",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "refresh_token",
-      "value": "",
-      "type": "string"
-    }
+    { "key": "base_url", "value": "http://localhost:8000", "type": "string" },
+    { "key": "customer_token", "value": "", "type": "string" },
+    { "key": "staff_token", "value": "", "type": "string" },
+    { "key": "order_id", "value": "", "type": "string" },
+    { "key": "product_slug", "value": "", "type": "string" }
   ],
   "item": [
     {
-      "name": "Staff Auth",
-      "item": [
-        {
-          "name": "Staff Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var json = pm.response.json();",
-                  "if (json.access) {",
-                  "    pm.collectionVariables.set('access_token', json.access);",
-                  "}",
-                  "if (json.refresh) {",
-                  "    pm.collectionVariables.set('refresh_token', json.refresh);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phone\": \"+963911000001\",\n  \"password\": \"admin1234\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/staff/login/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "staff", "login", ""]
-            },
-            "description": "Login for branch_manager, delivery, and admin roles. Returns access + refresh JWT tokens and user profile (id, phone, full_name, role, branch_id, branch_name). Tokens are auto-saved to collection variables. Returns 403 if role is customer."
-          },
-          "response": []
-        },
-        {
-          "name": "Staff Refresh Token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var json = pm.response.json();",
-                  "if (json.access) {",
-                  "    pm.collectionVariables.set('access_token', json.access);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/staff/refresh/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "staff", "refresh", ""]
-            },
-            "description": "Exchange a refresh token for a new access token. New access_token is auto-saved to collection variables."
-          },
-          "response": []
-        },
-        {
-          "name": "Staff Me",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/auth/staff/me/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "staff", "me", ""]
-            },
-            "description": "Returns the authenticated staff user's profile: id, phone, full_name, role, branch_id, branch_name. Returns 401 if no/invalid token. Returns 403 if the token belongs to a customer."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Auth",
+      "name": "🔐 Auth",
       "item": [
         {
           "name": "Request OTP Code",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/request-code/", "host": ["{{base_url}}"], "path": ["api", "auth", "request-code", ""] },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"phone\": \"0912345678\"\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/request-code/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "request-code", ""]
-            },
-            "description": "Send a 5-digit OTP to the phone number via WhatsApp. Phone is normalized to E.164 (+963...)."
-          },
-          "response": []
+            }
+          }
         },
         {
           "name": "Verify OTP Code",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var json = pm.response.json();",
-                  "if (json.access) {",
-                  "    pm.collectionVariables.set('access_token', json.access);",
-                  "}",
-                  "if (json.refresh) {",
-                  "    pm.collectionVariables.set('refresh_token', json.refresh);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/verify-code/", "host": ["{{base_url}}"], "path": ["api", "auth", "verify-code", ""] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"phone\": \"0912345678\",\n  \"code\": \"48219\"\n}",
+              "raw": "{\n  \"phone\": \"0912345678\",\n  \"code\": \"123456\"\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/verify-code/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "verify-code", ""]
-            },
-            "description": "Verify the 5-digit OTP code. Creates user account on first login. Returns access + refresh JWT tokens and is_new flag. Tokens are auto-saved to collection variables."
-          },
-          "response": []
-        },
-        {
-          "name": "Refresh Token",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "var json = pm.response.json();",
-                  "if (json.access) {",
-                  "    pm.collectionVariables.set('access_token', json.access);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
             }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/token/refresh/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "token", "refresh", ""]
-            },
-            "description": "Refresh the JWT access token. New access_token is auto-saved."
-          },
-          "response": []
+          }
         },
         {
-          "name": "Get My Profile",
+          "name": "Get Customer Profile (me)",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/auth/me/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "me", ""]
-            },
-            "description": "Returns: id, phone, first_name, last_name, role, address."
-          },
-          "response": []
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": { "raw": "{{base_url}}/api/auth/me/", "host": ["{{base_url}}"], "path": ["api", "auth", "me", ""] }
+          }
         },
         {
-          "name": "Update My Profile",
+          "name": "Update Customer Profile (me)",
           "request": {
             "method": "PATCH",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
               { "key": "Content-Type", "value": "application/json" }
             ],
+            "url": { "raw": "{{base_url}}/api/auth/me/", "host": ["{{base_url}}"], "path": ["api", "auth", "me", ""] },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"first_name\": \"أحمد\",\n  \"last_name\": \"البشير\"\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/auth/me/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "auth", "me", ""]
-            },
-            "description": "Partially update profile. Writable fields: first_name, last_name, address."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Addresses",
-      "item": [
-        {
-          "name": "List My Addresses",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/addresses/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "addresses", ""]
-            },
-            "description": "List all saved delivery addresses for the authenticated user."
-          },
-          "response": []
+            }
+          }
         },
         {
-          "name": "Create Address",
+          "name": "Staff Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/staff/login/", "host": ["{{base_url}}"], "path": ["api", "auth", "staff", "login", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"0912345678\",\n  \"password\": \"Admin@1234\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Get Staff Profile (me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/auth/staff/me/", "host": ["{{base_url}}"], "path": ["api", "auth", "staff", "me", ""] }
+          }
+        },
+        {
+          "name": "Refresh Token (Staff)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/staff/refresh/", "host": ["{{base_url}}"], "path": ["api", "auth", "staff", "refresh", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"<your_refresh_token>\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Refresh Token (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/api/auth/token/refresh/", "host": ["{{base_url}}"], "path": ["api", "auth", "token", "refresh", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"<your_refresh_token>\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Logout (Blacklist Token)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
               { "key": "Content-Type", "value": "application/json" }
             ],
+            "url": { "raw": "{{base_url}}/api/auth/logout/", "host": ["{{base_url}}"], "path": ["api", "auth", "logout", ""] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"label\": \"المنزل\",\n  \"city\": \"دمشق\",\n  \"full_address\": \"شارع الثورة، بناء 5، طابق 3\"\n}",
+              "raw": "{\n  \"refresh\": \"<your_refresh_token>\"\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/addresses/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "addresses", ""]
-            },
-            "description": "Create a new saved delivery address."
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Address",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/addresses/:id/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "addresses", ":id", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Address ID" }
-              ]
-            },
-            "description": "Delete a saved address. Returns 204 No Content."
-          },
-          "response": []
-        },
-        {
-          "name": "Set Default Address",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/addresses/:id/set-default/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "addresses", ":id", "set-default", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Address ID" }
-              ]
-            },
-            "description": "Mark an address as the default delivery address. No request body needed."
-          },
-          "response": []
+            }
+          }
         }
       ]
     },
     {
-      "name": "Products",
+      "name": "🛍️ Frontend — Public",
       "item": [
-        {
-          "name": "List Categories",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/products/categories/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "products", "categories", ""]
-            },
-            "description": "All active product categories."
-          },
-          "response": []
-        },
         {
           "name": "List Products",
           "request": {
@@ -362,576 +144,1743 @@
               "host": ["{{base_url}}"],
               "path": ["api", "products", ""],
               "query": [
-                {
-                  "key": "category",
-                  "value": "",
-                  "description": "Filter by category slug (e.g. tvs)",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "",
-                  "description": "Search by name or name_ar",
-                  "disabled": true
-                }
+                { "key": "category", "value": "", "disabled": true },
+                { "key": "search", "value": "", "disabled": true }
               ]
-            },
-            "description": "List available products. Optional query params: ?category=<slug> and ?search=<term>."
-          },
-          "response": []
+            }
+          }
         },
         {
-          "name": "Featured Products",
+          "name": "Get Product Detail",
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/products/featured/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "products", "featured", ""]
-            },
-            "description": "Products marked as is_featured=True. Used on the homepage."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/products/{{product_slug}}/", "host": ["{{base_url}}"], "path": ["api", "products", "{{product_slug}}", ""] }
+          }
         },
         {
-          "name": "Get Product by Slug",
+          "name": "List Categories",
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/products/:slug/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "products", ":slug", ""],
-              "variable": [
-                { "key": "slug", "value": "example-product", "description": "Product slug" }
-              ]
-            },
-            "description": "Full product detail including images and specs."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/products/categories/", "host": ["{{base_url}}"], "path": ["api", "products", "categories", ""] }
+          }
+        },
+        {
+          "name": "List Featured Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/products/featured/", "host": ["{{base_url}}"], "path": ["api", "products", "featured", ""] }
+          }
         },
         {
           "name": "List Bundles",
           "request": {
             "method": "GET",
             "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/products/bundles/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "products", "bundles", ""]
-            },
-            "description": "All available product bundles."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/products/bundles/", "host": ["{{base_url}}"], "path": ["api", "products", "bundles", ""] }
+          }
         },
         {
-          "name": "Get Bundle by ID",
+          "name": "Get Bundle Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/products/bundles/1/", "host": ["{{base_url}}"], "path": ["api", "products", "bundles", "1", ""] }
+          }
+        },
+        {
+          "name": "List Branches",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/branches/", "host": ["{{base_url}}"], "path": ["api", "branches", ""] }
+          }
+        },
+        {
+          "name": "Get Branch Detail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/branches/1/", "host": ["{{base_url}}"], "path": ["api", "branches", "1", ""] }
+          }
+        },
+        {
+          "name": "List Cities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/branches/cities/", "host": ["{{base_url}}"], "path": ["api", "branches", "cities", ""] }
+          }
+        },
+        {
+          "name": "List Ads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/ads/", "host": ["{{base_url}}"], "path": ["api", "ads", ""] }
+          }
+        },
+        {
+          "name": "List Payment Methods (by city)",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/products/bundles/:id/",
+              "raw": "{{base_url}}/api/payment-methods/?city=دمشق",
               "host": ["{{base_url}}"],
-              "path": ["api", "products", "bundles", ":id", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Bundle ID" }
-              ]
-            },
-            "description": "Single bundle detail with its included products."
-          },
-          "response": []
+              "path": ["api", "payment-methods", ""],
+              "query": [{ "key": "city", "value": "دمشق" }]
+            }
+          }
         }
       ]
     },
     {
-      "name": "Orders — Customer",
+      "name": "👤 Frontend — Customer",
       "item": [
         {
-          "name": "List My Orders",
+          "name": "List Addresses",
           "request": {
             "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": { "raw": "{{base_url}}/api/addresses/", "host": ["{{base_url}}"], "path": ["api", "addresses", ""] }
+          }
+        },
+        {
+          "name": "Create Address",
+          "request": {
+            "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ""]
-            },
-            "description": "All orders for the authenticated customer."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/addresses/", "host": ["{{base_url}}"], "path": ["api", "addresses", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"city\": 1,\n  \"street\": \"شارع الثورة، بناء رقم 12\",\n  \"notes\": \"الطابق الثالث، جرس رقم 3\",\n  \"is_default\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Update Address",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/addresses/1/", "host": ["{{base_url}}"], "path": ["api", "addresses", "1", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"street\": \"شارع النيل، بناء 7\"\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Address",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": { "raw": "{{base_url}}/api/addresses/1/", "host": ["{{base_url}}"], "path": ["api", "addresses", "1", ""] }
+          }
+        },
+        {
+          "name": "Set Default Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/addresses/1/set-default/", "host": ["{{base_url}}"], "path": ["api", "addresses", "1", "set-default", ""] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          }
         },
         {
           "name": "Create Order",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
               { "key": "Content-Type", "value": "application/json" }
             ],
+            "url": { "raw": "{{base_url}}/api/orders/", "host": ["{{base_url}}"], "path": ["api", "orders", ""] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"branch_id\": 1,\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 2 }\n  ],\n  \"bundle_items\": [],\n  \"address_id\": 1,\n  \"customer_note\": \"يرجى التوصيل صباحاً\"\n}",
+              "raw": "{\n  \"branch\": 1,\n  \"address_id\": 1,\n  \"notes\": \"يرجى التواصل قبل التوصيل\",\n  \"items\": [\n    { \"product\": 1, \"quantity\": 2 },\n    { \"product\": 3, \"quantity\": 1 }\n  ]\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ""]
-            },
-            "description": "Create a new order. Must supply either address_id (saved address) or delivery_address (free-text). Must include at least one item or bundle_item. Deposit is calculated automatically from SiteSettings."
-          },
-          "response": []
+            }
+          }
         },
         {
-          "name": "Create Order (new address)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"branch_id\": 1,\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 1 }\n  ],\n  \"bundle_items\": [],\n  \"delivery_address\": \"شارع النصر، بناء 12\",\n  \"customer_note\": \"\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ""]
-            },
-            "description": "Create order with a one-time delivery_address instead of a saved address_id."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Order by ID",
+          "name": "List My Orders",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/:id/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ":id", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Full order detail including items, bundle_items, and status logs."
-          },
-          "response": []
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": { "raw": "{{base_url}}/api/orders/", "host": ["{{base_url}}"], "path": ["api", "orders", ""] }
+          }
         },
         {
-          "name": "Upload Receipt",
+          "name": "Get Order Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": { "raw": "{{base_url}}/api/orders/{{order_id}}/", "host": ["{{base_url}}"], "path": ["api", "orders", "{{order_id}}", ""] }
+          }
+        },
+        {
+          "name": "Upload Payment Receipt",
           "request": {
             "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": { "raw": "{{base_url}}/api/orders/{{order_id}}/upload-receipt/", "host": ["{{base_url}}"], "path": ["api", "orders", "{{order_id}}", "upload-receipt", ""] },
             "body": {
               "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "receipt",
-                  "type": "file",
-                  "description": "Image file of the payment receipt"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/:id/upload-receipt/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ":id", "upload-receipt", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Upload a deposit receipt image. Only works when order status is 'pending'. Multipart form field name: receipt."
-          },
-          "response": []
+              "formdata": [{ "key": "receipt", "type": "file", "src": "" }]
+            }
+          }
         },
         {
           "name": "Cancel Order",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/:id/cancel/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ":id", "cancel", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Cancel a pending order. Only allowed when status is 'pending'. No request body."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/orders/{{order_id}}/cancel/", "host": ["{{base_url}}"], "path": ["api", "orders", "{{order_id}}", "cancel", ""] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          }
         },
         {
-          "name": "Track Order",
+          "name": "Get Order Tracking",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/orders/:id/tracking/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ":id", "tracking", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Returns current_status and a stages array (pending→confirmed→preparing→shipping→delivered) with timestamps."
-          },
-          "response": []
+            "header": [{ "key": "Authorization", "value": "Bearer {{customer_token}}" }],
+            "url": { "raw": "{{base_url}}/api/orders/{{order_id}}/tracking/", "host": ["{{base_url}}"], "path": ["api", "orders", "{{order_id}}", "tracking", ""] }
+          }
         },
         {
           "name": "Rate Order",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Authorization", "value": "Bearer {{customer_token}}" },
               { "key": "Content-Type", "value": "application/json" }
             ],
+            "url": { "raw": "{{base_url}}/api/orders/{{order_id}}/rate/", "host": ["{{base_url}}"], "path": ["api", "orders", "{{order_id}}", "rate", ""] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"خدمة ممتازة وتوصيل سريع\"\n}",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"خدمة ممتازة وتوصيل سريع، شكراً جزيلاً\"\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/:id/rate/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ":id", "rate", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Rate a delivered order (1–5). Only works when status is 'delivered'. Can only be rated once."
-          },
-          "response": []
-        },
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏬 Dashboard — Branch Manager",
+      "item": [
         {
-          "name": "List Delivery Orders (legacy)",
+          "name": "Branch Stats",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
             "url": {
-              "raw": "{{base_url}}/api/orders/delivery/",
+              "raw": "{{base_url}}/api/branch/stats/?period=today",
               "host": ["{{base_url}}"],
-              "path": ["api", "orders", "delivery", ""]
-            },
-            "description": "Legacy endpoint. Delivery staff: list orders assigned to you. Use /api/delivery/orders/ instead."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Orders — Shared Status Update",
-      "item": [
-        {
-          "name": "Update Order Status",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"confirmed\",\n  \"delivery_staff_id\": null,\n  \"rejection_reason\": \"\",\n  \"estimated_delivery\": null,\n  \"note\": \"\"\n}",
-              "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/orders/:id/status/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "orders", ":id", "status", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Generic status update (branch_manager or delivery role). Branch manager transitions: pending→confirmed/cancelled, confirmed→preparing/cancelled, preparing→cancelled. Delivery transitions: confirmed/preparing→shipping, shipping→delivered. Branch managers may also pass delivery_staff_id when transitioning."
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Orders — Branch Manager",
-      "item": [
+              "path": ["api", "branch", "stats", ""],
+              "query": [{ "key": "period", "value": "today", "description": "today | week | month" }]
+            }
+          }
+        },
         {
           "name": "List Branch Orders",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
             "url": {
               "raw": "{{base_url}}/api/branch/orders/",
               "host": ["{{base_url}}"],
               "path": ["api", "branch", "orders", ""],
               "query": [
-                {
-                  "key": "status",
-                  "value": "pending",
-                  "description": "Filter by status: pending, confirmed, preparing, shipping, delivered, cancelled",
-                  "disabled": true
-                }
+                { "key": "status", "value": "", "disabled": true },
+                { "key": "search", "value": "", "disabled": true }
               ]
-            },
-            "description": "List all orders for the manager's branch, newest first. Optional ?status= filter."
-          },
-          "response": []
+            }
+          }
         },
         {
-          "name": "Get Branch Order by ID",
+          "name": "Get Branch Order Detail",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/branch/orders/:id/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branch", "orders", ":id", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Full order detail for branch manager view, including items and receipt image."
-          },
-          "response": []
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/branch/orders/{{order_id}}/", "host": ["{{base_url}}"], "path": ["api", "branch", "orders", "{{order_id}}", ""] }
+          }
         },
         {
           "name": "Confirm Order",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": {
-              "raw": "{{base_url}}/api/branch/orders/:id/confirm/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branch", "orders", ":id", "confirm", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Confirm a pending order. No request body."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/branch/orders/{{order_id}}/confirm/", "host": ["{{base_url}}"], "path": ["api", "branch", "orders", "{{order_id}}", "confirm", ""] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          }
         },
         {
           "name": "Reject Order",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
               { "key": "Content-Type", "value": "application/json" }
             ],
+            "url": { "raw": "{{base_url}}/api/branch/orders/{{order_id}}/reject/", "host": ["{{base_url}}"], "path": ["api", "branch", "orders", "{{order_id}}", "reject", ""] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rejection_reason\": \"المنتج غير متوفر حالياً\"\n}",
+              "raw": "{\n  \"note\": \"المنتج غير متوفر حالياً\"\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/branch/orders/:id/reject/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branch", "orders", ":id", "reject", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Reject a pending or confirmed order. rejection_reason is required."
-          },
-          "response": []
+            }
+          }
         },
         {
-          "name": "Prepare Order",
+          "name": "Set Shipping Fee",
           "request": {
-            "method": "POST",
+            "method": "PATCH",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": {
-              "raw": "{{base_url}}/api/branch/orders/:id/prepare/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branch", "orders", ":id", "prepare", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Move a confirmed order to 'preparing'. No request body."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/branch/orders/{{order_id}}/set-shipping-fee/", "host": ["{{base_url}}"], "path": ["api", "branch", "orders", "{{order_id}}", "set-shipping-fee", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shipping_fee\": 2500\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
         },
         {
           "name": "Assign Delivery Staff",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
               { "key": "Content-Type", "value": "application/json" }
             ],
+            "url": { "raw": "{{base_url}}/api/branch/orders/{{order_id}}/assign-delivery/", "host": ["{{base_url}}"], "path": ["api", "branch", "orders", "{{order_id}}", "assign-delivery", ""] },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"delivery_user_id\": 5\n}",
+              "raw": "{\n  \"delivery_staff_id\": 5\n}",
               "options": { "raw": { "language": "json" } }
-            },
-            "url": {
-              "raw": "{{base_url}}/api/branch/orders/:id/assign-delivery/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branch", "orders", ":id", "assign-delivery", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Assign a delivery staff member to a preparing order. The user must have role='delivery' and belong to the same branch."
-          },
-          "response": []
+            }
+          }
         },
         {
-          "name": "Mark Order Ready (Ship)",
+          "name": "Mark Order Ready",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": {
-              "raw": "{{base_url}}/api/branch/orders/:id/ready/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branch", "orders", ":id", "ready", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Mark a preparing order (with assigned delivery staff) as shipping. No request body."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/branch/orders/{{order_id}}/ready/", "host": ["{{base_url}}"], "path": ["api", "branch", "orders", "{{order_id}}", "ready", ""] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "List Delivery Staff",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/branch/delivery-staff/", "host": ["{{base_url}}"], "path": ["api", "branch", "delivery-staff", ""] }
+          }
+        },
+        {
+          "name": "Get Delivery Staff Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/branch/delivery-staff/1/orders/", "host": ["{{base_url}}"], "path": ["api", "branch", "delivery-staff", "1", "orders", ""] }
+          }
+        },
+        {
+          "name": "Toggle Delivery Staff Active",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/branch/delivery-staff/1/toggle-active/", "host": ["{{base_url}}"], "path": ["api", "branch", "delivery-staff", "1", "toggle-active", ""] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          }
+        },
+        {
+          "name": "List Branch Payment Methods",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/branch/payment-methods/", "host": ["{{base_url}}"], "path": ["api", "branch", "payment-methods", ""] }
+          }
+        },
+        {
+          "name": "Create Branch Payment Method",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/branch/payment-methods/", "host": ["{{base_url}}"], "path": ["api", "branch", "payment-methods", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name_ar\": \"تحويل بنكي\",\n  \"description_ar\": \"يرجى التحويل إلى حساب بنك سورية\",\n  \"link\": \"\",\n  \"is_active\": true,\n  \"order\": 1\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Update Branch Payment Method",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": { "raw": "{{base_url}}/api/branch/payment-methods/1/", "host": ["{{base_url}}"], "path": ["api", "branch", "payment-methods", "1", ""] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Delete Branch Payment Method",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/branch/payment-methods/1/", "host": ["{{base_url}}"], "path": ["api", "branch", "payment-methods", "1", ""] }
+          }
         }
       ]
     },
     {
-      "name": "Orders — Delivery Staff",
+      "name": "🚚 Dashboard — Delivery Staff",
       "item": [
         {
-          "name": "List My Delivery Orders",
+          "name": "List Delivery Orders",
           "request": {
             "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
-            ],
-            "url": {
-              "raw": "{{base_url}}/api/delivery/orders/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "delivery", "orders", ""]
-            },
-            "description": "All orders assigned to the authenticated delivery staff member, newest first."
-          },
-          "response": []
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/delivery/orders/", "host": ["{{base_url}}"], "path": ["api", "delivery", "orders", ""] }
+          }
         },
         {
-          "name": "Start Delivery (mark shipping)",
+          "name": "Start Delivery (en route)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": {
-              "raw": "{{base_url}}/api/delivery/orders/:id/start/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "delivery", "orders", ":id", "start", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Mark a preparing order as shipping. Order must be in 'preparing' status. No request body."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/delivery/orders/{{order_id}}/start/", "host": ["{{base_url}}"], "path": ["api", "delivery", "orders", "{{order_id}}", "start", ""] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          }
         },
         {
-          "name": "Complete Delivery (mark delivered)",
+          "name": "Complete Delivery (delivered)",
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{access_token}}" }
+              { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+              { "key": "Content-Type", "value": "application/json" }
             ],
-            "url": {
-              "raw": "{{base_url}}/api/delivery/orders/:id/complete/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "delivery", "orders", ":id", "complete", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Order ID" }
-              ]
-            },
-            "description": "Mark a shipping order as delivered. Order must be in 'shipping' status. No request body."
-          },
-          "response": []
+            "url": { "raw": "{{base_url}}/api/delivery/orders/{{order_id}}/complete/", "host": ["{{base_url}}"], "path": ["api", "delivery", "orders", "{{order_id}}", "complete", ""] },
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+          }
         }
       ]
     },
     {
-      "name": "Branches",
+      "name": "👑 Dashboard — Admin",
       "item": [
         {
-          "name": "List Branches",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/branches/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branches", ""]
-            },
-            "description": "All active store branches."
-          },
-          "response": []
+          "name": "Stats",
+          "item": [
+            {
+              "name": "Admin Stats",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/stats/", "host": ["{{base_url}}"], "path": ["api", "admin", "stats", ""] }
+              }
+            }
+          ]
         },
         {
-          "name": "Get Branch by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/branches/:id/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "branches", ":id", ""],
-              "variable": [
-                { "key": "id", "value": "1", "description": "Branch ID" }
-              ]
+          "name": "Users",
+          "item": [
+            {
+              "name": "List Users",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/users/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "users", ""],
+                  "query": [
+                    { "key": "role", "value": "", "disabled": true, "description": "customer | branch_manager | delivery | admin" },
+                    { "key": "search", "value": "", "disabled": true }
+                  ]
+                }
+              }
             },
-            "description": "Branch detail: name, city, address, phone."
-          },
-          "response": []
+            {
+              "name": "Create User",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/users/", "host": ["{{base_url}}"], "path": ["api", "admin", "users", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"+963912345678\",\n  \"first_name\": \"محمد\",\n  \"last_name\": \"الأمين\",\n  \"role\": \"branch_manager\",\n  \"branch_id\": 1,\n  \"password\": \"Manager@1234\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Get User Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/users/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "1", ""] }
+              }
+            },
+            {
+              "name": "Update User",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/users/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": false\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete User",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/users/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "1", ""] }
+              }
+            },
+            {
+              "name": "Reset User Password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/users/1/reset-password/", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "1", "reset-password", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"new_password\": \"NewPass@5678\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Get User Orders",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/users/1/orders/", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "1", "orders", ""] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Branches",
+          "item": [
+            {
+              "name": "List Branches",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/branches/", "host": ["{{base_url}}"], "path": ["api", "admin", "branches", ""] }
+              }
+            },
+            {
+              "name": "Create Branch",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/branches/", "host": ["{{base_url}}"], "path": ["api", "admin", "branches", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Damascus Branch\",\n  \"name_ar\": \"فرع دمشق\",\n  \"address\": \"شارع بغداد، المزة\",\n  \"phone\": \"+963112345678\",\n  \"maps_url\": \"https://maps.google.com/?q=33.5,36.3\",\n  \"is_active\": true,\n  \"is_primary\": false\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Get Branch Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/branches/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "branches", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Branch",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/branches/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "branches", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": false\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Branch",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/branches/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "branches", "1", ""] }
+              }
+            },
+            {
+              "name": "Get Branch Stats",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/branches/1/stats/", "host": ["{{base_url}}"], "path": ["api", "admin", "branches", "1", "stats", ""] }
+              }
+            },
+            {
+              "name": "Get Branch Orders",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/branches/1/orders/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "branches", "1", "orders", ""],
+                  "query": [
+                    { "key": "status", "value": "", "disabled": true },
+                    { "key": "date_from", "value": "", "disabled": true },
+                    { "key": "date_to", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cities",
+          "item": [
+            {
+              "name": "List Cities",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/cities/", "host": ["{{base_url}}"], "path": ["api", "admin", "cities", ""] }
+              }
+            },
+            {
+              "name": "Create City",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/cities/", "host": ["{{base_url}}"], "path": ["api", "admin", "cities", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"حلب\",\n  \"branch\": 1,\n  \"requires_deposit\": true,\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Get City Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/cities/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "cities", "1", ""] }
+              }
+            },
+            {
+              "name": "Update City",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/cities/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "cities", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": false\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete City",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/cities/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "cities", "1", ""] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "List Categories",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", ""] }
+              }
+            },
+            {
+              "name": "Create Category",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "Lighting", "type": "text" },
+                    { "key": "name_ar", "value": "الإضاءة", "type": "text" },
+                    { "key": "is_active", "value": "true", "type": "text" },
+                    { "key": "order", "value": "1", "type": "text" },
+                    { "key": "icon", "type": "file", "src": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Category Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/categories/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name_ar\": \"إضاءة المنازل\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", "1", ""] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Products",
+          "item": [
+            {
+              "name": "List Products",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/products/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "products", ""],
+                  "query": [
+                    { "key": "category", "value": "", "disabled": true },
+                    { "key": "search", "value": "", "disabled": true },
+                    { "key": "is_available", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Product",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "LED Bulb 12W", "type": "text" },
+                    { "key": "name_ar", "value": "لمبة LED 12 واط", "type": "text" },
+                    { "key": "description", "value": "Energy-saving LED bulb", "type": "text" },
+                    { "key": "description_ar", "value": "لمبة LED موفرة للطاقة", "type": "text" },
+                    { "key": "price", "value": "12500", "type": "text" },
+                    { "key": "category", "value": "1", "type": "text" },
+                    { "key": "is_available", "value": "true", "type": "text" },
+                    { "key": "is_featured", "value": "false", "type": "text" },
+                    { "key": "specs", "value": "[{\"key\":\"Power\",\"key_ar\":\"القدرة\",\"value\":\"12W\",\"value_ar\":\"12 واط\"}]", "type": "text" },
+                    { "key": "images", "type": "file", "src": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Product Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Product",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"price\": 13000,\n  \"is_featured\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Product",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", ""] }
+              }
+            },
+            {
+              "name": "Upload Product Images",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/images/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "images", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [{ "key": "images", "type": "file", "src": "" }]
+                }
+              }
+            },
+            {
+              "name": "Delete Product Image",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/images/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "images", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Product Specs",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/specs/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "specs", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"specs\": [\n    { \"key\": \"Power\", \"key_ar\": \"القدرة\", \"value\": \"12W\", \"value_ar\": \"12 واط\" },\n    { \"key\": \"Color\", \"key_ar\": \"اللون\", \"value\": \"Warm White\", \"value_ar\": \"أبيض دافئ\" }\n  ]\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Toggle Product Availability",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/toggle-availability/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "toggle-availability", ""] },
+                "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bundles",
+          "item": [
+            {
+              "name": "List Bundles",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", ""] }
+              }
+            },
+            {
+              "name": "Create Bundle",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "Home Lighting Kit", "type": "text" },
+                    { "key": "name_ar", "value": "طقم إضاءة المنزل", "type": "text" },
+                    { "key": "description_ar", "value": "مجموعة متكاملة لإضاءة المنازل بأفضل الأسعار", "type": "text" },
+                    { "key": "price", "value": "85000", "type": "text" },
+                    { "key": "is_available", "value": "true", "type": "text" },
+                    { "key": "product_ids", "value": "1", "type": "text" },
+                    { "key": "product_ids", "value": "2", "type": "text" },
+                    { "key": "image", "type": "file", "src": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Bundle Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Bundle",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"price\": 79000,\n  \"is_available\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Bundle",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", ""] }
+              }
+            },
+            {
+              "name": "Add Product to Bundle",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/add-product/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", "add-product", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": 3\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Remove Product from Bundle",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/remove-product/3/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", "remove-product", "3", ""] }
+              }
+            },
+            {
+              "name": "Toggle Bundle Availability",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/toggle-active/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", "toggle-active", ""] },
+                "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Orders",
+          "item": [
+            {
+              "name": "List Orders",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/orders/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "orders", ""],
+                  "query": [
+                    { "key": "status", "value": "", "disabled": true },
+                    { "key": "branch", "value": "", "disabled": true },
+                    { "key": "search", "value": "", "disabled": true },
+                    { "key": "date_from", "value": "", "disabled": true },
+                    { "key": "date_to", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Order Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/orders/{{order_id}}/", "host": ["{{base_url}}"], "path": ["api", "admin", "orders", "{{order_id}}", ""] }
+              }
+            },
+            {
+              "name": "Cancel Order (Admin)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/orders/{{order_id}}/cancel/", "host": ["{{base_url}}"], "path": ["api", "admin", "orders", "{{order_id}}", "cancel", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"note\": \"إلغاء بناءً على طلب العميل\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Set Order Shipping Fee (Admin)",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/orders/{{order_id}}/set-shipping-fee/", "host": ["{{base_url}}"], "path": ["api", "admin", "orders", "{{order_id}}", "set-shipping-fee", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"shipping_fee\": 3000\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "List Order Ratings",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/order-ratings/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "order-ratings", ""],
+                  "query": [
+                    { "key": "rating", "value": "", "disabled": true },
+                    { "key": "order", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "List Order Status Logs",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/order-logs/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "order-logs", ""],
+                  "query": [{ "key": "order", "value": "", "disabled": true }]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reports",
+          "item": [
+            {
+              "name": "Sales Report",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reports/sales/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reports", "sales", ""],
+                  "query": [
+                    { "key": "date_from", "value": "2026-05-01", "disabled": true },
+                    { "key": "date_to", "value": "2026-05-14", "disabled": true },
+                    { "key": "branch", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Top Products Report",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reports/top-products/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reports", "top-products", ""],
+                  "query": [
+                    { "key": "date_from", "value": "", "disabled": true },
+                    { "key": "date_to", "value": "", "disabled": true },
+                    { "key": "limit", "value": "10", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Top Branches Report",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reports/top-branches/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reports", "top-branches", ""],
+                  "query": [
+                    { "key": "date_from", "value": "", "disabled": true },
+                    { "key": "date_to", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ads",
+          "item": [
+            {
+              "name": "List Ads",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", ""] }
+              }
+            },
+            {
+              "name": "Create Ad",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "title", "value": "تخفيضات الصيف", "type": "text" },
+                    { "key": "media_type", "value": "image", "type": "text" },
+                    { "key": "link", "value": "", "type": "text" },
+                    { "key": "is_active", "value": "true", "type": "text" },
+                    { "key": "order", "value": "1", "type": "text" },
+                    { "key": "file", "type": "file", "src": "" }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Ad Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Ad",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/ads/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"عروض رمضان المبارك\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Ad",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", "1", ""] }
+              }
+            },
+            {
+              "name": "Toggle Ad Active",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/ads/1/toggle-active/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", "1", "toggle-active", ""] },
+                "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Payment Methods",
+          "item": [
+            {
+              "name": "List Payment Methods",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/payment-methods/", "host": ["{{base_url}}"], "path": ["api", "admin", "payment-methods", ""] }
+              }
+            },
+            {
+              "name": "Create Payment Method",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/payment-methods/", "host": ["{{base_url}}"], "path": ["api", "admin", "payment-methods", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "branch", "value": "1", "type": "text" },
+                    { "key": "name_ar", "value": "سيريتيل كاش", "type": "text" },
+                    { "key": "description_ar", "value": "الدفع عبر سيريتيل كاش على الرقم 0912345678", "type": "text" },
+                    { "key": "link", "value": "", "type": "text" },
+                    { "key": "is_active", "value": "true", "type": "text" },
+                    { "key": "order", "value": "1", "type": "text" },
+                    { "key": "image", "type": "file", "src": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Payment Method Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/payment-methods/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "payment-methods", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Payment Method",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/payment-methods/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "payment-methods", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": false\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Payment Method",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/payment-methods/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "payment-methods", "1", ""] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Settings",
+          "item": [
+            {
+              "name": "Get Site Settings",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/settings/", "host": ["{{base_url}}"], "path": ["api", "admin", "settings", ""] }
+              }
+            },
+            {
+              "name": "Update Site Settings",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/settings/", "host": ["{{base_url}}"], "path": ["api", "admin", "settings", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"site_name\": \"البشير للكهربائيات\",\n  \"contact_phone\": \"+963912345678\",\n  \"min_deposit_percent\": 30\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Content Manager",
+          "item": [
+            {
+              "name": "Content Stats",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/content/stats/", "host": ["{{base_url}}"], "path": ["api", "admin", "content", "stats", ""] }
+              }
+            },
+            {
+              "name": "List Categories",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", ""] }
+              }
+            },
+            {
+              "name": "List Products",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", ""] }
+              }
+            },
+            {
+              "name": "List Bundles",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", ""] }
+              }
+            },
+            {
+              "name": "List Ads",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", ""] }
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "Ads",
+      "name": "🎨 Dashboard — Content Manager",
       "item": [
         {
-          "name": "List Active Ads",
+          "name": "Content Stats",
           "request": {
             "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{base_url}}/api/ads/",
-              "host": ["{{base_url}}"],
-              "path": ["api", "ads", ""]
+            "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+            "url": { "raw": "{{base_url}}/api/admin/content/stats/", "host": ["{{base_url}}"], "path": ["api", "admin", "content", "stats", ""] }
+          }
+        },
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "List Categories",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", ""] }
+              }
             },
-            "description": "All active ads sorted by display order. Used for homepage banners/promotions."
-          },
-          "response": []
+            {
+              "name": "Create Category",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "Switches", "type": "text" },
+                    { "key": "name_ar", "value": "مفاتيح الإضاءة", "type": "text" },
+                    { "key": "is_active", "value": "true", "type": "text" },
+                    { "key": "order", "value": "2", "type": "text" },
+                    { "key": "icon", "type": "file", "src": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Category",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/categories/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name_ar\": \"مفاتيح كهربائية\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Category",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/categories/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "categories", "1", ""] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Products",
+          "item": [
+            {
+              "name": "List Products",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/products/",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "products", ""],
+                  "query": [
+                    { "key": "category", "value": "", "disabled": true },
+                    { "key": "search", "value": "", "disabled": true },
+                    { "key": "is_available", "value": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Product",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "Smart Switch 16A", "type": "text" },
+                    { "key": "name_ar", "value": "مفتاح ذكي 16 أمبير", "type": "text" },
+                    { "key": "description", "value": "Smart touch switch with Wi-Fi control", "type": "text" },
+                    { "key": "description_ar", "value": "مفتاح لمسي ذكي مع تحكم عبر الواي فاي", "type": "text" },
+                    { "key": "price", "value": "45000", "type": "text" },
+                    { "key": "category", "value": "1", "type": "text" },
+                    { "key": "is_available", "value": "true", "type": "text" },
+                    { "key": "is_featured", "value": "false", "type": "text" },
+                    { "key": "specs", "value": "[{\"key\":\"Current\",\"key_ar\":\"التيار\",\"value\":\"16A\",\"value_ar\":\"16 أمبير\"},{\"key\":\"Voltage\",\"key_ar\":\"الجهد\",\"value\":\"220V\",\"value_ar\":\"220 فولت\"}]", "type": "text" },
+                    { "key": "images", "type": "file", "src": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Product Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Product",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"price\": 48000,\n  \"is_featured\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Product",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", ""] }
+              }
+            },
+            {
+              "name": "Upload Product Images",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/images/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "images", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [{ "key": "images", "type": "file", "src": "" }]
+                }
+              }
+            },
+            {
+              "name": "Delete Product Image",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/images/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "images", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Product Specs",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/specs/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "specs", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"specs\": [\n    { \"key\": \"Current\", \"key_ar\": \"التيار\", \"value\": \"16A\", \"value_ar\": \"16 أمبير\" },\n    { \"key\": \"Voltage\", \"key_ar\": \"الجهد\", \"value\": \"220V\", \"value_ar\": \"220 فولت\" },\n    { \"key\": \"Color\", \"key_ar\": \"اللون\", \"value\": \"White\", \"value_ar\": \"أبيض\" }\n  ]\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Toggle Availability",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/products/1/toggle-availability/", "host": ["{{base_url}}"], "path": ["api", "admin", "products", "1", "toggle-availability", ""] },
+                "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bundles",
+          "item": [
+            {
+              "name": "List Bundles",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", ""] }
+              }
+            },
+            {
+              "name": "Create Bundle",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "name", "value": "Smart Home Starter", "type": "text" },
+                    { "key": "name_ar", "value": "طقم المنزل الذكي", "type": "text" },
+                    { "key": "description", "value": "Complete starter kit for smart home automation", "type": "text" },
+                    { "key": "description_ar", "value": "طقم متكامل لأتمتة المنزل الذكي بأفضل الأسعار", "type": "text" },
+                    { "key": "price", "value": "120000", "type": "text" },
+                    { "key": "is_available", "value": "true", "type": "text" },
+                    { "key": "product_ids", "value": "1", "type": "text" },
+                    { "key": "product_ids", "value": "2", "type": "text" },
+                    { "key": "image", "type": "file", "src": "", "disabled": true }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Bundle Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", ""] }
+              }
+            },
+            {
+              "name": "Update Bundle",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"price\": 115000,\n  \"is_available\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Bundle",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", ""] }
+              }
+            },
+            {
+              "name": "Add Product to Bundle",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/add-product/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", "add-product", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"product_id\": 3\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Remove Product from Bundle",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/remove-product/3/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", "remove-product", "3", ""] }
+              }
+            },
+            {
+              "name": "Toggle Bundle Active",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/bundles/1/toggle-active/", "host": ["{{base_url}}"], "path": ["api", "admin", "bundles", "1", "toggle-active", ""] },
+                "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ads",
+          "item": [
+            {
+              "name": "List Ads",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", ""] }
+              }
+            },
+            {
+              "name": "Create Ad",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", ""] },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    { "key": "title", "value": "عروض العودة إلى المدرسة", "type": "text" },
+                    { "key": "media_type", "value": "image", "type": "text" },
+                    { "key": "link", "value": "", "type": "text" },
+                    { "key": "is_active", "value": "true", "type": "text" },
+                    { "key": "order", "value": "1", "type": "text" },
+                    { "key": "file", "type": "file", "src": "" }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update Ad",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/ads/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", "1", ""] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"تخفيضات نهاية الموسم\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                }
+              }
+            },
+            {
+              "name": "Delete Ad",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{staff_token}}" }],
+                "url": { "raw": "{{base_url}}/api/admin/ads/1/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", "1", ""] }
+              }
+            },
+            {
+              "name": "Toggle Ad Active",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Authorization", "value": "Bearer {{staff_token}}" },
+                  { "key": "Content-Type", "value": "application/json" }
+                ],
+                "url": { "raw": "{{base_url}}/api/admin/ads/1/toggle-active/", "host": ["{{base_url}}"], "path": ["api", "admin", "ads", "1", "toggle-active", ""] },
+                "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } }
+              }
+            }
+          ]
         }
       ]
     }

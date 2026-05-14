@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/store/auth'
-import { useBranchDeliveryStaff } from '@/features/branches/queries'
+import { useBranchDeliveryStaffList } from '@/features/branchDashboard/queries'
 import {
   Check,
   Loader2,
@@ -87,7 +86,7 @@ export function OrderActions({ order }: OrderActionsProps) {
         onCancel={() => setMode('idle')}
         onSubmit={(staffId) =>
           run(
-            () => assign.mutateAsync({ delivery_user_id: staffId }),
+            () => assign.mutateAsync({ delivery_staff_id: staffId }),
             t('dashboard.branch.actions.assigned'),
             () => setMode('idle'),
           )
@@ -327,8 +326,11 @@ interface AssignFormProps {
 
 function AssignForm({ loading, onCancel, onSubmit }: AssignFormProps) {
   const { t } = useTranslation()
-  const branchId = useAuthStore((s) => s.user?.branch?.id)
-  const { data: staff, isLoading: staffLoading } = useBranchDeliveryStaff(branchId)
+  const {
+    data: staff,
+    isLoading: staffLoading,
+    isError: staffError,
+  } = useBranchDeliveryStaffList()
   const [selected, setSelected] = useState('')
 
   const parsed = parseInt(selected, 10)
@@ -338,6 +340,9 @@ function AssignForm({ loading, onCancel, onSubmit }: AssignFormProps) {
     const name = [s.first_name, s.last_name].filter(Boolean).join(' ')
     return name || s.phone
   }
+
+  // Fallback to manual input when endpoint isn't available yet or branchId is missing
+  const useManualInput = staffError || (!staffLoading && (!staff || staff.length === 0))
 
   return (
     <div className="space-y-3 rounded-xl border border-primary/30 bg-primary/5 p-4 animate-in fade-in slide-in-from-top-1 duration-200">
@@ -351,10 +356,26 @@ function AssignForm({ loading, onCancel, onSubmit }: AssignFormProps) {
           <Loader2 className="size-4 animate-spin" />
           {t('common.loading')}
         </div>
-      ) : !staff || staff.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          {t('dashboard.branch.assign.noStaff')}
-        </p>
+      ) : useManualInput ? (
+        <>
+          {staffError && (
+            <p className="text-xs text-muted-foreground">
+              {t('dashboard.branch.assign.manualFallback')}
+            </p>
+          )}
+          <Input
+            id="delivery_user_id"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            autoFocus
+            dir="ltr"
+            placeholder={t('dashboard.branch.assign.manualPlaceholder')}
+            value={selected}
+            onChange={(e) => setSelected(e.target.value)}
+            disabled={loading}
+          />
+        </>
       ) : (
         <select
           id="delivery_user_id"
@@ -364,7 +385,7 @@ function AssignForm({ loading, onCancel, onSubmit }: AssignFormProps) {
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="">{t('dashboard.branch.assign.placeholder')}</option>
-          {staff.map((s) => (
+          {staff!.map((s) => (
             <option key={s.id} value={s.id}>
               {displayName(s)}
             </option>

@@ -101,15 +101,36 @@ export function resolveMediaUrl(
 
 /**
  * Pull a human-readable message out of an Axios error.
+ * Handles: detail, non_field_errors, field-level errors, raw strings.
  */
 export function extractApiError(err: unknown, fallback = 'حدث خطأ'): string {
-  if (axios.isAxiosError(err)) {
-    const data = err.response?.data as
-      | { detail?: string; non_field_errors?: string[] }
-      | undefined
-    if (data?.detail) return data.detail
-    if (data?.non_field_errors?.length) return data.non_field_errors[0]
-    if (err.message) return err.message
+  if (!axios.isAxiosError(err)) return fallback
+
+  const data = err.response?.data
+
+  if (!data) return err.message || fallback
+
+  if (typeof data === 'string') {
+    // Ignore HTML Django debug pages
+    if (data.trimStart().startsWith('<'))
+      return `${err.response?.status ?? 'Server'} Error`
+    return data
   }
-  return fallback
+
+  if (typeof data === 'object') {
+    if (typeof data.detail === 'string') return data.detail
+
+    if (Array.isArray(data.non_field_errors) && data.non_field_errors.length)
+      return String(data.non_field_errors[0])
+
+    // First field-level error: { phone: ["Already exists."] }
+    for (const key of Object.keys(data)) {
+      const val = (data as Record<string, unknown>)[key]
+      if (Array.isArray(val) && val.length && typeof val[0] === 'string')
+        return `${key}: ${val[0]}`
+      if (typeof val === 'string') return `${key}: ${val}`
+    }
+  }
+
+  return err.message || fallback
 }

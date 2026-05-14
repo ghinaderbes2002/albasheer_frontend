@@ -7,6 +7,7 @@ import {
 import {
   assignBranchDelivery,
   confirmBranchOrder,
+  getBranchDeliveryStaff,
   getBranchOrder,
   getBranchOrders,
   markBranchOrderReady,
@@ -92,4 +93,12 @@ export function useSetShippingFee(orderId: number | string) {
   return useOrderMutation(orderId, (fee: number) =>
     setShippingFee(orderId, fee),
   )
+}
+
+export function useBranchDeliveryStaffList() {
+  return useQuery({
+    queryKey: [...branchOrderKeys.all, 'delivery-staff'] as const,
+    queryFn: getBranchDeliveryStaff,
+    staleTime: 2 * 60 * 1000,
+  })
 }

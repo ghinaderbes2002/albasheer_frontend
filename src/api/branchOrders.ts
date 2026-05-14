@@ -3,6 +3,7 @@ import type {
   AssignDeliveryPayload,
   BranchOrderDetail,
   BranchOrderListItem,
+  DeliveryStaff,
   OrderStatus,
   PaginatedResponse,
   RejectOrderPayload,
@@ -83,12 +84,19 @@ export async function markBranchOrderReady(
   return data
 }
 
+export async function getBranchDeliveryStaff(): Promise<DeliveryStaff[]> {
+  const { data } = await api.get<DeliveryStaff[] | PaginatedResponse<DeliveryStaff>>(
+    '/api/branch/delivery-staff/',
+  )
+  return Array.isArray(data) ? data : data.results
+}
+
 export async function setShippingFee(
   id: number | string,
   shippingFee: number,
 ): Promise<BranchOrderDetail> {
   const { data } = await api.patch<BranchOrderDetail>(
-    `/api/orders/branch/${id}/set-shipping-fee/`,
+    `/api/branch/orders/${id}/set-shipping-fee/`,
     { shipping_fee: shippingFee },
   )
   return data

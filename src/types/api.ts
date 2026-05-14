@@ -290,7 +290,148 @@ export interface RejectOrderPayload {
 }
 
 export interface AssignDeliveryPayload {
-  delivery_user_id: number
+  delivery_staff_id: number
+}
+
+// ─── Payment Methods ──────────────────────────────────────────────────
+export interface PaymentMethod {
+  id: number
+  name_ar: string
+  description_ar: string
+  link: string
+  is_active: boolean
+  order: number
+}
+
+export interface PaymentMethodPayload {
+  name_ar: string
+  description_ar?: string
+  link?: string
+  is_active?: boolean
+  order?: number
+}
+
+// ─── Admin ────────────────────────────────────────────────────────────
+export interface AdminUser {
+  id: number
+  phone: string
+  first_name: string
+  last_name: string
+  role: Role
+  branch?: UserBranch
+  is_active: boolean
+  created_at: string
+}
+
+export interface CreateUserPayload {
+  phone: string
+  first_name?: string
+  last_name?: string
+  role: Role
+  branch_id?: number
+  password: string
+  is_active?: boolean
+}
+
+export interface AdminBranch {
+  id: number
+  name: string
+  name_ar: string
+  address: string
+  phone: string
+  maps_url: string
+  is_active: boolean
+  is_primary: boolean
+}
+
+export interface AdminCity {
+  id: number
+  name: string
+  branch: number
+  branch_name?: string
+  requires_deposit: boolean
+  is_active: boolean
+}
+
+export interface AdminCategory {
+  id: number
+  name: string
+  name_ar: string
+  slug: string
+  icon: string | null
+  is_active: boolean
+  order: number
+}
+
+export interface AdminProduct {
+  id: number
+  name: string
+  name_ar: string
+  slug: string
+  price: string
+  category: number
+  category_name?: string
+  is_available: boolean
+  is_featured: boolean
+  main_image: string | null
+  images: ProductImage[]
+  specs: ProductSpec[]
+  description: string
+  description_ar: string
+}
+
+export interface AdminBundle {
+  id: number
+  name: string
+  name_ar: string
+  description_ar: string
+  price: string
+  is_available: boolean
+  image: string | null
+  products: ProductListItem[]
+}
+
+export interface AdminOrder {
+  id: number
+  status: OrderStatus
+  status_display: string
+  customer_phone: string
+  customer_name: string
+  branch_name: string
+  total_price: string
+  deposit_amount: string
+  shipping_fee: string
+  delivery_address: string
+  created_at: string
+}
+
+export interface AdminStats {
+  total_orders: number
+  pending_orders: number
+  confirmed_orders: number
+  delivered_orders: number
+  cancelled_orders: number
+  total_revenue: string
+  today_orders: number
+  today_revenue: string
+}
+
+export interface SalesReportEntry {
+  date: string
+  orders_count: number
+  revenue: string
+}
+
+export interface TopProductEntry {
+  product_name: string
+  total_sold: number
+  revenue: string
+}
+
+export interface TopBranchEntry {
+  branch_name: string
+  total_orders: number
+  revenue: string
 }
 
 // ─── Ads ──────────────────────────────────────────────────────────────

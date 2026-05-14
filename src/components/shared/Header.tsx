@@ -27,7 +27,7 @@ export function Header() {
   const logout = useAuthStore((s) => s.logout)
   const cartCount = useCartCount()
   const isAuthed = !!accessToken
-  const isStaff = role === 'branch_manager' || role === 'delivery'
+  const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin'
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Close drawer on route change.
@@ -36,11 +36,13 @@ export function Header() {
   }, [location.pathname])
 
   const dashboardLink =
-    role === 'branch_manager'
-      ? { to: '/dashboard/branch', label: t('dashboard.branch.short') }
-      : role === 'delivery'
-        ? { to: '/dashboard/delivery', label: t('dashboard.delivery.short') }
-        : null
+    role === 'admin'
+      ? { to: '/admin', label: t('admin.nav.dashboard') }
+      : role === 'branch_manager'
+        ? { to: '/dashboard/branch', label: t('dashboard.branch.short') }
+        : role === 'delivery'
+          ? { to: '/dashboard/delivery', label: t('dashboard.delivery.short') }
+          : null
 
   const links = [
     { to: '/', label: t('nav.home'), end: true },
@@ -50,8 +52,9 @@ export function Header() {
     ...(isAuthed && !isStaff
       ? [{ to: '/orders', label: t('nav.myOrders'), end: false }]
       : []),
-    ...(dashboardLink
-      ? [{ ...dashboardLink, end: false }]
+    ...(dashboardLink ? [{ ...dashboardLink, end: false }] : []),
+    ...(role === 'branch_manager'
+      ? [{ to: '/dashboard/branch/payment-methods', label: t('paymentMethods.title'), end: false }]
       : []),
   ]
 
@@ -109,7 +112,7 @@ export function Header() {
               <Link to="/cart">
                 <ShoppingCart />
                 {cartCount > 0 && (
-                  <span className="absolute -end-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background animate-in zoom-in duration-200">
+                  <span className="absolute -inset-e-1 -top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground ring-2 ring-background animate-in zoom-in duration-200">
                     {cartCount}
                   </span>
                 )}
