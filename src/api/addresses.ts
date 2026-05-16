@@ -24,6 +24,6 @@ export async function deleteAddress(id: number): Promise<void> {
 }
 
 export async function setDefaultAddress(id: number): Promise<Address> {
-  const { data } = await api.post<Address>(`/api/addresses/${id}/set-default/`)
+  const { data } = await api.post<Address>(`/api/addresses/${id}/set-default/`, {})
   return data
 }

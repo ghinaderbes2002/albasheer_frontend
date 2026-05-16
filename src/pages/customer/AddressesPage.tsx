@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Loader2, MapPin, Pencil, Plus, Star, Trash2, X } from 'lucide-react'
+import { Loader2, MapPin, Pencil, Plus, Star, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ export function AddressesPage() {
             {t('addresses.subtitle')}
           </p>
         </div>
-        {!adding && (
+        {!adding && editingId === null && (
           <Button size="sm" onClick={() => setAdding(true)}>
             <Plus className="size-4" />
             {t('addresses.add')}
@@ -99,7 +99,7 @@ function AddressCard({
   onEdit: () => void
 }) {
   const { t } = useTranslation()
-  const [confirming, setConfirming] = useState(false)
+  const [deleteOpen, setDeleteOpen] = useState(false)
   const setDefault = useSetDefaultAddress()
   const del = useDeleteAddress()
 
@@ -107,7 +107,7 @@ function AddressCard({
     try {
       await del.mutateAsync(address.id)
       toast.success(t('addresses.deleted'))
-      setConfirming(false)
+      setDeleteOpen(false)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -123,84 +123,87 @@ function AddressCard({
   }
 
   return (
-    <Card className={cn(address.is_default && 'border-primary/40 bg-primary/5')}>
-      <CardContent className="flex items-start justify-between gap-3 pt-4">
-        <div className="flex-1 space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-sm">{address.label}</span>
-            {address.is_default && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                <Star className="size-2.5" />
-                {t('addresses.default')}
-              </span>
-            )}
+    <>
+      <Card className={cn(address.is_default && 'border-primary/40 bg-primary/5')}>
+        <CardContent className="flex items-start justify-between gap-3 pt-4">
+          <div className="flex-1 space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm">{address.label}</span>
+              {address.is_default && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  <Star className="size-2.5" />
+                  {t('addresses.default')}
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">{address.city}</p>
+            <p className="text-sm text-foreground/80">{address.full_address}</p>
           </div>
-          <p className="text-xs text-muted-foreground">{address.city}</p>
-          <p className="text-sm text-foreground/80">{address.full_address}</p>
-        </div>
 
-        <div className="flex shrink-0 items-center gap-1">
-          {!address.is_default && (
+          <div className="flex shrink-0 items-center gap-1">
+            {!address.is_default && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="size-8 text-muted-foreground hover:text-amber-500"
+                disabled={setDefault.isPending}
+                onClick={handleSetDefault}
+                title={t('addresses.setDefault')}
+              >
+                {setDefault.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Star className="size-4" />
+                )}
+              </Button>
+            )}
             <Button
               size="icon"
               variant="ghost"
               className="size-8 text-muted-foreground"
-              disabled={setDefault.isPending}
-              onClick={handleSetDefault}
-              title={t('addresses.setDefault')}
+              onClick={onEdit}
             >
-              {setDefault.isPending ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Star className="size-4" />
-              )}
+              <Pencil className="size-4" />
             </Button>
-          )}
-          <Button
-            size="icon"
-            variant="ghost"
-            className="size-8 text-muted-foreground"
-            onClick={onEdit}
-          >
-            <Pencil className="size-4" />
-          </Button>
-          {confirming ? (
-            <>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="size-8 text-destructive"
-                disabled={del.isPending}
-                onClick={handleDelete}
-              >
-                {del.isPending ? (
-                  <Loader2 className="size-4 animate-spin" />
-                ) : (
-                  <Check className="size-4" />
-                )}
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="size-8"
-                onClick={() => setConfirming(false)}
-              >
-                <X className="size-4" />
-              </Button>
-            </>
-          ) : (
             <Button
               size="icon"
               variant="ghost"
               className="size-8 text-destructive/70 hover:text-destructive"
-              onClick={() => setConfirming(true)}
+              onClick={() => setDeleteOpen(true)}
             >
               <Trash2 className="size-4" />
             </Button>
-          )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {deleteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl space-y-4">
+            <h2 className="text-base font-semibold">{t('addresses.deleteTitle')}</h2>
+            <p className="text-sm text-muted-foreground">{address.label} — {address.full_address}</p>
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                className="flex-1"
+                disabled={del.isPending}
+                onClick={handleDelete}
+              >
+                {del.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                {t('common.delete')}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={del.isPending}
+                onClick={() => setDeleteOpen(false)}
+              >
+                {t('common.cancel')}
+              </Button>
+            </div>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </>
   )
 }
 
@@ -234,7 +237,7 @@ function AddressForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const trimmed = {
+    const trimmed: AddressPayload = {
       label: form.label.trim(),
       city: form.city.trim(),
       full_address: form.full_address.trim(),

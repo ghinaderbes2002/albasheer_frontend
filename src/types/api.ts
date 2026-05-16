@@ -138,13 +138,13 @@ export interface Address {
   city: string
   full_address: string
   is_default: boolean
-  created_at: string
 }
 
 export interface AddressPayload {
   label: string
   city: string
   full_address: string
+  is_default?: boolean
 }
 
 // ─── Orders ───────────────────────────────────────────────────────────
@@ -234,11 +234,12 @@ export interface CreateOrderBundleItemPayload {
 
 export interface CreateOrderPayload {
   city: string
+  address_id: number
   /** At least one of `items` / `bundle_items` must be non-empty. */
   items?: CreateOrderItemPayload[]
   bundle_items?: CreateOrderBundleItemPayload[]
-  delivery_address: string
   customer_note?: string
+  payment_method_id?: number
 }
 
 export interface UpdateOrderStatusPayload {
@@ -290,7 +291,7 @@ export interface RejectOrderPayload {
 }
 
 export interface AssignDeliveryPayload {
-  delivery_staff_id: number
+  delivery_user_id: number
 }
 
 // ─── Payment Methods ──────────────────────────────────────────────────

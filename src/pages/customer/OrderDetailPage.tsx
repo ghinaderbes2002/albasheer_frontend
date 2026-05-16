@@ -1,7 +1,8 @@
 import axios from 'axios'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, MapPin, Receipt, Truck } from 'lucide-react'
+import { AlertCircle, ChevronLeft, ChevronRight, MapPin, Receipt, Truck } from 'lucide-react'
 
 import {
   Card,
@@ -23,7 +24,14 @@ import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
 export function OrderDetailPage() {
   const { t, i18n } = useTranslation()
   const { id } = useParams<{ id: string }>()
+  const { hash } = useLocation()
   const { data: order, isLoading, isError, error } = useOrder(id)
+
+  useEffect(() => {
+    if (!hash || isLoading) return
+    const el = document.getElementById(hash.slice(1))
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [hash, isLoading])
   const Sep = i18n.language.startsWith('ar') ? ChevronLeft : ChevronRight
 
   if (isLoading) {
@@ -59,7 +67,8 @@ export function OrderDetailPage() {
   }
 
   const receiptUrl = resolveMediaUrl(order.receipt_image)
-  const canUpload = order.requires_deposit && order.status === 'pending' && !order.receipt_image
+  const hasDeposit = order.requires_deposit || parseFloat(order.deposit_amount ?? '0') > 0
+  const canUpload = hasDeposit && order.status === 'pending' && !order.receipt_image
   const shippingFee = parseFloat(order.shipping_fee ?? '0')
 
   return (
@@ -102,6 +111,20 @@ export function OrderDetailPage() {
           <StatusBadge status={order.status} className="text-sm" />
         </div>
       </header>
+
+      {canUpload && (
+        <div className="mb-4 flex items-start gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm">
+          <AlertCircle className="mt-0.5 size-4 shrink-0 text-amber-600" />
+          <div>
+            <p className="font-semibold text-amber-700 dark:text-amber-400">
+              {t('orders.receipt.uploadRequired')}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {t('orders.receipt.uploadRequiredHint')}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
         <div className="space-y-4">
@@ -224,7 +247,7 @@ export function OrderDetailPage() {
           </Card>
 
           {/* Receipt */}
-          <Card>
+          <Card id="receipt-section">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <Receipt className="size-4" />
@@ -291,19 +314,19 @@ export function OrderDetailPage() {
                 value={`${formatPrice(order.shipping_fee, i18n.language)} ${t('common.currency')}`}
               />
             )}
-            {order.requires_deposit && (
+            {hasDeposit && (
               <Row
                 label={t('orders.deposit')}
                 value={`${formatPrice(order.deposit_amount, i18n.language)} ${t('common.currency')}`}
               />
             )}
-            {order.deposit_percent && order.requires_deposit && (
+            {order.deposit_percent && hasDeposit && (
               <Row
                 label={t('orders.depositPercent')}
                 value={`${order.deposit_percent}%`}
               />
             )}
-            {!order.requires_deposit && (
+            {!hasDeposit && (
               <Row
                 label={t('orders.paymentMethod')}
                 value={t('checkout.deposit.codTitle')}

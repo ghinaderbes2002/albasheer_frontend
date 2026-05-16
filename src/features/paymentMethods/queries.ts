@@ -14,11 +14,12 @@ const pmKeys = {
   branch: () => [...pmKeys.all, 'branch'] as const,
 }
 
-export function usePaymentMethods(cityId?: number | string) {
+export function usePaymentMethods(cityId?: number | string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: pmKeys.public(cityId),
     queryFn: () => getPaymentMethods(cityId),
     staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
   })
 }
 

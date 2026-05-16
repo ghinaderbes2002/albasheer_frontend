@@ -22,8 +22,9 @@ import {
   checkoutSchema,
   type CheckoutFormValues,
 } from '@/features/orders/validators'
-import { useMe } from '@/features/auth/queries'
+import { useAddresses } from '@/features/addresses/queries'
 import { useCities } from '@/features/branches/queries'
+import { usePaymentMethods } from '@/features/paymentMethods/queries'
 import { useCartStore } from '@/store/cart'
 import { extractApiError } from '@/lib/api'
 import { cn } from '@/lib/utils'
@@ -33,8 +34,8 @@ const errorKey = (msg?: string) => {
   switch (msg) {
     case 'city.required':
       return 'checkout.errors.cityRequired'
-    case 'address.tooShort':
-      return 'auth.profile.addressTooShort'
+    case 'address.required':
+      return 'checkout.errors.addressRequired'
     default:
       return null
   }
@@ -49,8 +50,8 @@ export function CheckoutPage() {
   const removeItem = useCartStore((s) => s.removeItem)
   const removeBundle = useCartStore((s) => s.removeBundle)
   const clearCart = useCartStore((s) => s.clear)
-  const { data: me } = useMe()
   const { data: cities, isLoading: citiesLoading } = useCities()
+  const { data: addresses } = useAddresses()
   const createOrder = useCreateOrder()
 
   // ── Single-item checkout via ?product=… or ?bundle=… ─────────────
@@ -94,12 +95,13 @@ export function CheckoutPage() {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       city: '',
-      delivery_address: '',
+      address_id: undefined,
       customer_note: '',
     },
   })
@@ -108,27 +110,35 @@ export function CheckoutPage() {
   const selectedCity = cities?.find((c) => c.name === selectedCityName)
   const requiresDeposit = selectedCity?.requires_deposit ?? false
 
+  const { data: paymentMethods } = usePaymentMethods(
+    selectedCity?.name,
+    { enabled: requiresDeposit && !!selectedCity?.name },
+  )
+
   const depositSuggestion = String(Math.round(subtotal * 0.1))
 
-  // Prefill address from /me when it arrives.
+  // Prefill default address when addresses load.
   useEffect(() => {
-    if (me) {
-      reset((prev) => ({
-        ...prev,
-        delivery_address: prev.delivery_address || me.address || '',
-      }))
+    if (addresses?.length) {
+      const def = addresses.find((a) => a.is_default) ?? addresses[0]
+      setValue('address_id', def.id)
     }
-  }, [me, reset])
+  }, [addresses, setValue])
 
   if (items.length === 0 && bundles.length === 0)
     return <Navigate to="/cart" replace />
 
   const onSubmit = handleSubmit(async (values) => {
+    if (requiresDeposit && !values.payment_method_id) {
+      toast.error(t('checkout.errors.paymentMethodRequired'))
+      return
+    }
     try {
       const order = await createOrder.mutateAsync({
         city: values.city,
-        delivery_address: values.delivery_address,
+        address_id: values.address_id,
         customer_note: values.customer_note || undefined,
+        payment_method_id: values.payment_method_id,
         items: items.length
           ? items.map((i) => ({
               product_id: i.product_id,
@@ -150,7 +160,25 @@ export function CheckoutPage() {
         clearCart()
       }
 
-      toast.success(t('checkout.created'))
+      const needsReceipt = parseFloat(order.deposit_amount ?? '0') > 0
+      if (needsReceipt) {
+        toast(
+          (toastInstance) => (
+            <button
+              className="text-start text-sm"
+              onClick={() => {
+                toast.dismiss(toastInstance.id)
+                navigate(`/orders/${order.id}#receipt-section`)
+              }}
+            >
+              📎 {t('checkout.depositReminder')}
+            </button>
+          ),
+          { duration: 8000 },
+        )
+      } else {
+        toast.success(t('checkout.created'))
+      }
       navigate(`/orders/${order.id}`, { replace: true })
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
@@ -257,6 +285,31 @@ export function CheckoutPage() {
                       })
                     : t('checkout.deposit.codHint')}
                 </p>
+
+                {requiresDeposit && (
+                  <div className="mt-3 flex flex-col gap-1.5">
+                    <Label htmlFor="payment_method_id" className="text-foreground">
+                      {t('checkout.deposit.paymentMethod')}
+                    </Label>
+                    <select
+                      id="payment_method_id"
+                      disabled={busy}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                      onChange={(e) => {
+                        const val = e.target.value
+                        setValue('payment_method_id', val ? Number(val) : undefined)
+                      }}
+                      defaultValue=""
+                    >
+                      <option value="">{t('checkout.deposit.paymentMethodPlaceholder')}</option>
+                      {paymentMethods?.map((pm) => (
+                        <option key={pm.id} value={pm.id}>
+                          {pm.name_ar}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -270,23 +323,40 @@ export function CheckoutPage() {
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="delivery_address">
+                <Label htmlFor="address_id">
                   {t('checkout.delivery.address')}
                 </Label>
-                <Input
-                  id="delivery_address"
+                <select
+                  id="address_id"
                   disabled={busy}
-                  aria-invalid={!!errors.delivery_address || undefined}
-                  {...register('delivery_address')}
-                />
-                {errors.delivery_address && (
+                  aria-invalid={!!errors.address_id || undefined}
+                  className={cn(
+                    'flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    'disabled:cursor-not-allowed disabled:opacity-50',
+                    errors.address_id && 'border-destructive ring-2 ring-destructive/30',
+                  )}
+                  onChange={(e) => setValue('address_id', Number(e.target.value))}
+                  defaultValue=""
+                >
+                  <option value="">{t('checkout.delivery.addressPlaceholder')}</option>
+                  {addresses?.map((a) => (
+                    <option key={a.id} value={a.id} selected={a.is_default}>
+                      {a.label} — {a.city}{a.full_address ? `, ${a.full_address}` : ''}
+                    </option>
+                  ))}
+                </select>
+                {errors.address_id && (
                   <p className="text-xs text-destructive">
-                    {t(
-                      errorKey(errors.delivery_address.message) ??
-                        'auth.profile.addressTooShort',
-                    )}
+                    {t(errorKey(errors.address_id.message) ?? 'checkout.errors.addressRequired')}
                   </p>
                 )}
+                <a
+                  href="/addresses"
+                  className="self-start text-xs text-primary hover:underline"
+                >
+                  {t('checkout.delivery.manageAddresses')}
+                </a>
               </div>
 
               <div className="flex flex-col gap-2">

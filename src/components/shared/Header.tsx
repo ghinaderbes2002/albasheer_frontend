@@ -50,7 +50,10 @@ export function Header() {
     { to: '/bundles', label: t('nav.bundles'), end: false },
     { to: '/branches', label: t('nav.branches'), end: false },
     ...(isAuthed && !isStaff
-      ? [{ to: '/orders', label: t('nav.myOrders'), end: false }]
+      ? [
+          { to: '/orders', label: t('nav.myOrders'), end: false },
+          { to: '/addresses', label: t('nav.addresses'), end: false },
+        ]
       : []),
     ...(dashboardLink ? [{ ...dashboardLink, end: false }] : []),
     ...(role === 'branch_manager'

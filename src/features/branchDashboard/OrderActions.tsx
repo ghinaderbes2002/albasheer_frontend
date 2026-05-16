@@ -86,7 +86,7 @@ export function OrderActions({ order }: OrderActionsProps) {
         onCancel={() => setMode('idle')}
         onSubmit={(staffId) =>
           run(
-            () => assign.mutateAsync({ delivery_staff_id: staffId }),
+            () => assign.mutateAsync({ delivery_user_id: staffId }),
             t('dashboard.branch.actions.assigned'),
             () => setMode('idle'),
           )

@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ShoppingCart, Trash2 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { CartItemRow } from '@/features/cart/CartItemRow'
+import { CartBundleRow } from '@/features/cart/CartBundleRow'
 import { CartSummary } from '@/features/cart/CartSummary'
 import { useCartStore, useCartSubtotal } from '@/store/cart'
 
@@ -11,12 +12,13 @@ export function CartPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const items = useCartStore((s) => s.items)
+  const bundles = useCartStore((s) => s.bundles)
   const clear = useCartStore((s) => s.clear)
   const subtotal = useCartSubtotal()
   const Arrow = i18n.language.startsWith('ar') ? ArrowLeft : ArrowRight
   const depositSuggestion = Math.round(subtotal * 0.1)
 
-  if (items.length === 0) {
+  if (items.length === 0 && bundles.length === 0) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-col items-center px-4 py-20 text-center animate-in fade-in slide-in-from-bottom-2 duration-500">
         <div className="relative mb-6">
@@ -63,6 +65,9 @@ export function CartPage() {
         <div className="space-y-3">
           {items.map((it) => (
             <CartItemRow key={it.product_id} item={it} />
+          ))}
+          {bundles.map((b) => (
+            <CartBundleRow key={b.bundle_id} item={b} />
           ))}
         </div>
 

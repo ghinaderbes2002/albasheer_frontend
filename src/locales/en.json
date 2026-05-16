@@ -178,6 +178,7 @@
     "title": "Checkout",
     "submit": "Place order",
     "created": "Your order was created successfully",
+    "depositReminder": "Order placed! Please upload your payment receipt to begin processing",
     "selectBranch": "Select a branch",
     "city": {
       "title": "Delivery city",
@@ -193,6 +194,8 @@
       "city": "City",
       "cityPlaceholder": "e.g. Damascus",
       "address": "Delivery address",
+      "addressPlaceholder": "Select a saved address",
+      "manageAddresses": "Manage my addresses",
       "note": "Additional notes (optional)",
       "notePlaceholder": "e.g. Call before delivery"
     },
@@ -202,7 +205,9 @@
       "requiredTitle": "Advance deposit required",
       "requiredHint": "This city requires an estimated deposit of {{amount}} {{currency}} before order confirmation — upload a receipt after placing the order",
       "codTitle": "Cash on delivery",
-      "codHint": "No advance payment needed — order is confirmed immediately and you pay upon delivery"
+      "codHint": "No advance payment needed — order is confirmed immediately and you pay upon delivery",
+      "paymentMethod": "Payment method",
+      "paymentMethodPlaceholder": "Select a payment method"
     },
     "summary": {
       "title": "Order summary"
@@ -210,7 +215,9 @@
     "errors": {
       "branchRequired": "A branch is required",
       "cityRequired": "Enter the delivery city",
-      "depositInvalid": "Enter a valid amount"
+      "depositInvalid": "Enter a valid amount",
+      "paymentMethodRequired": "Please select a payment method for this city",
+      "addressRequired": "Please select a delivery address"
     },
     "singleItem": {
       "title": "Checking out a single item",
@@ -272,7 +279,9 @@
       "uploaded": "Receipt uploaded",
       "invalidType": "Unsupported file type",
       "tooLarge": "File is larger than {{mb}} MB",
-      "notUploaded": "Receipt cannot be uploaded for this status"
+      "notUploaded": "Receipt cannot be uploaded for this status",
+      "uploadRequired": "Action required: upload your payment receipt",
+      "uploadRequiredHint": "Your order won't be processed until you upload proof of deposit payment below"
     }
   },
   "status": {
@@ -294,6 +303,7 @@
     "deleted": "Address deleted",
     "created": "Address added",
     "updated": "Address updated",
+    "deleteTitle": "Delete address?",
     "addTitle": "Add new address",
     "editTitle": "Edit address",
     "form": {
@@ -302,7 +312,7 @@
       "city": "City",
       "cityPlaceholder": "Select a city",
       "fullAddress": "Full address",
-      "fullAddressPlaceholder": "e.g. Mazzeh district, Street 5, Building 12"
+      "fullAddressPlaceholder": "e.g. Al-Mazzeh district, Street 5, Building 12, 3rd floor"
     }
   },
   "paymentMethods": {
