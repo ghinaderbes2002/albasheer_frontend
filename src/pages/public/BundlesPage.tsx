@@ -4,19 +4,20 @@ import { Boxes } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BundleCard } from '@/features/bundles/BundleCard'
 import { useBundles } from '@/features/bundles/queries'
+import { PageHero } from '@/components/shared/PageHero'
 
 export function BundlesPage() {
   const { t } = useTranslation()
   const { data, isLoading, isError } = useBundles()
 
   return (
+    <div>
+      <PageHero
+        title={t('nav.bundles')}
+        subtitle={t('bundles.subtitle')}
+        image="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80&auto=format&fit=crop"
+      />
     <div className="mx-auto w-full max-w-7xl px-4 py-8">
-      <header className="mb-6 flex flex-col gap-2">
-        <h1 className="text-3xl font-bold md:text-4xl">{t('nav.bundles')}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t('bundles.subtitle')}
-        </p>
-      </header>
 
       {isLoading ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -45,6 +46,7 @@ export function BundlesPage() {
           ))}
         </div>
       )}
+    </div>
     </div>
   )
 }

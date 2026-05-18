@@ -20,9 +20,11 @@ export function Logo({
 }: LogoProps) {
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-primary text-lg font-extrabold ring-2 ring-primary/40 shadow-[0_0_14px_rgba(212,175,55,0.35)]">
-        B
-      </div>
+      <img
+        src="/images/logo_al_basheer-removebg-preview.png"
+        alt="البشير"
+        className="h-10 w-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
+      />
       {showText && (
         <div className="leading-tight text-start">
           <div
@@ -33,8 +35,8 @@ export function Logo({
           >
             البشير
           </div>
-          <div className="text-[10px] font-medium uppercase tracking-[0.18em] text-current opacity-60">
-            Al Basheer
+          <div className="text-[10px] font-medium text-foreground">
+            لتجارة الأدوات المنزلية
           </div>
         </div>
       )}

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { OrderCard } from '@/features/orders/OrderCard'
 import { useMyOrders } from '@/features/orders/queries'
+import { PageHero } from '@/components/shared/PageHero'
 import { cn } from '@/lib/utils'
 import type { OrderStatus } from '@/types/api'
 
@@ -30,15 +31,14 @@ export function MyOrdersPage() {
   )
 
   return (
+    <div>
+      <PageHero
+        title={t('nav.myOrders')}
+        subtitle={t('orders.subtitle')}
+        image="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1920&q=80&auto=format&fit=crop"
+        height="sm"
+      />
     <div className="mx-auto w-full max-w-4xl px-4 py-8">
-      <header className="mb-6 flex flex-col gap-2">
-        <h1 className="text-2xl font-bold md:text-3xl">
-          {t('nav.myOrders')}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {t('orders.subtitle')}
-        </p>
-      </header>
 
       <div className="mb-5 flex flex-wrap gap-2">
         {STATUS_FILTERS.map((s) => (
@@ -88,6 +88,7 @@ export function MyOrdersPage() {
           ))}
         </div>
       )}
+    </div>
     </div>
   )
 }

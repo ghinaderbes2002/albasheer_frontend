@@ -98,6 +98,12 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  ::selection {
+    background-color: var(--color-brand-400);
+    color: var(--color-ink-950);
   }
 
   body {
@@ -122,19 +128,74 @@
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
     background: var(--color-border);
-    border-radius: 8px;
+    border-radius: 99px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-brand-500);
   }
+}
+
+/* Page entrance */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+#root {
+  animation: page-enter 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Gold gradient text — use className="gold-text" */
+.gold-text {
+  background-image: linear-gradient(
+    135deg,
+    var(--color-brand-200) 0%,
+    var(--color-brand-400) 40%,
+    var(--color-brand-300) 60%,
+    var(--color-brand-500) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 1px 14px rgba(212, 175, 55, 0.35));
+}
+
+/* Section heading with gold accent underline bar */
+.section-heading {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+.section-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 2.5rem;
+  height: 3px;
+  background: var(--color-brand-500);
+  border-radius: 99px;
+}
+
+/* Gold glow — for price boxes and primary interactive areas */
+.gold-glow {
+  box-shadow:
+    0 0 0 1px rgba(212, 175, 55, 0.18),
+    0 4px 24px rgba(212, 175, 55, 0.12);
+}
+
+/* Shimmer loading keyframe */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
 }
 
 /* Slow metallic shimmer used on the wordmark logo */

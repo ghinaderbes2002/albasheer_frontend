@@ -62,14 +62,14 @@ export function Header() {
   ]
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur-md supports-backdrop-filter:bg-background/70">
+    <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/85 backdrop-blur-md supports-backdrop-filter:bg-background/70 shadow-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4">
         <Link to="/" className="shrink-0">
           <Logo />
         </Link>
 
         {/* Desktop nav */}
-        <nav className="me-auto hidden items-center gap-1 md:flex">
+        <nav className="me-auto hidden items-center gap-0.5 md:flex">
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -77,25 +77,14 @@ export function Header() {
               end={link.end}
               className={({ isActive }) =>
                 cn(
-                  'relative rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                  'rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'text-foreground'
-                    : 'text-muted-foreground hover:text-foreground',
+                    ? 'bg-primary/10 text-foreground font-semibold'
+                    : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
                 )
               }
             >
-              {({ isActive }) => (
-                <>
-                  {link.label}
-                  <span
-                    aria-hidden
-                    className={cn(
-                      'absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary transition-all duration-200',
-                      isActive ? 'opacity-100' : 'opacity-0',
-                    )}
-                  />
-                </>
-              )}
+              {link.label}
             </NavLink>
           ))}
         </nav>
@@ -194,9 +183,9 @@ export function Header() {
                 end={link.end}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                    'rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                     isActive
-                      ? 'bg-accent text-accent-foreground'
+                      ? 'bg-primary/10 text-foreground font-semibold'
                       : 'text-foreground hover:bg-muted',
                   )
                 }

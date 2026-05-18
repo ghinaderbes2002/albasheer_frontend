@@ -8,6 +8,7 @@ import { SearchBar } from '@/features/catalog/SearchBar'
 import { Pagination } from '@/features/catalog/Pagination'
 import { useProducts } from '@/features/catalog/queries'
 import { PRODUCTS_PAGE_SIZE } from '@/api/products'
+import { PageHero } from '@/components/shared/PageHero'
 
 const PAGE_SIZE = PRODUCTS_PAGE_SIZE
 
@@ -48,13 +49,13 @@ export function ProductsPage() {
   }
 
   return (
+    <div>
+      <PageHero
+        title={t('nav.products')}
+        subtitle={t('catalog.heroSubtitle')}
+        image="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1920&q=80&auto=format&fit=crop"
+      />
     <div className="mx-auto w-full max-w-7xl px-4 py-8">
-      <header className="mb-6 flex flex-col gap-2">
-        <h1 className="text-3xl font-bold md:text-4xl">{t('nav.products')}</h1>
-        <p className="text-sm text-muted-foreground">
-          {t('catalog.totalCount', { count: data?.count ?? 0 })}
-        </p>
-      </header>
 
       <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <SearchBar
@@ -90,6 +91,7 @@ export function ProductsPage() {
           />
         </div>
       )}
+    </div>
     </div>
   )
 }

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { PageHero } from '@/components/shared/PageHero'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ProductCard } from '@/features/catalog/ProductCard'
 import { useCategories, useProducts } from '@/features/catalog/queries'
@@ -29,28 +30,32 @@ export function HomePage() {
     <>
       {/* Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-background" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_25%_15%,rgba(212,175,55,0.10),transparent_55%),radial-gradient(circle_at_80%_85%,rgba(212,175,55,0.06),transparent_55%)]" />
-        <div
+        {/* Blurred background image */}
+        <img
+          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80&auto=format&fit=crop"
+          alt=""
           aria-hidden
-          className="absolute inset-x-0 bottom-0 -z-10 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
+          className="absolute inset-0 h-full w-full scale-105 object-cover blur-sm"
         />
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px]" />
 
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-20 text-center md:py-28">
           <div className="relative">
             <span
               aria-hidden
-              className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/15 blur-xl"
+              className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/20 blur-xl"
             />
-            <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-secondary text-primary text-3xl font-extrabold ring-4 ring-primary/30 shadow-[0_10px_30px_rgba(0,0,0,0.18)]">
-              B
-            </div>
+            <img
+              src="/images/logo_al_basheer-removebg-preview.png"
+              alt="البشير"
+              className="h-24 w-24 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]"
+            />
           </div>
 
-          <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-foreground md:text-6xl animate-in fade-in slide-in-from-bottom-3 duration-500">
+          <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-foreground md:text-6xl animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500">
             {t('home.hero.title')}
           </h1>
-          <p className="max-w-2xl text-base text-muted-foreground md:text-lg animate-in fade-in slide-in-from-bottom-3 duration-500 delay-100">
+          <p className="max-w-2xl text-base text-foreground/65 md:text-lg animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500 delay-100">
             {t('home.hero.subtitle')}
           </p>
 
@@ -87,8 +92,8 @@ export function HomePage() {
 
       {/* Categories ────────────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 py-14">
-        <div className="mb-6 flex items-baseline justify-between gap-3">
-          <h2 className="text-2xl font-bold md:text-3xl">
+        <div className="mb-10 flex items-end justify-between gap-3">
+          <h2 className="section-heading text-2xl font-bold md:text-3xl">
             {t('home.categories.title')}
           </h2>
         </div>
@@ -114,7 +119,7 @@ export function HomePage() {
                 >
                   <span
                     aria-hidden
-                    className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/0 via-primary/0 to-primary/0 transition-all duration-300 group-hover:from-primary/5 group-hover:to-primary/10"
+                    className="absolute inset-0 -z-10 bg-linear-to-br from-primary/0 via-primary/0 to-primary/0 transition-all duration-300 group-hover:from-primary/5 group-hover:to-primary/10"
                   />
                   <div className="flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
                     {icon ? (
@@ -143,8 +148,8 @@ export function HomePage() {
 
       {/* Featured ──────────────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 pb-20">
-        <div className="mb-6 flex items-baseline justify-between gap-3">
-          <h2 className="text-2xl font-bold md:text-3xl">
+        <div className="mb-10 flex items-end justify-between gap-3">
+          <h2 className="section-heading text-2xl font-bold md:text-3xl">
             {t('home.featured.title')}
           </h2>
           <Button asChild variant="ghost" size="sm">

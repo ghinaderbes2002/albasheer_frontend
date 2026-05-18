@@ -121,6 +121,7 @@
     }
   },
   "catalog": {
+    "heroSubtitle": "Browse our full range of electrical products and find what you need",
     "searchPlaceholder": "Search products...",
     "totalCount": "{{count}} products",
     "empty": "No products match your search",
