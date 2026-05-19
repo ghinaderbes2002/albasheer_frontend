@@ -5,7 +5,7 @@ import axios, {
 } from 'axios'
 import { useAuthStore } from '@/store/auth'
 
-const API_BASE =
+export const API_BASE =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
   'http://localhost:8000'
 
@@ -14,14 +14,19 @@ export const MEDIA_BASE =
 
 export const api: AxiosInstance = axios.create({
   baseURL: API_BASE,
-  headers: { 'Content-Type': 'application/json' },
 })
 
-// Attach JWT to outgoing requests.
+// Attach JWT and set Content-Type for outgoing requests.
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`
+  }
+  // Only set JSON content type when the body is NOT FormData.
+  // FormData payloads need the browser to set Content-Type automatically
+  // so it includes the correct multipart boundary.
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json'
   }
   return config
 })

@@ -26,6 +26,7 @@ export function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState('')
   const [editUser, setEditUser] = useState<AdminUser | null>(null)
   const [showCreate, setShowCreate] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<AdminUser | null>(null)
 
   const { data, isLoading } = useAdminUsers({
     search: search || undefined,
@@ -33,11 +34,12 @@ export function AdminUsersPage() {
   })
   const deleteUser = useDeleteAdminUser()
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('admin.users.confirmDelete'))) return
+  const handleDelete = async () => {
+    if (!confirmDelete) return
     try {
-      await deleteUser.mutateAsync(id)
+      await deleteUser.mutateAsync(confirmDelete.id)
       toast.success(t('admin.users.deleted'))
+      setConfirmDelete(null)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -45,12 +47,8 @@ export function AdminUsersPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-      <header className="flex items-center justify-between gap-4 flex-wrap">
+      <header>
         <h1 className="text-2xl font-bold">{t('admin.users.title')}</h1>
-        <Button onClick={() => setShowCreate(true)}>
-          <Plus className="size-4" />
-          {t('admin.users.add')}
-        </Button>
       </header>
 
       <div className="flex flex-wrap gap-3">
@@ -70,6 +68,10 @@ export function AdminUsersPage() {
             <option key={r} value={r}>{r}</option>
           ))}
         </select>
+        <Button onClick={() => setShowCreate(true)} className="ms-auto">
+          <Plus className="size-4" />
+          {t('admin.users.add')}
+        </Button>
       </div>
 
       {isLoading ? (
@@ -96,7 +98,7 @@ export function AdminUsersPage() {
             <tbody className="divide-y divide-border">
               {data.map((u) => (
                 <tr key={u.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 text-muted-foreground">#{u.id}</td>
+                  <td className="px-4 py-3 text-muted-foreground" dir="ltr">#{u.id}</td>
                   <td className="px-4 py-3 font-medium" dir="ltr">{u.phone}</td>
                   <td className="px-4 py-3 hidden sm:table-cell">
                     {[u.first_name, u.last_name].filter(Boolean).join(' ') || '—'}
@@ -107,7 +109,7 @@ export function AdminUsersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
-                    {u.branch?.name ?? '—'}
+                    {u.branch_name ?? '—'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
@@ -122,8 +124,7 @@ export function AdminUsersPage() {
                         variant="ghost"
                         size="icon"
                         className="text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDelete(u.id)}
-                        disabled={deleteUser.isPending}
+                        onClick={() => setConfirmDelete(u)}
                       >
                         <Trash2 className="size-4" />
                       </Button>
@@ -141,6 +142,42 @@ export function AdminUsersPage() {
           user={editUser}
           onClose={() => { setShowCreate(false); setEditUser(null) }}
         />
+      )}
+
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-destructive/10">
+                <Trash2 className="size-5 text-destructive" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold">{t('admin.users.confirmDelete')}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {[confirmDelete.first_name, confirmDelete.last_name].filter(Boolean).join(' ') || confirmDelete.phone}
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                className="flex-1"
+                disabled={deleteUser.isPending}
+                onClick={handleDelete}
+              >
+                {deleteUser.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                {t('common.delete')}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={deleteUser.isPending}
+                onClick={() => setConfirmDelete(null)}
+              >
+                {t('common.cancel')}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -165,7 +202,7 @@ function UserFormDialog({
     formState: { errors },
   } = useForm<CreateUserPayload & { is_active: boolean }>({
     defaultValues: {
-      phone: user?.phone ?? '',
+      phone: user?.phone?.replace(/^\+/, '') ?? '',
       first_name: user?.first_name ?? '',
       last_name: user?.last_name ?? '',
       role: user?.role ?? 'customer',
@@ -180,13 +217,17 @@ function UserFormDialog({
   const isEdit = !!user
 
   const onSubmit = async (values: CreateUserPayload & { is_active: boolean }) => {
+    const payload = {
+      ...values,
+      phone: values.phone.startsWith('+') ? values.phone : `+${values.phone}`,
+    }
     try {
       if (isEdit) {
-        const { password, ...rest } = values
-        await update.mutateAsync(password ? values : rest)
+        const { password, ...rest } = payload
+        await update.mutateAsync(password ? payload : rest)
         toast.success(t('admin.users.updated'))
       } else {
-        await create.mutateAsync(values)
+        await create.mutateAsync(payload)
         toast.success(t('admin.users.created'))
       }
       onClose()
@@ -205,7 +246,16 @@ function UserFormDialog({
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <Field label={t('admin.users.phone')}>
-            <Input {...register('phone')} dir="ltr" disabled={isEdit} />
+            <div dir="ltr" className="flex h-10 overflow-hidden rounded-md border border-input bg-background shadow-sm focus-within:ring-2 focus-within:ring-ring">
+              <span className="flex items-center border-r border-input bg-muted px-3 text-sm font-medium select-none">+</span>
+              <input
+                {...register('phone')}
+                dir="ltr"
+                disabled={isEdit}
+                placeholder="963XXXXXXXXX"
+                className="flex-1 bg-transparent px-3 text-sm outline-none disabled:opacity-50"
+              />
+            </div>
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label={t('auth.profile.firstName')}>

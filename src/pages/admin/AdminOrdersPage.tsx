@@ -72,18 +72,18 @@ export function AdminOrdersPage() {
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground">#</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.orders.number')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.orders.customer')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.orders.branch')}</th>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground">Status</th>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('orders.total')}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.orders.status')}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.orders.total')}</th>
                 <th className="px-4 py-3 text-end"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {data.map((o) => (
                 <tr key={o.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 text-muted-foreground">#{o.id}</td>
+                  <td className="px-4 py-3 text-muted-foreground font-mono" dir="ltr">#{o.id}</td>
                   <td className="px-4 py-3">
                     <p className="font-medium">{o.customer_name || t('dashboard.branch.unnamedCustomer')}</p>
                     <p className="text-xs text-muted-foreground" dir="ltr">{o.customer_phone}</p>
@@ -97,7 +97,7 @@ export function AdminOrdersPage() {
                   <td className="px-4 py-3 hidden md:table-cell" dir="ltr">
                     {Number(o.total_price).toLocaleString()} {t('common.currency')}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-end">
                     {(o.status === 'pending' || o.status === 'confirmed') && (
                       <Button
                         variant="ghost"

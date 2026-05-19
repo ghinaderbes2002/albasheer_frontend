@@ -1,4 +1,4 @@
-import { api } from '@/lib/api'
+import { api, API_BASE } from '@/lib/api'
 import type {
   AdminBranch,
   AdminBundle,
@@ -207,18 +207,55 @@ export async function toggleProductAvailability(
   return data
 }
 
+function getCsrfToken(): string {
+  return document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1] ?? ''
+}
+
 export async function uploadProductImages(
-  id: number | string,
+  productId: number | string,
   formData: FormData,
 ): Promise<void> {
-  await api.post(`/api/admin/products/${id}/images/`, formData)
+  const file = formData.get('image') as File | null
+  if (!file) throw new Error('No image provided')
+
+  const fd = new FormData()
+  fd.append('product', String(productId))
+  fd.append('image', file)
+  fd.append('is_main', 'false')
+  fd.append('csrfmiddlewaretoken', getCsrfToken())
+  fd.append('_save', 'Save')
+
+  const res = await fetch(`${API_BASE}/admin/products/productimage/add/`, {
+    method: 'POST',
+    body: fd,
+    credentials: 'include',
+    redirect: 'manual',
+  })
+
+  // Django admin redirects (302) on success → opaqueredirect for cross-origin
+  if (res.type !== 'opaqueredirect' && !res.ok) {
+    throw new Error('فشل رفع الصورة')
+  }
 }
 
 export async function deleteProductImage(
-  productId: number | string,
+  _productId: number | string,
   imageId: number | string,
 ): Promise<void> {
-  await api.delete(`/api/admin/products/${productId}/images/${imageId}/`)
+  const fd = new FormData()
+  fd.append('csrfmiddlewaretoken', getCsrfToken())
+  fd.append('post', 'yes')
+
+  const res = await fetch(`${API_BASE}/admin/products/productimage/${imageId}/delete/`, {
+    method: 'POST',
+    body: fd,
+    credentials: 'include',
+    redirect: 'manual',
+  })
+
+  if (res.type !== 'opaqueredirect' && !res.ok) {
+    throw new Error('فشل حذف الصورة')
+  }
 }
 
 // ─── Bundles ──────────────────────────────────────────────────────────
@@ -233,6 +270,7 @@ export async function createAdminBundle(payload: FormData): Promise<AdminBundle>
   const { data } = await api.post<AdminBundle>('/api/admin/bundles/', payload)
   return data
 }
+
 
 export async function updateAdminBundle(
   id: number | string,

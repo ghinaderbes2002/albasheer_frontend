@@ -351,15 +351,15 @@
       "reports": "التقارير"
     },
     "stats": {
-      "title": "نظرة عامة",
+      "title": "لوحة التحكم",
       "totalOrders": "إجمالي الطلبات",
-      "pendingOrders": "قيد الانتظار",
+      "pendingOrders": "بانتظار التأكيد",
       "confirmedOrders": "مؤكدة",
       "deliveredOrders": "تم التسليم",
       "cancelledOrders": "ملغاة",
-      "totalRevenue": "إجمالي الإيرادات",
+      "totalRevenue": "إجمالي المبيعات",
       "todayOrders": "طلبات اليوم",
-      "todayRevenue": "إيرادات اليوم"
+      "todayRevenue": "مبيعات اليوم"
     },
     "users": {
       "title": "المستخدمون",
@@ -397,7 +397,9 @@
       "deleted": "تم حذف الفرع",
       "created": "تم إنشاء الفرع",
       "updated": "تم تحديث الفرع",
-      "confirmDelete": "حذف هذا الفرع؟"
+      "confirmDelete": "حذف هذا الفرع؟",
+      "status": "الحالة",
+      "viewOnMap": "عرض على الخريطة"
     },
     "cities": {
       "title": "المدن",
@@ -450,7 +452,11 @@
       "deleted": "تم حذف المنتج",
       "created": "تم إنشاء المنتج",
       "updated": "تم تحديث المنتج",
-      "confirmDelete": "حذف هذا المنتج؟"
+      "confirmDelete": "حذف هذا المنتج؟",
+      "addImage": "إضافة صورة",
+      "noImages": "لا توجد صور بعد",
+      "imageUploaded": "تم رفع الصور",
+      "mainImage": "رئيسية"
     },
     "bundles": {
       "title": "الباقات",
@@ -473,8 +479,11 @@
       "title": "جميع الطلبات",
       "empty": "لا توجد طلبات",
       "emptyForFilter": "لا توجد طلبات بهذه الحالة",
+      "number": "رقم الطلب",
       "customer": "الزبون",
       "branch": "الفرع",
+      "status": "الحالة",
+      "total": "الإجمالي",
       "cancelOrder": "إلغاء الطلب",
       "cancelNote": "ملاحظة الإلغاء (اختياري)",
       "cancelled": "تم إلغاء الطلب"

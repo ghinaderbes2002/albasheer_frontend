@@ -63,6 +63,7 @@ export const isAuthenticated = () => !!useAuthStore.getState().accessToken
  * already-authenticated user lands on `/login`.
  */
 export function defaultHomeForRole(role: Role | null): string {
+  if (role === 'admin') return '/admin'
   if (role === 'branch_manager') return '/dashboard/branch'
   if (role === 'delivery') return '/dashboard/delivery'
   return '/'

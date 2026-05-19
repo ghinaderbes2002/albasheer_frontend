@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Inbox, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Inbox, Loader2, Pencil, Plus, Search, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -24,14 +24,27 @@ export function AdminCitiesPage() {
   const { t } = useTranslation()
   const [editCity, setEditCity] = useState<AdminCity | null>(null)
   const [showCreate, setShowCreate] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState<AdminCity | null>(null)
+  const [search, setSearch] = useState('')
   const { data, isLoading } = useAdminCities()
   const deleteCity = useDeleteAdminCity()
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('admin.cities.confirmDelete'))) return
+  const filtered = search.trim()
+    ? (data ?? []).filter((c) => {
+        const q = search.toLowerCase()
+        return (
+          c.name.toLowerCase().includes(q) ||
+          (c.branch_name ?? '').toLowerCase().includes(q)
+        )
+      })
+    : (data ?? [])
+
+  const handleDelete = async () => {
+    if (!confirmDelete) return
     try {
-      await deleteCity.mutateAsync(id)
+      await deleteCity.mutateAsync(confirmDelete.id)
       toast.success(t('admin.cities.deleted'))
+      setConfirmDelete(null)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -39,13 +52,25 @@ export function AdminCitiesPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-      <header className="flex items-center justify-between gap-4 flex-wrap">
+      <header>
         <h1 className="text-2xl font-bold">{t('admin.cities.title')}</h1>
-        <Button onClick={() => setShowCreate(true)}>
+      </header>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative w-full sm:w-72">
+          <Search className="absolute inset-y-0 inset-e-3 my-auto size-4 text-muted-foreground pointer-events-none" />
+          <Input
+            className="pe-9"
+            placeholder={t('common.search')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <Button onClick={() => setShowCreate(true)} className="ms-auto">
           <Plus className="size-4" />
           {t('admin.cities.add')}
         </Button>
-      </header>
+      </div>
 
       {isLoading ? (
         <div className="space-y-2">
@@ -53,8 +78,8 @@ export function AdminCitiesPage() {
             <Skeleton key={i} className="h-14 rounded-xl" />
           ))}
         </div>
-      ) : !data?.length ? (
-        <EmptyState message={t('admin.cities.empty')} />
+      ) : !filtered.length ? (
+        <EmptyState message={search ? t('catalog.empty') : t('admin.cities.empty')} />
       ) : (
         <div className="rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">
@@ -68,7 +93,7 @@ export function AdminCitiesPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {data.map((c) => (
+              {filtered.map((c) => (
                 <tr key={c.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3 font-medium">{c.name}</td>
                   <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">{c.branch_name ?? c.branch}</td>
@@ -91,7 +116,7 @@ export function AdminCitiesPage() {
                         variant="ghost"
                         size="icon"
                         className="text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDelete(c.id)}
+                        onClick={() => setConfirmDelete(c)}
                         disabled={deleteCity.isPending}
                       >
                         <Trash2 className="size-4" />
@@ -110,6 +135,40 @@ export function AdminCitiesPage() {
           city={editCity}
           onClose={() => { setShowCreate(false); setEditCity(null) }}
         />
+      )}
+
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-destructive/10">
+                <Trash2 className="size-5 text-destructive" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold">{t('admin.cities.confirmDelete')}</h2>
+                <p className="text-sm text-muted-foreground">{confirmDelete.name}</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                className="flex-1"
+                disabled={deleteCity.isPending}
+                onClick={handleDelete}
+              >
+                {deleteCity.isPending ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+                {t('common.delete')}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={deleteCity.isPending}
+                onClick={() => setConfirmDelete(null)}
+              >
+                {t('common.cancel')}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

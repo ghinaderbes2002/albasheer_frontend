@@ -53,7 +53,7 @@ export function AdminLayout() {
       {/* Sidebar — desktop */}
       <aside
         className={cn(
-          'hidden md:flex flex-col border-e border-border bg-background transition-all duration-200 shrink-0',
+          'hidden md:flex flex-col border-e border-border bg-background transition-all duration-200 shrink-0 sticky top-0 h-svh',
           collapsed ? 'w-16' : 'w-56',
         )}
       >
@@ -73,7 +73,7 @@ export function AdminLayout() {
           </Button>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-1 p-2">
+        <nav className="flex flex-1 flex-col gap-1 p-2 overflow-y-auto">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}

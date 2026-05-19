@@ -348,15 +348,15 @@
       "reports": "Reports"
     },
     "stats": {
-      "title": "Overview",
+      "title": "Dashboard",
       "totalOrders": "Total orders",
-      "pendingOrders": "Pending",
+      "pendingOrders": "Awaiting confirmation",
       "confirmedOrders": "Confirmed",
       "deliveredOrders": "Delivered",
       "cancelledOrders": "Cancelled",
-      "totalRevenue": "Total revenue",
+      "totalRevenue": "Total sales",
       "todayOrders": "Today's orders",
-      "todayRevenue": "Today's revenue"
+      "todayRevenue": "Today's sales"
     },
     "users": {
       "title": "Users",
@@ -394,7 +394,9 @@
       "deleted": "Branch deleted",
       "created": "Branch created",
       "updated": "Branch updated",
-      "confirmDelete": "Delete this branch?"
+      "confirmDelete": "Delete this branch?",
+      "status": "Status",
+      "viewOnMap": "View on map"
     },
     "cities": {
       "title": "Cities",
@@ -447,7 +449,11 @@
       "deleted": "Product deleted",
       "created": "Product created",
       "updated": "Product updated",
-      "confirmDelete": "Delete this product?"
+      "confirmDelete": "Delete this product?",
+      "addImage": "Add image",
+      "noImages": "No images yet",
+      "imageUploaded": "Images uploaded",
+      "mainImage": "Main"
     },
     "bundles": {
       "title": "Bundles",
@@ -470,8 +476,11 @@
       "title": "All orders",
       "empty": "No orders found",
       "emptyForFilter": "No orders with this status",
+      "number": "Order #",
       "customer": "Customer",
       "branch": "Branch",
+      "status": "Status",
+      "total": "Total",
       "cancelOrder": "Cancel order",
       "cancelNote": "Cancellation note (optional)",
       "cancelled": "Order cancelled"

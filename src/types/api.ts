@@ -319,9 +319,10 @@ export interface AdminUser {
   first_name: string
   last_name: string
   role: Role
-  branch?: UserBranch
+  branch_id?: number | null
+  branch_name?: string | null
   is_active: boolean
-  created_at: string
+  date_joined: string
 }
 
 export interface CreateUserPayload {
