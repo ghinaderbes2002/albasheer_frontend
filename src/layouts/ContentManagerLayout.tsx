@@ -1,23 +1,16 @@
 import { useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
-  BarChart3,
   Boxes,
-  Building2,
   ChevronLeft,
   ChevronRight,
-  ClipboardList,
-  CreditCard,
   LayoutDashboard,
   LogOut,
-  MapPin,
   Megaphone,
   Menu,
   Package,
-  Settings,
   Tag,
-  Users,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -27,31 +20,18 @@ import { Button } from '@/components/ui/button'
 import { LangSwitcher } from '@/components/shared/LangSwitcher'
 
 const NAV_ITEMS = [
-  { to: '/admin', label: 'admin.nav.dashboard', icon: LayoutDashboard, end: true },
-  { to: '/admin/users', label: 'admin.nav.users', icon: Users },
-  { to: '/admin/branches', label: 'admin.nav.branches', icon: Building2 },
-  { to: '/admin/cities', label: 'admin.nav.cities', icon: MapPin },
-  { to: '/admin/categories', label: 'admin.nav.categories', icon: Tag },
-  { to: '/admin/products', label: 'admin.nav.products', icon: Package },
-  { to: '/admin/bundles', label: 'admin.nav.bundles', icon: Boxes },
-  { to: '/admin/ads', label: 'admin.nav.ads', icon: Megaphone },
-  { to: '/admin/orders', label: 'admin.nav.orders', icon: ClipboardList },
-  { to: '/admin/payment-methods', label: 'admin.nav.paymentMethods', icon: CreditCard },
-  { to: '/admin/reports', label: 'admin.nav.reports', icon: BarChart3 },
-  { to: '/admin/settings', label: 'admin.nav.settings', icon: Settings },
+  { to: '/content', label: 'admin.nav.dashboard', icon: LayoutDashboard, end: true },
+  { to: '/content/categories', label: 'admin.nav.categories', icon: Tag },
+  { to: '/content/products', label: 'admin.nav.products', icon: Package },
+  { to: '/content/bundles', label: 'admin.nav.bundles', icon: Boxes },
+  { to: '/content/ads', label: 'admin.nav.ads', icon: Megaphone },
 ]
 
-export function AdminLayout() {
+export function ContentManagerLayout() {
   const { t } = useTranslation()
   const logout = useAuthStore((s) => s.logout)
-  const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-
-  // close mobile drawer on route change
-  useState(() => {
-    setMobileOpen(false)
-  })
 
   return (
     <div className="flex min-h-svh bg-muted/30" dir="rtl">
@@ -64,7 +44,7 @@ export function AdminLayout() {
       >
         <div className="flex h-16 items-center justify-between border-b border-border px-3">
           {!collapsed && (
-            <Link to="/admin" className="flex items-center gap-2">
+            <Link to="/content" className="flex items-center gap-2">
               <Logo />
             </Link>
           )}
@@ -175,13 +155,8 @@ export function AdminLayout() {
 
       {/* Main content */}
       <div className="flex flex-1 flex-col min-w-0">
-        {/* Top bar — mobile */}
         <header className="flex h-16 items-center gap-3 border-b border-border bg-background px-4 md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileOpen(true)}
-          >
+          <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}>
             <Menu className="size-5" />
           </Button>
           <Logo />
@@ -189,7 +164,6 @@ export function AdminLayout() {
             <LangSwitcher />
           </div>
         </header>
-
         <main className="flex-1 p-4 md:p-6">
           <Outlet />
         </main>

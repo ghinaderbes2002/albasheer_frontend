@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Inbox, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, Inbox, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -18,7 +18,7 @@ import { useAdminBranches } from '@/features/admin/queries'
 import { extractApiError } from '@/lib/api'
 import type { AdminUser, CreateUserPayload, Role } from '@/types/api'
 
-const ROLES: Role[] = ['customer', 'branch_manager', 'delivery', 'admin']
+const ROLES: Role[] = ['customer', 'branch_manager', 'delivery', 'admin', 'content_manager']
 
 export function AdminUsersPage() {
   const { t } = useTranslation()
@@ -65,7 +65,7 @@ export function AdminUsersPage() {
         >
           <option value="">{t('common.all')}</option>
           {ROLES.map((r) => (
-            <option key={r} value={r}>{r}</option>
+            <option key={r} value={r}>{t(`admin.users.roles.${r}`, r)}</option>
           ))}
         </select>
         <Button onClick={() => setShowCreate(true)} className="ms-auto">
@@ -105,7 +105,7 @@ export function AdminUsersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${roleColor(u.role)}`}>
-                      {u.role}
+                      {t(`admin.users.roles.${u.role}`, u.role)}
                     </span>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
@@ -191,6 +191,7 @@ function UserFormDialog({
   onClose: () => void
 }) {
   const { t } = useTranslation()
+  const [showPassword, setShowPassword] = useState(false)
   const { data: branches } = useAdminBranches()
   const create = useCreateAdminUser()
   const update = useUpdateAdminUser(user?.id ?? 0)
@@ -217,6 +218,7 @@ function UserFormDialog({
   const isEdit = !!user
 
   const onSubmit = async (values: CreateUserPayload & { is_active: boolean }) => {
+    const isCustomer = values.role === 'customer'
     const payload = {
       ...values,
       phone: values.phone.startsWith('+') ? values.phone : `+${values.phone}`,
@@ -224,10 +226,11 @@ function UserFormDialog({
     try {
       if (isEdit) {
         const { password, ...rest } = payload
-        await update.mutateAsync(password ? payload : rest)
+        await update.mutateAsync(isCustomer || !password ? rest : payload)
         toast.success(t('admin.users.updated'))
       } else {
-        await create.mutateAsync(payload)
+        const { password, ...rest } = payload
+        await create.mutateAsync(isCustomer ? rest : payload)
         toast.success(t('admin.users.created'))
       }
       onClose()
@@ -270,7 +273,7 @@ function UserFormDialog({
               {...register('role')}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
+              {ROLES.map((r) => <option key={r} value={r}>{t(`admin.users.roles.${r}`, r)}</option>)}
             </select>
           </Field>
           {needsBranch && (
@@ -292,9 +295,26 @@ function UserFormDialog({
               </select>
             </Field>
           )}
-          <Field label={isEdit ? `${t('admin.users.newPassword')} (${t('common.cancel').toLowerCase()} = don't change)` : t('admin.users.newPassword')}>
-            <Input {...register('password')} type="password" required={!isEdit} />
-          </Field>
+          {role !== 'customer' && (
+            <Field label={isEdit ? `${t('admin.users.newPassword')} (${t('common.cancel').toLowerCase()} = don't change)` : t('admin.users.newPassword')}>
+              <div className="relative">
+                <Input
+                  {...register('password')}
+                  type={showPassword ? 'text' : 'password'}
+                  required={!isEdit}
+                  className="pe-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 inset-e-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+            </Field>
+          )}
           <div className="flex items-center gap-2">
             <input type="checkbox" id="is_active" {...register('is_active')} className="size-4" />
             <Label htmlFor="is_active">{t('admin.users.active')}</Label>
@@ -347,6 +367,7 @@ function roleColor(role: Role) {
     branch_manager: 'bg-blue-100 text-blue-700',
     delivery: 'bg-amber-100 text-amber-700',
     customer: 'bg-gray-100 text-gray-700',
+    content_manager: 'bg-teal-100 text-teal-700',
   }
   return map[role]
 }

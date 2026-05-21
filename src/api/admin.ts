@@ -1,6 +1,10 @@
-import { api, API_BASE } from '@/lib/api'
+import { api } from '@/lib/api'
 import type {
+  AdminAd,
   AdminBranch,
+  AdminPaymentMethod,
+  ContentStats,
+  SiteSettings,
   AdminBundle,
   AdminCategory,
   AdminCity,
@@ -12,7 +16,7 @@ import type {
   OrderDetail,
   OrderStatus,
   PaginatedResponse,
-  SalesReportEntry,
+  SalesReportResponse,
   TopBranchEntry,
   TopProductEntry,
 } from '@/types/api'
@@ -207,10 +211,6 @@ export async function toggleProductAvailability(
   return data
 }
 
-function getCsrfToken(): string {
-  return document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1] ?? ''
-}
-
 export async function uploadProductImages(
   productId: number | string,
   formData: FormData,
@@ -219,43 +219,24 @@ export async function uploadProductImages(
   if (!file) throw new Error('No image provided')
 
   const fd = new FormData()
-  fd.append('product', String(productId))
-  fd.append('image', file)
-  fd.append('is_main', 'false')
-  fd.append('csrfmiddlewaretoken', getCsrfToken())
-  fd.append('_save', 'Save')
+  fd.append('images', file)
 
-  const res = await fetch(`${API_BASE}/admin/products/productimage/add/`, {
-    method: 'POST',
-    body: fd,
-    credentials: 'include',
-    redirect: 'manual',
-  })
-
-  // Django admin redirects (302) on success → opaqueredirect for cross-origin
-  if (res.type !== 'opaqueredirect' && !res.ok) {
-    throw new Error('فشل رفع الصورة')
-  }
+  await api.post(`/api/admin/products/${productId}/images/`, fd)
 }
 
 export async function deleteProductImage(
-  _productId: number | string,
+  productId: number | string,
   imageId: number | string,
 ): Promise<void> {
-  const fd = new FormData()
-  fd.append('csrfmiddlewaretoken', getCsrfToken())
-  fd.append('post', 'yes')
+  await api.delete(`/api/admin/products/${productId}/images/${imageId}/`)
+}
 
-  const res = await fetch(`${API_BASE}/admin/products/productimage/${imageId}/delete/`, {
-    method: 'POST',
-    body: fd,
-    credentials: 'include',
-    redirect: 'manual',
-  })
-
-  if (res.type !== 'opaqueredirect' && !res.ok) {
-    throw new Error('فشل حذف الصورة')
-  }
+export async function updateAdminProductSpecs(
+  id: number | string,
+  specs: Array<{ key: string; key_ar: string; value: string; value_ar: string }>,
+): Promise<AdminProduct> {
+  const { data } = await api.patch<AdminProduct>(`/api/admin/products/${id}/specs/`, { specs })
+  return data
 }
 
 // ─── Bundles ──────────────────────────────────────────────────────────
@@ -320,16 +301,95 @@ export async function cancelAdminOrder(
   await api.post(`/api/admin/orders/${id}/cancel/`, { note })
 }
 
+export async function setAdminOrderShippingFee(
+  id: number | string,
+  shippingFee: number,
+): Promise<void> {
+  await api.patch(`/api/admin/orders/${id}/set-shipping-fee/`, { shipping_fee: shippingFee })
+}
+
+// ─── Ads ──────────────────────────────────────────────────────────────
+export async function getAdminAds(): Promise<AdminAd[]> {
+  const { data } = await api.get<AdminAd[] | PaginatedResponse<AdminAd>>('/api/admin/ads/')
+  return unwrap(data)
+}
+
+export async function getAdminAd(id: number | string): Promise<AdminAd> {
+  const { data } = await api.get<AdminAd>(`/api/admin/ads/${id}/`)
+  return data
+}
+
+export async function createAdminAd(payload: FormData): Promise<AdminAd> {
+  const { data } = await api.post<AdminAd>('/api/admin/ads/', payload)
+  return data
+}
+
+export async function updateAdminAd(
+  id: number | string,
+  payload: Partial<Omit<AdminAd, 'id' | 'file'>> | FormData,
+): Promise<AdminAd> {
+  const { data } = await api.patch<AdminAd>(`/api/admin/ads/${id}/`, payload)
+  return data
+}
+
+export async function deleteAdminAd(id: number | string): Promise<void> {
+  await api.delete(`/api/admin/ads/${id}/`)
+}
+
+export async function toggleAdActive(id: number | string): Promise<AdminAd> {
+  const { data } = await api.post<AdminAd>(`/api/admin/ads/${id}/toggle-active/`)
+  return data
+}
+
+// ─── Payment Methods ──────────────────────────────────────────────────
+export async function getAdminPaymentMethods(): Promise<AdminPaymentMethod[]> {
+  const { data } = await api.get<AdminPaymentMethod[] | PaginatedResponse<AdminPaymentMethod>>(
+    '/api/admin/payment-methods/',
+  )
+  return unwrap(data)
+}
+
+export async function createAdminPaymentMethod(payload: FormData): Promise<AdminPaymentMethod> {
+  const { data } = await api.post<AdminPaymentMethod>('/api/admin/payment-methods/', payload)
+  return data
+}
+
+export async function updateAdminPaymentMethod(
+  id: number | string,
+  payload: Partial<Omit<AdminPaymentMethod, 'id' | 'image' | 'branch_name'>> | FormData,
+): Promise<AdminPaymentMethod> {
+  const { data } = await api.patch<AdminPaymentMethod>(`/api/admin/payment-methods/${id}/`, payload)
+  return data
+}
+
+export async function deleteAdminPaymentMethod(id: number | string): Promise<void> {
+  await api.delete(`/api/admin/payment-methods/${id}/`)
+}
+
+// ─── Site Settings ────────────────────────────────────────────────────
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const { data } = await api.get<SiteSettings>('/api/admin/settings/')
+  return data
+}
+
+export async function updateSiteSettings(payload: Partial<SiteSettings>): Promise<SiteSettings> {
+  const { data } = await api.patch<SiteSettings>('/api/admin/settings/', payload)
+  return data
+}
+
+// ─── Content Stats ────────────────────────────────────────────────────
+export async function getContentStats(): Promise<ContentStats> {
+  const { data } = await api.get<ContentStats>('/api/admin/content/stats/')
+  return data
+}
+
 // ─── Reports ──────────────────────────────────────────────────────────
 export async function getSalesReport(params?: {
   date_from?: string
   date_to?: string
   branch?: number | string
-}): Promise<SalesReportEntry[]> {
-  const { data } = await api.get<SalesReportEntry[]>(
-    '/api/admin/reports/sales/',
-    { params },
-  )
+}): Promise<SalesReportResponse> {
+  const { data } = await api.get<SalesReportResponse>('/api/admin/reports/sales/', { params })
   return data
 }
 
@@ -338,10 +398,7 @@ export async function getTopProductsReport(params?: {
   date_to?: string
   limit?: number
 }): Promise<TopProductEntry[]> {
-  const { data } = await api.get<TopProductEntry[]>(
-    '/api/admin/reports/top-products/',
-    { params },
-  )
+  const { data } = await api.get<TopProductEntry[]>('/api/admin/reports/top-products/', { params })
   return data
 }
 
@@ -349,9 +406,6 @@ export async function getTopBranchesReport(params?: {
   date_from?: string
   date_to?: string
 }): Promise<TopBranchEntry[]> {
-  const { data } = await api.get<TopBranchEntry[]>(
-    '/api/admin/reports/top-branches/',
-    { params },
-  )
+  const { data } = await api.get<TopBranchEntry[]>('/api/admin/reports/top-branches/', { params })
   return data
 }

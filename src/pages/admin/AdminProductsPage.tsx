@@ -1,8 +1,8 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { ImagePlus, Inbox, Loader2, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { ImagePlus, Inbox, Loader2, Pencil, Plus, Search, Star, Trash2, X } from 'lucide-react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -12,10 +12,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import {
   useAdminCategories,
+  useAdminProduct,
   useAdminProducts,
   useCreateAdminProduct,
   useDeleteAdminProduct,
+  useDeleteProductImage,
   useUpdateAdminProduct,
+  useUploadProductImages,
 } from '@/features/admin/queries'
 import { uploadProductImages } from '@/api/admin'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
@@ -24,6 +27,8 @@ import type { AdminProduct } from '@/types/api'
 export function AdminProductsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
+  const basePath = location.pathname.startsWith('/content') ? '/content' : '/admin'
   const [search, setSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [editProduct, setEditProduct] = useState<AdminProduct | null>(null)
@@ -107,7 +112,7 @@ export function AdminProductsPage() {
                 <tr
                   key={p.id}
                   className="hover:bg-muted/30 transition-colors cursor-pointer"
-                  onClick={() => navigate(`/admin/products/${p.id}`)}
+                  onClick={() => navigate(`${basePath}/products/${p.id}`)}
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -205,12 +210,22 @@ export function ProductFormDialog({
 }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
+  const basePath = location.pathname.startsWith('/content') ? '/content' : '/admin'
   const { data: categories } = useAdminCategories()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
 
   const isEdit = !!initialProduct
+
+  // In edit mode fetch the full product to get current images
+  const { data: fullProduct } = useAdminProduct(isEdit ? initialProduct!.id : undefined)
+  const currentImages = fullProduct?.images ?? initialProduct?.images ?? []
+
+  const uploadImages = useUploadProductImages(initialProduct?.id ?? 0)
+  const deleteImage = useDeleteProductImage(initialProduct?.id ?? 0)
+
   const create = useCreateAdminProduct()
   const update = useUpdateAdminProduct(initialProduct?.id ?? 0)
 
@@ -235,6 +250,23 @@ export function ProductFormDialog({
 
   const removeFile = (idx: number) => {
     setPendingFiles((prev) => prev.filter((_, i) => i !== idx))
+  }
+
+  const handleUploadNewImages = async (files: FileList) => {
+    for (const file of Array.from(files)) {
+      const fd = new FormData()
+      fd.append('image', file)
+      await uploadImages.mutateAsync(fd)
+    }
+    if (fileInputRef.current) fileInputRef.current.value = ''
+  }
+
+  const handleDeleteImage = async (imageId: number) => {
+    try {
+      await deleteImage.mutateAsync(imageId)
+    } catch (err) {
+      toast.error(extractApiError(err, t('errors.generic')))
+    }
   }
 
   const onSubmit = async (values: {
@@ -271,7 +303,7 @@ export function ProductFormDialog({
           setUploading(false)
         }
 
-        navigate(`/admin/products/${newProduct.id}`)
+        navigate(`${basePath}/products/${newProduct.id}`)
       }
     } catch (err) {
       setUploading(false)
@@ -333,46 +365,88 @@ export function ProductFormDialog({
             </label>
           </div>
 
-          {/* Image picker — only for new products */}
-          {!isEdit && (
-            <Field label={t('admin.products.images')}>
-              <div
-                className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-border p-4 text-center text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <ImagePlus className="size-6" />
-                <span>{t('admin.products.addImage')}</span>
+          {/* Images section */}
+          <Field label={t('admin.products.images')}>
+            {/* Existing images (edit mode) */}
+            {isEdit && currentImages.length > 0 && (
+              <div className="mb-2 grid grid-cols-4 gap-2">
+                {currentImages.map((img) => (
+                  <div key={img.id} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
+                    <img
+                      src={resolveMediaUrl(img.image) ?? img.image}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    {img.is_main && (
+                      <span className="absolute inset-s-1 top-1 flex size-4 items-center justify-center rounded-full bg-primary">
+                        <Star className="size-2.5 text-primary-foreground" />
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(img.id)}
+                      disabled={deleteImage.isPending}
+                      className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      {deleteImage.isPending
+                        ? <Loader2 className="size-4 text-white animate-spin" />
+                        : <Trash2 className="size-4 text-white" />
+                      }
+                    </button>
+                  </div>
+                ))}
               </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(e) => e.target.files?.length && addFiles(e.target.files)}
-              />
-              {pendingFiles.length > 0 && (
-                <div className="mt-2 grid grid-cols-4 gap-2">
-                  {pendingFiles.map((file, idx) => (
-                    <div key={idx} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt=""
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); removeFile(idx) }}
-                        className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
-                      >
-                        <X className="size-4 text-white" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </Field>
-          )}
+            )}
+
+            {/* Upload area */}
+            <div
+              className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-border p-4 text-center text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/5"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploadImages.isPending
+                ? <Loader2 className="size-5 animate-spin" />
+                : <ImagePlus className="size-6" />
+              }
+              <span>{t('admin.products.addImage')}</span>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                if (!e.target.files?.length) return
+                if (isEdit) {
+                  handleUploadNewImages(e.target.files)
+                } else {
+                  addFiles(e.target.files)
+                }
+              }}
+            />
+
+            {/* Pending files preview (create mode) */}
+            {!isEdit && pendingFiles.length > 0 && (
+              <div className="mt-2 grid grid-cols-4 gap-2">
+                {pendingFiles.map((file, idx) => (
+                  <div key={idx} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); removeFile(idx) }}
+                      className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+                    >
+                      <X className="size-4 text-white" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Field>
 
           <div className="flex gap-2 pt-1 flex-wrap">
             <Button type="submit" disabled={pending} className="flex-1">

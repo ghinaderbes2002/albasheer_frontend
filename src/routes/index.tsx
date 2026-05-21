@@ -40,8 +40,16 @@ import { AdminCategoriesPage } from '@/pages/admin/AdminCategoriesPage'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
 import { AdminProductDetailPage } from '@/pages/admin/AdminProductDetailPage'
 import { AdminBundlesPage } from '@/pages/admin/AdminBundlesPage'
+import { AdminAdsPage } from '@/pages/admin/AdminAdsPage'
+import { AdminAdDetailPage } from '@/pages/admin/AdminAdDetailPage'
 import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
+import { AdminOrderDetailPage } from '@/pages/admin/AdminOrderDetailPage'
+import { AdminPaymentMethodsPage } from '@/pages/admin/AdminPaymentMethodsPage'
 import { AdminReportsPage } from '@/pages/admin/AdminReportsPage'
+import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
+
+import { ContentManagerLayout } from '@/layouts/ContentManagerLayout'
+import { ContentDashboardPage } from '@/pages/content/ContentDashboardPage'
 
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { ForbiddenPage } from '@/pages/ForbiddenPage'
@@ -132,8 +140,37 @@ export const router = createBrowserRouter([
               { path: 'admin/products', element: <AdminProductsPage /> },
               { path: 'admin/products/:id', element: <AdminProductDetailPage /> },
               { path: 'admin/bundles', element: <AdminBundlesPage /> },
+              { path: 'admin/ads', element: <AdminAdsPage /> },
+              { path: 'admin/ads/:id', element: <AdminAdDetailPage /> },
               { path: 'admin/orders', element: <AdminOrdersPage /> },
+              { path: 'admin/orders/:id', element: <AdminOrderDetailPage /> },
+              { path: 'admin/payment-methods', element: <AdminPaymentMethodsPage /> },
               { path: 'admin/reports', element: <AdminReportsPage /> },
+              { path: 'admin/settings', element: <AdminSettingsPage /> },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  // Content manager panel
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <RoleGuard allow={['content_manager']} />,
+        children: [
+          {
+            element: <ContentManagerLayout />,
+            children: [
+              { path: 'content', element: <ContentDashboardPage /> },
+              { path: 'content/categories', element: <AdminCategoriesPage /> },
+              { path: 'content/products', element: <AdminProductsPage /> },
+              { path: 'content/products/:id', element: <AdminProductDetailPage /> },
+              { path: 'content/bundles', element: <AdminBundlesPage /> },
+              { path: 'content/ads', element: <AdminAdsPage /> },
+              { path: 'content/ads/:id', element: <AdminAdDetailPage /> },
             ],
           },
         ],

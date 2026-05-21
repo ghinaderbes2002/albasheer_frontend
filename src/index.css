@@ -126,6 +126,15 @@
     unicode-bidi: embed;
   }
 
+  /* Hide scrollbar utility */
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* LTR inputs inside RTL page must left-align text */
   input[dir='ltr'],
   textarea[dir='ltr'] {

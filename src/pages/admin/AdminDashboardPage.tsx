@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next'
 import {
-  BarChart3,
   CheckCircle2,
   Package,
   ShoppingCart,
+  Truck,
   TrendingUp,
+  Users,
   XCircle,
 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -46,16 +47,15 @@ export function AdminDashboardPage() {
           )}
           <div className="mt-4 flex gap-6 text-sm text-primary-foreground/60">
             <span>
-              {t('admin.stats.todayRevenue')}:{' '}
-              <span className="font-semibold text-primary-foreground">
-                {isLoading ? '…' : fmt(data?.today_revenue) ?? '—'}
-              </span>
-              {' '}{currency}
-            </span>
-            <span>
               {t('admin.stats.todayOrders')}:{' '}
               <span className="font-semibold text-primary-foreground">
-                {isLoading ? '…' : (data?.today_orders ?? '—')}
+                {isLoading ? '…' : (data?.orders_today ?? '—')}
+              </span>
+            </span>
+            <span>
+              {t('admin.stats.totalCustomers')}:{' '}
+              <span className="font-semibold text-primary-foreground">
+                {isLoading ? '…' : (data?.total_customers ?? '—')}
               </span>
             </span>
           </div>
@@ -73,27 +73,51 @@ export function AdminDashboardPage() {
         />
         <StatCard
           label={t('admin.stats.pendingOrders')}
-          value={data?.pending_orders}
+          value={data?.orders_by_status?.pending}
           icon={Package}
           loading={isLoading}
-          iconBg="bg-amber-50 text-amber-200 dark:bg-amber-950 dark:text-amber-100"
-          valueColor="text-amber-200 dark:text-amber-100"
+          iconBg="bg-amber-50 text-amber-500 dark:bg-amber-950 dark:text-amber-400"
+          valueColor="text-amber-500 dark:text-amber-400"
         />
         <StatCard
           label={t('admin.stats.confirmedOrders')}
-          value={data?.confirmed_orders}
+          value={data?.orders_by_status?.confirmed}
           icon={CheckCircle2}
           loading={isLoading}
           iconBg="bg-indigo-50 text-indigo-600 dark:bg-indigo-950 dark:text-indigo-400"
           valueColor="text-indigo-600 dark:text-indigo-400"
         />
         <StatCard
+          label={t('admin.stats.shippingOrders')}
+          value={data?.orders_by_status?.shipping}
+          icon={Truck}
+          loading={isLoading}
+          iconBg="bg-sky-50 text-sky-600 dark:bg-sky-950 dark:text-sky-400"
+          valueColor="text-sky-600 dark:text-sky-400"
+        />
+        <StatCard
           label={t('admin.stats.deliveredOrders')}
-          value={data?.delivered_orders}
+          value={data?.orders_by_status?.delivered}
           icon={TrendingUp}
           loading={isLoading}
           iconBg="bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"
           valueColor="text-emerald-600 dark:text-emerald-400"
+        />
+        <StatCard
+          label={t('admin.stats.totalProducts')}
+          value={data?.total_products}
+          icon={Package}
+          loading={isLoading}
+          iconBg="bg-violet-50 text-violet-600 dark:bg-violet-950 dark:text-violet-400"
+          valueColor="text-violet-600 dark:text-violet-400"
+        />
+        <StatCard
+          label={t('admin.stats.totalCustomers')}
+          value={data?.total_customers}
+          icon={Users}
+          loading={isLoading}
+          iconBg="bg-cyan-50 text-cyan-600 dark:bg-cyan-950 dark:text-cyan-400"
+          valueColor="text-cyan-600 dark:text-cyan-400"
         />
       </div>
 
@@ -108,7 +132,7 @@ export function AdminDashboardPage() {
         {isLoading ? (
           <Skeleton className="h-7 w-16" />
         ) : (
-          <span className="text-2xl font-bold text-destructive">{data?.cancelled_orders ?? '—'}</span>
+          <span className="text-2xl font-bold text-destructive">{data?.orders_by_status?.cancelled ?? '—'}</span>
         )}
       </div>
 

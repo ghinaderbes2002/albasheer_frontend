@@ -99,43 +99,35 @@ export function HomePage() {
         </div>
 
         {catLoading ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-square rounded-xl" />
+              <Skeleton key={i} className="h-28 rounded-2xl" />
             ))}
           </div>
         ) : categories && categories.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
             {categories.map((c) => {
               const icon = resolveMediaUrl(c.icon)
+              const name = pickLang(c.name, c.name_ar, i18n.language)
               return (
                 <Link
                   key={c.id}
                   to={`/products?category=${c.slug}`}
-                  className={cn(
-                    'group relative flex aspect-square flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm transition-all',
-                    'hover:-translate-y-1 hover:border-primary/60 hover:shadow-lg hover:shadow-primary/10',
-                  )}
+                  className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-2xl bg-card p-5 text-center shadow-sm ring-1 ring-border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-primary/40"
                 >
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 -z-10 bg-linear-to-br from-primary/0 via-primary/0 to-primary/0 transition-all duration-300 group-hover:from-primary/5 group-hover:to-primary/10"
-                  />
-                  <div className="flex size-14 items-center justify-center rounded-full bg-accent text-accent-foreground transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
+                  {/* Gold shimmer line at top on hover */}
+                  <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                  <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/8 transition-all duration-300 group-hover:bg-primary/15 group-hover:scale-110">
                     {icon ? (
-                      <img
-                        src={icon}
-                        alt=""
-                        className="size-8 object-contain"
-                      />
+                      <img src={icon} alt="" className="size-8 object-contain" />
                     ) : (
-                      <span className="text-xl font-bold">
-                        {pickLang(c.name, c.name_ar, i18n.language).charAt(0)}
-                      </span>
+                      <span className="text-xl font-bold text-primary">{name.charAt(0)}</span>
                     )}
                   </div>
-                  <span className="text-center text-sm font-semibold line-clamp-2">
-                    {pickLang(c.name, c.name_ar, i18n.language)}
+
+                  <span className="text-xs font-semibold leading-snug text-muted-foreground line-clamp-2 transition-colors duration-300 group-hover:text-primary">
+                    {name}
                   </span>
                 </Link>
               )

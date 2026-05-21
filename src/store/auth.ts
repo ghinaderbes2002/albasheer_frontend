@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Role, User } from '@/types/api'
+import { queryClient } from '@/lib/queryClient'
 
 interface AuthState {
   accessToken: string | null
@@ -36,13 +37,15 @@ export const useAuthStore = create<AuthState>()(
           role: user?.role ?? state.role,
         })),
       setRole: (role) => set({ role }),
-      logout: () =>
+      logout: () => {
+        queryClient.clear()
         set({
           accessToken: null,
           refreshToken: null,
           user: null,
           role: null,
-        }),
+        })
+      },
     }),
     {
       name: 'albasheer-auth',
@@ -66,5 +69,6 @@ export function defaultHomeForRole(role: Role | null): string {
   if (role === 'admin') return '/admin'
   if (role === 'branch_manager') return '/dashboard/branch'
   if (role === 'delivery') return '/dashboard/delivery'
+  if (role === 'content_manager') return '/content'
   return '/'
 }

@@ -17,7 +17,8 @@
     "arabic": "العربية",
     "english": "English",
     "currency": "ل.س",
-    "required": "هذا الحقل مطلوب"
+    "required": "هذا الحقل مطلوب",
+    "reset": "إعادة ضبط"
   },
   "nav": {
     "home": "الرئيسية",
@@ -338,6 +339,9 @@
     "sectionTitle": "طريقة الدفع",
     "sectionHint": "اختر كيف ستدفع"
   },
+  "content": {
+    "activeCount": "{{count}} نشط"
+  },
   "admin": {
     "nav": {
       "dashboard": "لوحة التحكم",
@@ -347,19 +351,24 @@
       "categories": "الفئات",
       "products": "المنتجات",
       "bundles": "الباقات",
+      "ads": "الإعلانات",
       "orders": "الطلبات",
-      "reports": "التقارير"
+      "paymentMethods": "طرق الدفع",
+      "reports": "التقارير",
+      "settings": "الإعدادات"
     },
     "stats": {
       "title": "لوحة التحكم",
       "totalOrders": "إجمالي الطلبات",
       "pendingOrders": "بانتظار التأكيد",
       "confirmedOrders": "مؤكدة",
+      "shippingOrders": "قيد التوصيل",
       "deliveredOrders": "تم التسليم",
       "cancelledOrders": "ملغاة",
       "totalRevenue": "إجمالي المبيعات",
       "todayOrders": "طلبات اليوم",
-      "todayRevenue": "مبيعات اليوم"
+      "totalCustomers": "إجمالي العملاء",
+      "totalProducts": "إجمالي المنتجات"
     },
     "users": {
       "title": "المستخدمون",
@@ -379,7 +388,14 @@
       "created": "تم إنشاء المستخدم",
       "updated": "تم تحديث المستخدم",
       "passwordReset": "تم إعادة تعيين كلمة المرور",
-      "confirmDelete": "هل أنت متأكد من حذف هذا المستخدم؟"
+      "confirmDelete": "هل أنت متأكد من حذف هذا المستخدم؟",
+      "roles": {
+        "customer": "زبون",
+        "branch_manager": "مدير فرع",
+        "delivery": "موظف توصيل",
+        "admin": "مشرف عام",
+        "content_manager": "مدير محتوى"
+      }
     },
     "branches": {
       "title": "الفروع",
@@ -415,6 +431,29 @@
       "created": "تم إنشاء المدينة",
       "updated": "تم تحديث المدينة",
       "confirmDelete": "حذف هذه المدينة؟"
+    },
+    "ads": {
+      "title": "الإعلانات",
+      "add": "إضافة إعلان",
+      "addTitle": "إضافة إعلان جديد",
+      "editTitle": "تعديل الإعلان",
+      "empty": "لا توجد إعلانات",
+      "titleLabel": "العنوان",
+      "mediaType": "نوع الملف",
+      "image": "صورة",
+      "video": "فيديو",
+      "fileLabel": "الملف",
+      "linkLabel": "رابط (اختياري)",
+      "orderLabel": "الترتيب",
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "activate": "تفعيل",
+      "deactivate": "إيقاف",
+      "deleted": "تم حذف الإعلان",
+      "created": "تم إنشاء الإعلان",
+      "updated": "تم تحديث الإعلان",
+      "replaceFile": "استبدال الملف (اختياري)",
+      "confirmDelete": "حذف هذا الإعلان؟"
     },
     "categories": {
       "title": "الفئات",
@@ -456,7 +495,15 @@
       "addImage": "إضافة صورة",
       "noImages": "لا توجد صور بعد",
       "imageUploaded": "تم رفع الصور",
-      "mainImage": "رئيسية"
+      "mainImage": "رئيسية",
+      "editSpecs": "تعديل المواصفات",
+      "addSpec": "إضافة مواصفة",
+      "noSpecs": "لا توجد مواصفات بعد",
+      "specsUpdated": "تم تحديث المواصفات",
+      "specKey": "المفتاح (إنجليزي)",
+      "specKeyAr": "المفتاح (عربي)",
+      "specValue": "القيمة (إنجليزي)",
+      "specValueAr": "القيمة (عربي)"
     },
     "bundles": {
       "title": "الباقات",
@@ -484,22 +531,82 @@
       "branch": "الفرع",
       "status": "الحالة",
       "total": "الإجمالي",
+      "date": "التاريخ",
       "cancelOrder": "إلغاء الطلب",
       "cancelNote": "ملاحظة الإلغاء (اختياري)",
-      "cancelled": "تم إلغاء الطلب"
+      "cancelled": "تم إلغاء الطلب",
+      "setShippingFee": "تعيين رسوم التوصيل",
+      "shippingFee": "رسوم التوصيل",
+      "shippingFeeUpdated": "تم تحديث رسوم التوصيل",
+      "details": "تفاصيل الطلب",
+      "deposit": "العربون",
+      "address": "عنوان التوصيل",
+      "note": "ملاحظة الزبون",
+      "estimatedDelivery": "موعد التوصيل",
+      "deliveryStaff": "موظف التوصيل",
+      "rejectionReason": "سبب الرفض",
+      "receipt": "إيصال الدفع",
+      "viewReceipt": "عرض الإيصال",
+      "items": "المنتجات",
+      "product": "المنتج",
+      "qty": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "subtotal": "المجموع",
+      "statusLog": "سجل الحالات"
     },
     "reports": {
       "title": "التقارير",
-      "salesTitle": "المبيعات",
+      "salesTitle": "تقرير المبيعات اليومية",
       "topProductsTitle": "أكثر المنتجات مبيعاً",
       "topBranchesTitle": "أفضل الفروع",
       "dateFrom": "من",
       "dateTo": "إلى",
+      "branch": "الفرع",
+      "allBranches": "جميع الفروع",
       "apply": "تطبيق",
-      "ordersCount": "الطلبات",
+      "date": "التاريخ",
+      "product": "المنتج",
+      "branchName": "الفرع",
+      "ordersCount": "عدد الطلبات",
       "revenue": "الإيرادات",
       "totalSold": "الكمية المباعة",
+      "total": "الإجمالي",
+      "rank": "#",
       "empty": "لا توجد بيانات لهذه الفترة"
+    },
+    "paymentMethods": {
+      "title": "طرق الدفع",
+      "add": "إضافة طريقة",
+      "addTitle": "إضافة طريقة دفع",
+      "editTitle": "تعديل طريقة الدفع",
+      "empty": "لا توجد طرق دفع بعد",
+      "name": "الاسم",
+      "branch": "الفرع",
+      "description": "الوصف",
+      "status": "الحالة",
+      "active": "نشطة",
+      "inactive": "غير نشطة",
+      "link": "رابط / رقم حساب",
+      "order": "الترتيب",
+      "image": "الصورة",
+      "currentImage": "الصورة الحالية",
+      "uploadImage": "رفع صورة",
+      "changeImage": "تغيير الصورة",
+      "confirmDelete": "حذف طريقة الدفع هذه؟",
+      "deleted": "تم حذف طريقة الدفع",
+      "created": "تم إضافة طريقة الدفع",
+      "updated": "تم تحديث طريقة الدفع"
+    },
+    "settings": {
+      "title": "الإعدادات",
+      "subtitle": "إعدادات الموقع العامة",
+      "general": "الإعدادات العامة",
+      "siteName": "اسم الموقع",
+      "contactPhone": "رقم التواصل",
+      "depositPercent": "نسبة الدفعة المقدمة",
+      "depositHint": "النسبة المئوية الدنيا للدفعة المقدمة عند الطلب",
+      "save": "حفظ الإعدادات",
+      "saved": "تم حفظ الإعدادات"
     }
   },
   "dashboard": {

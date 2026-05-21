@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ChevronRight, ImagePlus, Loader2, Pencil, Power, Star, Trash2 } from 'lucide-react'
+import { ChevronRight, ImagePlus, Loader2, Pencil, Plus, Power, Star, Trash2, X } from 'lucide-react'
+import { useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -10,17 +11,24 @@ import {
   useAdminProduct,
   useDeleteProductImage,
   useToggleProductAvailability,
+  useUpdateAdminProductSpecs,
   useUploadProductImages,
 } from '@/features/admin/queries'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import type { ProductSpec } from '@/types/api'
 import { ProductFormDialog } from './AdminProductsPage'
 
 export function AdminProductDetailPage() {
   const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
+  const basePath = location.pathname.startsWith('/content') ? '/content' : '/admin'
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [showEdit, setShowEdit] = useState(false)
+  const [showSpecsEdit, setShowSpecsEdit] = useState(false)
 
   const { data: product, isLoading } = useAdminProduct(id)
   const uploadImages = useUploadProductImages(id ?? '')
@@ -85,7 +93,7 @@ export function AdminProductDetailPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Header */}
       <div className="flex items-center gap-3 flex-wrap">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/admin/products')}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(`${basePath}/products`)}>
           <ChevronRight className="size-5" />
         </Button>
         <h1 className="text-2xl font-bold truncate">{product.name_ar}</h1>
@@ -166,11 +174,15 @@ export function AdminProductDetailPage() {
       </div>
 
       {/* Specs */}
-      {product.specs?.length > 0 && (
-        <div className="overflow-hidden rounded-2xl border border-border">
-          <div className="bg-muted/40 px-4 py-3">
-            <h2 className="font-semibold">{t('catalog.specs')}</h2>
-          </div>
+      <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="flex items-center justify-between bg-muted/40 px-4 py-3">
+          <h2 className="font-semibold">{t('catalog.specs')}</h2>
+          <Button size="sm" variant="outline" onClick={() => setShowSpecsEdit(true)}>
+            <Pencil className="size-3.5" />
+            {t('admin.products.editSpecs')}
+          </Button>
+        </div>
+        {product.specs?.length > 0 ? (
           <div className="divide-y divide-border">
             {product.specs.map((s) => (
               <div key={s.id} className="flex items-center gap-4 px-4 py-2.5 text-sm">
@@ -179,8 +191,10 @@ export function AdminProductDetailPage() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <p className="px-4 py-6 text-center text-sm text-muted-foreground">{t('admin.products.noSpecs')}</p>
+        )}
+      </div>
 
       {/* Images */}
       <div className="space-y-3">
@@ -250,6 +264,96 @@ export function AdminProductDetailPage() {
           onClose={() => setShowEdit(false)}
         />
       )}
+
+      {showSpecsEdit && (
+        <SpecsEditorDialog
+          productId={id!}
+          specs={product.specs ?? []}
+          onClose={() => setShowSpecsEdit(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+function SpecsEditorDialog({
+  productId,
+  specs,
+  onClose,
+}: {
+  productId: string
+  specs: ProductSpec[]
+  onClose: () => void
+}) {
+  const { t } = useTranslation()
+  const [rows, setRows] = useState(
+    specs.map((s) => ({ key: s.key, key_ar: s.key_ar, value: s.value, value_ar: s.value_ar })),
+  )
+  const update = useUpdateAdminProductSpecs(productId)
+
+  const addRow = () => setRows((r) => [...r, { key: '', key_ar: '', value: '', value_ar: '' }])
+  const removeRow = (i: number) => setRows((r) => r.filter((_, idx) => idx !== i))
+  const setField = (i: number, field: string, val: string) =>
+    setRows((r) => r.map((row, idx) => (idx === i ? { ...row, [field]: val } : row)))
+
+  const handleSave = async () => {
+    try {
+      await update.mutateAsync(rows)
+      toast.success(t('admin.products.specsUpdated'))
+      onClose()
+    } catch (err) {
+      toast.error(extractApiError(err, t('errors.generic')))
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-2xl rounded-2xl bg-background p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t('admin.products.editSpecs')}</h2>
+          <Button variant="ghost" size="icon" onClick={onClose} disabled={update.isPending}>
+            <X className="size-4" />
+          </Button>
+        </div>
+
+        <div className="space-y-2">
+          {rows.length > 0 && (
+            <div className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground px-1">
+              <Label className="text-xs text-muted-foreground">{t('admin.products.specKeyAr')}</Label>
+              <Label className="text-xs text-muted-foreground">{t('admin.products.specValueAr')}</Label>
+              <Label className="text-xs text-muted-foreground" dir="ltr">{t('admin.products.specKey')}</Label>
+              <Label className="text-xs text-muted-foreground" dir="ltr">{t('admin.products.specValue')}</Label>
+              <span />
+            </div>
+          )}
+          {rows.map((row, i) => (
+            <div key={i} className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-2 items-center">
+              <Input value={row.key_ar} onChange={(e) => setField(i, 'key_ar', e.target.value)} placeholder="مثال: اللون" />
+              <Input value={row.value_ar} onChange={(e) => setField(i, 'value_ar', e.target.value)} placeholder="مثال: أبيض" />
+              <Input value={row.key} onChange={(e) => setField(i, 'key', e.target.value)} dir="ltr" placeholder="Color" />
+              <Input value={row.value} onChange={(e) => setField(i, 'value', e.target.value)} dir="ltr" placeholder="White" />
+              <Button type="button" variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 shrink-0" onClick={() => removeRow(i)}>
+                <Trash2 className="size-4" />
+              </Button>
+            </div>
+          ))}
+
+          <Button type="button" variant="outline" size="sm" onClick={addRow} className="w-full mt-1">
+            <Plus className="size-4" />
+            {t('admin.products.addSpec')}
+          </Button>
+        </div>
+
+        <div className="flex gap-2 pt-1">
+          <Button onClick={handleSave} disabled={update.isPending} className="flex-1">
+            {update.isPending && <Loader2 className="size-4 animate-spin" />}
+            {t('common.save')}
+          </Button>
+          <Button variant="outline" onClick={onClose} disabled={update.isPending}>
+            {t('common.cancel')}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }

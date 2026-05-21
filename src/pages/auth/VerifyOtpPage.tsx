@@ -43,7 +43,10 @@ export function VerifyOtpPage() {
             phone={phone}
             onSuccess={(data) => {
               if (data.is_new) {
-                navigate('/complete-profile', { replace: true })
+                navigate('/complete-profile', {
+                  replace: true,
+                  state: location.state,
+                })
                 return
               }
               // Role-based redirect: staff goes straight to their dashboard.

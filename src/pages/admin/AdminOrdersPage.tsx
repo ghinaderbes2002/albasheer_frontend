@@ -1,36 +1,34 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Inbox, Loader2 } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { Inbox } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { useAdminOrders, useCancelAdminOrder } from '@/features/admin/queries'
-import { extractApiError } from '@/lib/api'
-import type { AdminOrder, OrderStatus } from '@/types/api'
+import { useAdminBranches, useAdminOrders } from '@/features/admin/queries'
+import type { OrderStatus } from '@/types/api'
 
-const STATUS_FILTERS: Array<{ value: OrderStatus | ''; label: string }> = [
-  { value: '', label: 'all' },
-  { value: 'pending', label: 'pending' },
-  { value: 'confirmed', label: 'confirmed' },
-  { value: 'preparing', label: 'preparing' },
-  { value: 'shipping', label: 'shipping' },
-  { value: 'delivered', label: 'delivered' },
-  { value: 'cancelled', label: 'cancelled' },
-]
+const STATUSES: Array<OrderStatus | ''> = ['', 'pending', 'confirmed', 'preparing', 'shipping', 'delivered', 'cancelled']
 
 export function AdminOrdersPage() {
   const { t } = useTranslation()
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | ''>('')
-  const [search, setSearch] = useState('')
-  const [cancelOrder, setCancelOrder] = useState<AdminOrder | null>(null)
+  const navigate = useNavigate()
+  const today = new Date().toISOString().split('T')[0]
 
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | ''>('')
+  const [branchFilter, setBranchFilter] = useState('')
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
+
+  const { data: branches } = useAdminBranches()
   const { data, isLoading } = useAdminOrders({
     status: statusFilter || undefined,
+    branch: branchFilter || undefined,
     search: search || undefined,
+    date_from: dateFrom || undefined,
+    date_to: dateTo || undefined,
   })
 
   return (
@@ -39,26 +37,71 @@ export function AdminOrdersPage() {
         <h1 className="text-2xl font-bold">{t('admin.orders.title')}</h1>
       </header>
 
-      <div className="flex flex-wrap gap-3">
-        <Input
-          className="w-full sm:w-64"
-          placeholder={t('common.search')}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* Filters */}
+      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
+        <div className="w-full sm:w-56">
+          <Input
+            placeholder={t('common.search')}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as OrderStatus | '')}
           className="flex h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {STATUS_FILTERS.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.value ? t(`status.${s.value}`) : t('common.all')}
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s ? t(`status.${s}`) : t('common.all')}
             </option>
           ))}
         </select>
+
+        {branches && branches.length > 0 && (
+          <select
+            value={branchFilter}
+            onChange={(e) => setBranchFilter(e.target.value)}
+            className="flex h-10 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <option value="">{t('admin.reports.allBranches')}</option>
+            {branches.map((b) => (
+              <option key={b.id} value={b.id}>{b.name_ar || b.name}</option>
+            ))}
+          </select>
+        )}
+
+        <div className="flex items-center gap-2">
+          <Input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className="w-36"
+            max={today}
+          />
+          <span className="text-muted-foreground text-sm">—</span>
+          <Input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className="w-36"
+            max={today}
+          />
+        </div>
+
+        {(search || statusFilter || branchFilter || dateFrom || dateTo) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => { setSearch(''); setStatusFilter(''); setBranchFilter(''); setDateFrom(''); setDateTo('') }}
+          >
+            {t('common.reset')}
+          </Button>
+        )}
       </div>
 
+      {/* Table */}
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -66,7 +109,7 @@ export function AdminOrdersPage() {
           ))}
         </div>
       ) : !data?.length ? (
-        <EmptyState message={statusFilter ? t('admin.orders.emptyForFilter') : t('admin.orders.empty')} />
+        <EmptyState message={t('admin.orders.empty')} />
       ) : (
         <div className="rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">
@@ -77,37 +120,29 @@ export function AdminOrdersPage() {
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.orders.branch')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.orders.status')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.orders.total')}</th>
-                <th className="px-4 py-3 text-end"></th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden lg:table-cell">{t('admin.orders.date')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {data.map((o) => (
-                <tr key={o.id} className="hover:bg-muted/30 transition-colors">
+                <tr
+                  key={o.id}
+                  className="hover:bg-muted/30 transition-colors cursor-pointer"
+                  onClick={() => navigate(`/admin/orders/${o.id}`)}
+                >
                   <td className="px-4 py-3 text-muted-foreground font-mono" dir="ltr">#{o.id}</td>
-                  <td className="px-4 py-3">
-                    <p className="font-medium">{o.customer_name || t('dashboard.branch.unnamedCustomer')}</p>
-                    <p className="text-xs text-muted-foreground" dir="ltr">{o.customer_phone}</p>
-                  </td>
+                  <td className="px-4 py-3 font-medium" dir="ltr">{o.customer_phone}</td>
                   <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">{o.branch_name}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(o.status)}`}>
                       {t(`status.${o.status}`)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 hidden md:table-cell" dir="ltr">
+                  <td className="px-4 py-3 hidden md:table-cell tabular-nums" dir="ltr">
                     {Number(o.total_price).toLocaleString()} {t('common.currency')}
                   </td>
-                  <td className="px-4 py-3 text-end">
-                    {(o.status === 'pending' || o.status === 'confirmed') && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:bg-destructive/10"
-                        onClick={() => setCancelOrder(o)}
-                      >
-                        {t('orders.cancel.button')}
-                      </Button>
-                    )}
+                  <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground font-mono text-xs" dir="ltr">
+                    {o.created_at.slice(0, 10)}
                   </td>
                 </tr>
               ))}
@@ -115,67 +150,11 @@ export function AdminOrdersPage() {
           </table>
         </div>
       )}
-
-      {cancelOrder && (
-        <CancelDialog
-          order={cancelOrder}
-          onClose={() => setCancelOrder(null)}
-        />
-      )}
     </div>
   )
 }
 
-function CancelDialog({ order, onClose }: { order: AdminOrder; onClose: () => void }) {
-  const { t } = useTranslation()
-  const [note, setNote] = useState('')
-  const cancel = useCancelAdminOrder(order.id)
-
-  const handleSubmit = async () => {
-    try {
-      await cancel.mutateAsync(note || undefined)
-      toast.success(t('admin.orders.cancelled'))
-      onClose()
-    } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
-    }
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl space-y-4">
-        <h2 className="text-lg font-semibold">{t('admin.orders.cancelOrder')}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t('orders.orderNumber', { id: order.id })} — {order.customer_name}
-        </p>
-        <div className="space-y-1">
-          <Label className="text-sm text-muted-foreground">{t('admin.orders.cancelNote')}</Label>
-          <Textarea
-            rows={3}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="destructive"
-            className="flex-1"
-            onClick={handleSubmit}
-            disabled={cancel.isPending}
-          >
-            {cancel.isPending && <Loader2 className="animate-spin size-4" />}
-            {t('orders.cancel.yes')}
-          </Button>
-          <Button variant="outline" onClick={onClose} disabled={cancel.isPending}>
-            {t('common.cancel')}
-          </Button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function statusColor(status: OrderStatus) {
+export function statusColor(status: OrderStatus) {
   const map: Record<OrderStatus, string> = {
     pending: 'bg-amber-100 text-amber-700',
     confirmed: 'bg-blue-100 text-blue-700',

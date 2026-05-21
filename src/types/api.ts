@@ -3,7 +3,7 @@
  * Source of truth: FRONTEND_API_GUIDE.md
  */
 
-export type Role = 'customer' | 'branch_manager' | 'delivery' | 'admin'
+export type Role = 'customer' | 'branch_manager' | 'delivery' | 'admin' | 'content_manager'
 
 export type OrderStatus =
   | 'pending'
@@ -312,6 +312,18 @@ export interface PaymentMethodPayload {
   order?: number
 }
 
+export interface AdminPaymentMethod {
+  id: number
+  branch: number
+  branch_name: string
+  name_ar: string
+  description_ar: string
+  image: string | null
+  link: string
+  is_active: boolean
+  order: number
+}
+
 // ─── Admin ────────────────────────────────────────────────────────────
 export interface AdminUser {
   id: number
@@ -398,42 +410,53 @@ export interface AdminOrder {
   status: OrderStatus
   status_display: string
   customer_phone: string
-  customer_name: string
   branch_name: string
   total_price: string
   deposit_amount: string
-  shipping_fee: string
-  delivery_address: string
   created_at: string
 }
 
 export interface AdminStats {
   total_orders: number
-  pending_orders: number
-  confirmed_orders: number
-  delivered_orders: number
-  cancelled_orders: number
-  total_revenue: string
-  today_orders: number
-  today_revenue: string
+  total_revenue: number
+  orders_today: number
+  total_customers: number
+  total_products: number
+  orders_by_status: {
+    pending: number
+    confirmed: number
+    shipping: number
+    delivered: number
+    cancelled: number
+  }
 }
 
 export interface SalesReportEntry {
   date: string
-  orders_count: number
-  revenue: string
+  orders: number
+  revenue: string | number
+}
+
+export interface SalesReportResponse {
+  total_orders: number
+  total_revenue: string | number
+  delivered_orders: number
+  cancelled_orders: number
+  daily_breakdown: SalesReportEntry[]
 }
 
 export interface TopProductEntry {
-  product_name: string
+  product_id: number
+  name_ar: string
   total_sold: number
-  revenue: string
+  total_revenue: string | number
 }
 
 export interface TopBranchEntry {
-  branch_name: string
+  branch_id: number
+  name_ar: string
   total_orders: number
-  revenue: string
+  total_revenue: string | number
 }
 
 // ─── Ads ──────────────────────────────────────────────────────────────
@@ -448,6 +471,29 @@ export interface Ad {
   /** Optional click target. Empty string means non-clickable. */
   link: string
   order: number
+}
+
+export interface AdminAd extends Ad {
+  is_active: boolean
+}
+
+// ─── Site Settings ────────────────────────────────────────────────────
+export interface SiteSettings {
+  site_name: string
+  contact_phone: string
+  min_deposit_percent: number
+}
+
+// ─── Content Stats ────────────────────────────────────────────────────
+export interface ContentStats {
+  total_categories: number
+  total_products: number
+  total_bundles: number
+  total_ads: number
+  active_categories: number
+  active_products: number
+  active_bundles: number
+  active_ads: number
 }
 
 // ─── Pagination ───────────────────────────────────────────────────────

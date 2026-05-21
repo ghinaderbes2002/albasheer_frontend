@@ -1,12 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
+  getContentStats,
   cancelAdminOrder,
+  setAdminOrderShippingFee,
+  getAdminPaymentMethods,
+  createAdminPaymentMethod,
+  updateAdminPaymentMethod,
+  deleteAdminPaymentMethod,
+  createAdminAd,
+  getAdminAd,
+  getSiteSettings,
+  updateSiteSettings,
   createAdminBranch,
   createAdminBundle,
   createAdminCategory,
   createAdminCity,
   createAdminProduct,
   createAdminUser,
+  deleteAdminAd,
   deleteAdminBranch,
   deleteAdminBundle,
   deleteAdminCategory,
@@ -14,6 +25,8 @@ import {
   deleteAdminProduct,
   deleteAdminUser,
   deleteProductImage,
+  updateAdminProductSpecs,
+  getAdminAds,
   getAdminBranches,
   getAdminBundles,
   getAdminCategories,
@@ -28,8 +41,10 @@ import {
   getTopBranchesReport,
   getTopProductsReport,
   resetUserPassword,
+  toggleAdActive,
   toggleBundleAvailability,
   toggleProductAvailability,
+  updateAdminAd,
   updateAdminBranch,
   updateAdminBundle,
   updateAdminCategory,
@@ -38,11 +53,14 @@ import {
   updateAdminUser,
   uploadProductImages,
 } from '@/api/admin'
-import type { CreateUserPayload, OrderStatus } from '@/types/api'
+import type { AdminAd, CreateUserPayload, OrderStatus } from '@/types/api'
 
 export const adminKeys = {
   all: ['admin'] as const,
   stats: () => [...adminKeys.all, 'stats'] as const,
+  ads: () => [...adminKeys.all, 'ads'] as const,
+  ad: (id: number | string) => [...adminKeys.all, 'ad', id] as const,
+  settings: () => [...adminKeys.all, 'settings'] as const,
   users: (params?: object) => [...adminKeys.all, 'users', params ?? {}] as const,
   user: (id: number | string) => [...adminKeys.all, 'user', id] as const,
   branches: () => [...adminKeys.all, 'branches'] as const,
@@ -51,6 +69,7 @@ export const adminKeys = {
   products: (params?: object) => [...adminKeys.all, 'products', params ?? {}] as const,
   product: (id: number | string) => [...adminKeys.all, 'product', id] as const,
   bundles: () => [...adminKeys.all, 'bundles'] as const,
+  paymentMethods: () => [...adminKeys.all, 'paymentMethods'] as const,
   orders: (params?: object) => [...adminKeys.all, 'orders', params ?? {}] as const,
   order: (id: number | string) => [...adminKeys.all, 'order', id] as const,
   salesReport: (params?: object) => [...adminKeys.all, 'reports', 'sales', params ?? {}] as const,
@@ -281,6 +300,15 @@ export function useUploadProductImages(id: number | string) {
   })
 }
 
+export function useUpdateAdminProductSpecs(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (specs: Array<{ key: string; key_ar: string; value: string; value_ar: string }>) =>
+      updateAdminProductSpecs(id, specs),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.product(id) }),
+  })
+}
+
 export function useDeleteProductImage(productId: number | string) {
   const qc = useQueryClient()
   return useMutation({
@@ -366,6 +394,124 @@ export function useCancelAdminOrder(id: number | string) {
       qc.invalidateQueries({ queryKey: adminKeys.orders() })
       qc.invalidateQueries({ queryKey: adminKeys.order(id) })
     },
+  })
+}
+
+export function useSetAdminOrderShippingFee(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (shippingFee: number) => setAdminOrderShippingFee(id, shippingFee),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.order(id) }),
+  })
+}
+
+// ─── Ads ──────────────────────────────────────────────────────────────
+export function useAdminAds() {
+  return useQuery({
+    queryKey: adminKeys.ads(),
+    queryFn: getAdminAds,
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useAdminAd(id: number | string | undefined) {
+  return useQuery({
+    queryKey: adminKeys.ad(id ?? ''),
+    queryFn: () => getAdminAd(id as string),
+    enabled: !!id,
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useCreateAdminAd() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: FormData) => createAdminAd(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.ads() }),
+  })
+}
+
+export function useUpdateAdminAd(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: Partial<Omit<AdminAd, 'id' | 'file'>> | FormData) => updateAdminAd(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.ads() }),
+  })
+}
+
+export function useDeleteAdminAd() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => deleteAdminAd(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.ads() }),
+  })
+}
+
+export function useToggleAdActive(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => toggleAdActive(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.ads() }),
+  })
+}
+
+// ─── Site Settings ────────────────────────────────────────────────────
+export function useSiteSettings() {
+  return useQuery({
+    queryKey: adminKeys.settings(),
+    queryFn: getSiteSettings,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useUpdateSiteSettings() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof updateSiteSettings>[0]) => updateSiteSettings(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.settings() }),
+  })
+}
+
+// ─── Payment Methods ──────────────────────────────────────────────────
+export function useAdminPaymentMethods() {
+  return useQuery({
+    queryKey: adminKeys.paymentMethods(),
+    queryFn: getAdminPaymentMethods,
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useCreateAdminPaymentMethod() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: FormData) => createAdminPaymentMethod(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.paymentMethods() }),
+  })
+}
+
+export function useUpdateAdminPaymentMethod(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: Parameters<typeof updateAdminPaymentMethod>[1]) =>
+      updateAdminPaymentMethod(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.paymentMethods() }),
+  })
+}
+
+export function useDeleteAdminPaymentMethod() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => deleteAdminPaymentMethod(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.paymentMethods() }),
+  })
+}
+
+// ─── Content Stats ────────────────────────────────────────────────────
+export function useContentStats() {
+  return useQuery({
+    queryKey: [...adminKeys.all, 'content-stats'] as const,
+    queryFn: getContentStats,
+    staleTime: 60 * 1000,
   })
 }
 
