@@ -92,12 +92,24 @@ export interface ProductListItem {
   main_image: string | null
 }
 
+export interface PublicProductVariant {
+  id: number
+  type: string
+  option_value: string
+  effective_price: string
+  stock: number
+  is_available: boolean
+  images: ProductImage[]
+}
+
 export interface ProductDetail extends ProductListItem {
   description: string
   description_ar: string
   images: ProductImage[]
   specs: ProductSpec[]
   is_available: boolean
+  variants?: PublicProductVariant[]
+  related_products?: ProductListItem[]
 }
 
 // ─── Bundles ──────────────────────────────────────────────────────────

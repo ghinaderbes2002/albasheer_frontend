@@ -4,7 +4,6 @@ import type {
   PaginatedResponse,
   ProductDetail,
   ProductListItem,
-  ProductVariant,
 } from '@/types/api'
 
 export interface ProductListParams {
@@ -56,16 +55,3 @@ export async function getProduct(slug: string): Promise<ProductDetail> {
   return data
 }
 
-export async function getProductVariants(slug: string): Promise<ProductVariant[]> {
-  const { data } = await api.get<ProductVariant[] | PaginatedResponse<ProductVariant>>(
-    `/api/products/${slug}/variants/`,
-  )
-  return Array.isArray(data) ? data : data.results
-}
-
-export async function getProductRelated(slug: string): Promise<ProductListItem[]> {
-  const { data } = await api.get<ProductListItem[] | PaginatedResponse<ProductListItem>>(
-    `/api/products/${slug}/related/`,
-  )
-  return Array.isArray(data) ? data : data.results
-}

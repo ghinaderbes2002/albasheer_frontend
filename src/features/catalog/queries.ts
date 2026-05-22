@@ -3,8 +3,6 @@ import {
   getCategories,
   getProduct,
   getProducts,
-  getProductVariants,
-  getProductRelated,
   type ProductListParams,
 } from '@/api/products'
 
@@ -15,10 +13,6 @@ export const catalogKeys = {
     [...catalogKeys.all, 'products', params] as const,
   product: (slug: string) =>
     [...catalogKeys.all, 'product', slug] as const,
-  productVariants: (slug: string) =>
-    [...catalogKeys.all, 'product', slug, 'variants'] as const,
-  productRelated: (slug: string) =>
-    [...catalogKeys.all, 'product', slug, 'related'] as const,
 }
 
 export function useCategories() {
@@ -47,20 +41,3 @@ export function useProduct(slug: string | undefined) {
   })
 }
 
-export function useProductVariants(slug: string | undefined) {
-  return useQuery({
-    queryKey: catalogKeys.productVariants(slug ?? ''),
-    queryFn: () => getProductVariants(slug as string),
-    enabled: !!slug,
-    staleTime: 60 * 1000,
-  })
-}
-
-export function useProductRelated(slug: string | undefined) {
-  return useQuery({
-    queryKey: catalogKeys.productRelated(slug ?? ''),
-    queryFn: () => getProductRelated(slug as string),
-    enabled: !!slug,
-    staleTime: 60 * 1000,
-  })
-}
