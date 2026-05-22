@@ -18,7 +18,8 @@
     "english": "English",
     "currency": "SYP",
     "required": "This field is required",
-    "reset": "Reset"
+    "reset": "Reset",
+    "confirmDelete": "Are you sure you want to delete?"
   },
   "nav": {
     "home": "Home",
@@ -131,7 +132,8 @@
     "addToCart": "Add to cart",
     "addedToCart": "Added to cart",
     "outOfStock": "Out of stock",
-    "view": "View"
+    "view": "View",
+    "relatedProducts": "Related Products"
   },
   "branches": {
     "subtitle": "Visit your nearest branch — every store offers the same quality service",
@@ -351,6 +353,7 @@
       "ads": "Ads",
       "orders": "Orders",
       "paymentMethods": "Payment Methods",
+      "variantTypes": "Variant Types",
       "reports": "Reports",
       "settings": "Settings"
     },
@@ -604,6 +607,45 @@
       "depositHint": "Minimum deposit percentage required on order creation",
       "save": "Save settings",
       "saved": "Settings saved"
+    },
+    "variants": {
+      "title": "Variant Types",
+      "addType": "Add Type",
+      "editType": "Edit Type",
+      "typeCreated": "Type added",
+      "typeUpdated": "Type updated",
+      "typeDeleted": "Type deleted",
+      "emptyTypes": "No variant types yet",
+      "options": "Options",
+      "addOption": "Add Option",
+      "editOption": "Edit Option",
+      "optionCreated": "Option added",
+      "optionUpdated": "Option updated",
+      "optionDeleted": "Option deleted",
+      "emptyOptions": "No options yet",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "valueAr": "Value (Arabic)",
+      "valueEn": "Value (English)",
+      "productVariants": "Product Variants",
+      "addVariant": "Add Variant",
+      "editVariant": "Edit Variant",
+      "noVariants": "No variants for this product",
+      "variantCreated": "Variant added",
+      "variantUpdated": "Variant updated",
+      "variantDeleted": "Variant deleted",
+      "stock": "Stock",
+      "variantType": "Variant Type",
+      "option": "Option",
+      "selectOption": "Please select an option",
+      "variantImage": "Variant Image",
+      "uploadImage": "Upload Image",
+      "relatedProducts": "Related Products",
+      "addRelated": "Add Related Product",
+      "noRelated": "No related products",
+      "relatedAdded": "Related product added",
+      "relatedRemoved": "Related product removed",
+      "noProducts": "No results found"
     }
   },
   "dashboard": {

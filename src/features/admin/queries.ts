@@ -52,6 +52,23 @@ import {
   updateAdminProduct,
   updateAdminUser,
   uploadProductImages,
+  getAdminVariantTypes,
+  createAdminVariantType,
+  updateAdminVariantType,
+  deleteAdminVariantType,
+  getAdminVariantOptions,
+  createAdminVariantOption,
+  updateAdminVariantOption,
+  deleteAdminVariantOption,
+  getProductVariants,
+  addProductVariant,
+  updateProductVariant,
+  deleteProductVariant,
+  uploadVariantImage,
+  deleteVariantImage,
+  getRelatedProducts,
+  addRelatedProduct,
+  removeRelatedProduct,
 } from '@/api/admin'
 import type { AdminAd, CreateUserPayload, OrderStatus } from '@/types/api'
 
@@ -75,6 +92,10 @@ export const adminKeys = {
   salesReport: (params?: object) => [...adminKeys.all, 'reports', 'sales', params ?? {}] as const,
   topProducts: (params?: object) => [...adminKeys.all, 'reports', 'top-products', params ?? {}] as const,
   topBranches: (params?: object) => [...adminKeys.all, 'reports', 'top-branches', params ?? {}] as const,
+  variantTypes: () => [...adminKeys.all, 'variantTypes'] as const,
+  variantOptions: (typeId: number | string) => [...adminKeys.all, 'variantOptions', typeId] as const,
+  productVariants: (productId: number | string) => [...adminKeys.all, 'productVariants', productId] as const,
+  relatedProducts: (productId: number | string) => [...adminKeys.all, 'relatedProducts', productId] as const,
 }
 
 // ─── Stats ────────────────────────────────────────────────────────────
@@ -512,6 +533,155 @@ export function useContentStats() {
     queryKey: [...adminKeys.all, 'content-stats'] as const,
     queryFn: getContentStats,
     staleTime: 60 * 1000,
+  })
+}
+
+// ─── Variant Types ────────────────────────────────────────────────────
+export function useAdminVariantTypes() {
+  return useQuery({
+    queryKey: adminKeys.variantTypes(),
+    queryFn: getAdminVariantTypes,
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useCreateAdminVariantType() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { name: string; name_ar: string }) => createAdminVariantType(payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.variantTypes() }),
+  })
+}
+
+export function useUpdateAdminVariantType(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: Partial<{ name: string; name_ar: string }>) =>
+      updateAdminVariantType(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.variantTypes() }),
+  })
+}
+
+export function useDeleteAdminVariantType() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => deleteAdminVariantType(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.variantTypes() }),
+  })
+}
+
+// ─── Variant Options ──────────────────────────────────────────────────
+export function useAdminVariantOptions(typeId: number | string | undefined) {
+  return useQuery({
+    queryKey: adminKeys.variantOptions(typeId ?? ''),
+    queryFn: () => getAdminVariantOptions(typeId as string),
+    enabled: !!typeId,
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useCreateAdminVariantOption(typeId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { value: string; value_ar: string }) =>
+      createAdminVariantOption(typeId, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.variantOptions(typeId) }),
+  })
+}
+
+export function useUpdateAdminVariantOption(typeId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number | string; payload: Partial<{ value: string; value_ar: string }> }) =>
+      updateAdminVariantOption(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.variantOptions(typeId) }),
+  })
+}
+
+export function useDeleteAdminVariantOption(typeId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number | string) => deleteAdminVariantOption(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.variantOptions(typeId) }),
+  })
+}
+
+// ─── Product Variants ─────────────────────────────────────────────────
+export function useProductVariants(productId: number | string | undefined) {
+  return useQuery({
+    queryKey: adminKeys.productVariants(productId ?? ''),
+    queryFn: () => getProductVariants(productId as string),
+    enabled: !!productId,
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useAddProductVariant(productId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { option_id: number; price: number | string; stock: number; is_available: boolean }) =>
+      addProductVariant(productId, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.productVariants(productId) }),
+  })
+}
+
+export function useUpdateProductVariant(productId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number | string; payload: Partial<{ price: number | string; stock: number; is_available: boolean }> }) =>
+      updateProductVariant(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.productVariants(productId) }),
+  })
+}
+
+export function useDeleteProductVariant(productId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (variantId: number | string) => deleteProductVariant(variantId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.productVariants(productId) }),
+  })
+}
+
+export function useUploadVariantImage(productId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ variantId, formData }: { variantId: number | string; formData: FormData }) =>
+      uploadVariantImage(variantId, formData),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.productVariants(productId) }),
+  })
+}
+
+export function useDeleteVariantImage(productId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (imageId: number | string) => deleteVariantImage(imageId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.productVariants(productId) }),
+  })
+}
+
+// ─── Related Products ─────────────────────────────────────────────────
+export function useRelatedProducts(productId: number | string | undefined) {
+  return useQuery({
+    queryKey: adminKeys.relatedProducts(productId ?? ''),
+    queryFn: () => getRelatedProducts(productId as string),
+    enabled: !!productId,
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useAddRelatedProduct(productId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (relatedProductId: number) => addRelatedProduct(productId, relatedProductId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.relatedProducts(productId) }),
+  })
+}
+
+export function useRemoveRelatedProduct(productId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (relatedId: number | string) => removeRelatedProduct(productId, relatedId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.relatedProducts(productId) }),
   })
 }
 

@@ -82,3 +82,21 @@ export async function rateOrder(
 ): Promise<void> {
   await api.post(`/api/orders/${orderId}/rate/`, payload)
 }
+
+export interface OrderRating {
+  id: number
+  rating: number
+  comment: string
+  created_at: string
+}
+
+export async function getOrderRating(
+  orderId: number | string,
+): Promise<OrderRating | null> {
+  try {
+    const { data } = await api.get<OrderRating>(`/api/orders/${orderId}/rate/`)
+    return data
+  } catch {
+    return null
+  }
+}

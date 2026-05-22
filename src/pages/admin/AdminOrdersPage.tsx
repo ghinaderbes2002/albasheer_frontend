@@ -139,7 +139,7 @@ export function AdminOrdersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell tabular-nums" dir="ltr">
-                    {Number(o.total_price).toLocaleString()} {t('common.currency')}
+                    {Number(o.total_price).toLocaleString('en-US')} {t('common.currency')}
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground font-mono text-xs" dir="ltr">
                     {o.created_at.slice(0, 10)}

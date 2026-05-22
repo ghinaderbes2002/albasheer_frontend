@@ -9,6 +9,7 @@ import {
   getMyOrders,
   getOrder,
   getOrderTracking,
+  getOrderRating,
   rateOrder,
   updateOrderStatus,
   uploadReceipt,
@@ -100,13 +101,22 @@ export function useCancelOrder(orderId: number | string) {
   })
 }
 
+export function useOrderRating(orderId: number | string | undefined) {
+  return useQuery({
+    queryKey: [...orderKeys.detail(orderId ?? ''), 'rating'],
+    queryFn: () => getOrderRating(orderId as number | string),
+    enabled: orderId !== undefined && orderId !== '',
+    staleTime: 60 * 1000,
+  })
+}
+
 export function useRateOrder(orderId: number | string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (payload: { rating: number; comment?: string }) =>
       rateOrder(orderId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: orderKeys.detail(orderId) })
+      queryClient.invalidateQueries({ queryKey: [...orderKeys.detail(orderId), 'rating'] })
     },
   })
 }

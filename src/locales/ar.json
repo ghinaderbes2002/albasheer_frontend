@@ -18,7 +18,8 @@
     "english": "English",
     "currency": "ل.س",
     "required": "هذا الحقل مطلوب",
-    "reset": "إعادة ضبط"
+    "reset": "إعادة ضبط",
+    "confirmDelete": "هل أنت متأكد من الحذف؟"
   },
   "nav": {
     "home": "الرئيسية",
@@ -131,7 +132,8 @@
     "addToCart": "أضف إلى السلة",
     "addedToCart": "تمت الإضافة إلى السلة",
     "outOfStock": "غير متوفر",
-    "view": "عرض"
+    "view": "عرض",
+    "relatedProducts": "منتجات مشابهة"
   },
   "branches": {
     "subtitle": "زورنا في أقرب فرع — كل فروعنا تخدمك بنفس الجودة",
@@ -354,6 +356,7 @@
       "ads": "الإعلانات",
       "orders": "الطلبات",
       "paymentMethods": "طرق الدفع",
+      "variantTypes": "أنواع المتغيرات",
       "reports": "التقارير",
       "settings": "الإعدادات"
     },
@@ -596,6 +599,45 @@
       "deleted": "تم حذف طريقة الدفع",
       "created": "تم إضافة طريقة الدفع",
       "updated": "تم تحديث طريقة الدفع"
+    },
+    "variants": {
+      "title": "أنواع المتغيرات",
+      "addType": "إضافة نوع",
+      "editType": "تعديل النوع",
+      "typeCreated": "تم إضافة النوع",
+      "typeUpdated": "تم تحديث النوع",
+      "typeDeleted": "تم حذف النوع",
+      "emptyTypes": "لا توجد أنواع متغيرات بعد",
+      "options": "الخيارات",
+      "addOption": "إضافة خيار",
+      "editOption": "تعديل الخيار",
+      "optionCreated": "تم إضافة الخيار",
+      "optionUpdated": "تم تحديث الخيار",
+      "optionDeleted": "تم حذف الخيار",
+      "emptyOptions": "لا توجد خيارات بعد",
+      "nameAr": "الاسم بالعربي",
+      "nameEn": "الاسم بالإنجليزي",
+      "valueAr": "القيمة بالعربي",
+      "valueEn": "القيمة بالإنجليزي",
+      "productVariants": "متغيرات المنتج",
+      "addVariant": "إضافة متغير",
+      "editVariant": "تعديل المتغير",
+      "noVariants": "لا توجد متغيرات لهذا المنتج",
+      "variantCreated": "تم إضافة المتغير",
+      "variantUpdated": "تم تحديث المتغير",
+      "variantDeleted": "تم حذف المتغير",
+      "stock": "المخزون",
+      "variantType": "نوع المتغير",
+      "option": "الخيار",
+      "selectOption": "يرجى اختيار خيار",
+      "variantImage": "صورة المتغير",
+      "uploadImage": "رفع صورة",
+      "relatedProducts": "المنتجات المشابهة",
+      "addRelated": "إضافة منتج مشابه",
+      "noRelated": "لا توجد منتجات مشابهة",
+      "relatedAdded": "تم إضافة المنتج المشابه",
+      "relatedRemoved": "تم إزالة المنتج المشابه",
+      "noProducts": "لا توجد نتائج"
     },
     "settings": {
       "title": "الإعدادات",

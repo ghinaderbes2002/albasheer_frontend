@@ -207,7 +207,7 @@ function UserFormDialog({
       first_name: user?.first_name ?? '',
       last_name: user?.last_name ?? '',
       role: user?.role ?? 'customer',
-      branch_id: user?.branch?.id,
+      branch_id: user?.branch_id ?? undefined,
       password: '',
       is_active: user?.is_active ?? true,
     },
@@ -230,7 +230,7 @@ function UserFormDialog({
         toast.success(t('admin.users.updated'))
       } else {
         const { password, ...rest } = payload
-        await create.mutateAsync(isCustomer ? rest : payload)
+        await create.mutateAsync(isCustomer ? (rest as CreateUserPayload) : payload)
         toast.success(t('admin.users.created'))
       }
       onClose()
@@ -249,16 +249,12 @@ function UserFormDialog({
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <Field label={t('admin.users.phone')}>
-            <div dir="ltr" className="flex h-10 overflow-hidden rounded-md border border-input bg-background shadow-sm focus-within:ring-2 focus-within:ring-ring">
-              <span className="flex items-center border-r border-input bg-muted px-3 text-sm font-medium select-none">+</span>
-              <input
-                {...register('phone')}
-                dir="ltr"
-                disabled={isEdit}
-                placeholder="963XXXXXXXXX"
-                className="flex-1 bg-transparent px-3 text-sm outline-none disabled:opacity-50"
-              />
-            </div>
+            <Input
+              {...register('phone')}
+              dir="ltr"
+              disabled={isEdit}
+              placeholder="963XXXXXXXXX"
+            />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label={t('auth.profile.firstName')}>

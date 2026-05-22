@@ -17,7 +17,7 @@ export function AdminDashboardPage() {
 
   const currency = t('common.currency')
   const fmt = (v?: string | number) =>
-    v != null ? Number(v).toLocaleString() : undefined
+    v != null ? Number(v).toLocaleString('en-US') : undefined
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">

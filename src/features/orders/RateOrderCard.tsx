@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useRateOrder } from '@/features/orders/queries'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useRateOrder, useOrderRating } from '@/features/orders/queries'
 import { extractApiError } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
@@ -17,10 +18,10 @@ interface RateOrderCardProps {
 
 export function RateOrderCard({ orderId }: RateOrderCardProps) {
   const { t } = useTranslation()
+  const { data: existingRating, isLoading } = useOrderRating(orderId)
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [comment, setComment] = useState('')
-  const [submitted, setSubmitted] = useState(false)
   const rate = useRateOrder(orderId)
 
   const handleSubmit = async () => {
@@ -28,28 +29,51 @@ export function RateOrderCard({ orderId }: RateOrderCardProps) {
     try {
       await rate.mutateAsync({ rating, comment: comment || undefined })
       toast.success(t('orders.rate.success'))
-      setSubmitted(true)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
   }
 
-  if (submitted) {
+  if (isLoading) {
     return (
       <Card>
-        <CardContent className="py-6 text-center text-sm text-muted-foreground">
-          <div className="mb-2 flex justify-center gap-1">
+        <CardContent className="py-6">
+          <Skeleton className="h-8 w-40" />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Already rated — show read-only view
+  if (existingRating) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Star className="size-4" />
+            {t('orders.rate.title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex gap-1">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
                 className={cn(
-                  'size-5',
-                  i < rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30',
+                  'size-7',
+                  i < existingRating.rating
+                    ? 'fill-amber-400 text-amber-400'
+                    : 'text-muted-foreground/30',
                 )}
               />
             ))}
           </div>
-          {t('orders.rate.submitted')}
+          {existingRating.comment && (
+            <p className="text-sm text-muted-foreground rounded-xl border border-border bg-muted/30 px-3 py-2">
+              {existingRating.comment}
+            </p>
+          )}
+          <p className="text-xs text-muted-foreground">{t('orders.rate.submitted')}</p>
         </CardContent>
       </Card>
     )

@@ -484,6 +484,29 @@ export interface SiteSettings {
   min_deposit_percent: number
 }
 
+// ─── Variants ─────────────────────────────────────────────────────────
+export interface VariantType {
+  id: number
+  name: string
+  name_ar: string
+}
+
+export interface VariantOption {
+  id: number
+  variant_type: number
+  value: string
+  value_ar: string
+}
+
+export interface ProductVariant {
+  id: number
+  option: VariantOption
+  price: string
+  stock: number
+  is_available: boolean
+  images: ProductImage[]
+}
+
 // ─── Content Stats ────────────────────────────────────────────────────
 export interface ContentStats {
   total_categories: number

@@ -37,7 +37,7 @@ export function AdminReportsPage() {
   const currency = t('common.currency')
   const fmt = (v: string | number | null | undefined) => {
     const n = Number(v)
-    return isNaN(n) ? '0' : n.toLocaleString()
+    return isNaN(n) ? '0' : n.toLocaleString('en-US')
   }
 
   const totalRevenue = sales?.total_revenue ?? 0

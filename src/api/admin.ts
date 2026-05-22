@@ -16,9 +16,13 @@ import type {
   OrderDetail,
   OrderStatus,
   PaginatedResponse,
+  ProductListItem,
+  ProductVariant,
   SalesReportResponse,
   TopBranchEntry,
   TopProductEntry,
+  VariantOption,
+  VariantType,
 } from '@/types/api'
 
 function unwrap<T>(data: T[] | PaginatedResponse<T>): T[] {
@@ -408,4 +412,116 @@ export async function getTopBranchesReport(params?: {
 }): Promise<TopBranchEntry[]> {
   const { data } = await api.get<TopBranchEntry[]>('/api/admin/reports/top-branches/', { params })
   return data
+}
+
+// ─── Variant Types ────────────────────────────────────────────────────
+export async function getAdminVariantTypes(): Promise<VariantType[]> {
+  const { data } = await api.get<VariantType[] | PaginatedResponse<VariantType>>('/api/admin/variant-types/')
+  return unwrap(data)
+}
+
+export async function createAdminVariantType(payload: { name: string; name_ar: string }): Promise<VariantType> {
+  const { data } = await api.post<VariantType>('/api/admin/variant-types/', payload)
+  return data
+}
+
+export async function updateAdminVariantType(
+  id: number | string,
+  payload: Partial<{ name: string; name_ar: string }>,
+): Promise<VariantType> {
+  const { data } = await api.patch<VariantType>(`/api/admin/variant-types/${id}/`, payload)
+  return data
+}
+
+export async function deleteAdminVariantType(id: number | string): Promise<void> {
+  await api.delete(`/api/admin/variant-types/${id}/`)
+}
+
+// ─── Variant Options ──────────────────────────────────────────────────
+export async function getAdminVariantOptions(typeId: number | string): Promise<VariantOption[]> {
+  const { data } = await api.get<VariantOption[] | PaginatedResponse<VariantOption>>(
+    `/api/admin/variant-types/${typeId}/options/`,
+  )
+  return unwrap(data)
+}
+
+export async function createAdminVariantOption(
+  typeId: number | string,
+  payload: { value: string; value_ar: string },
+): Promise<VariantOption> {
+  const { data } = await api.post<VariantOption>(`/api/admin/variant-types/${typeId}/options/`, payload)
+  return data
+}
+
+export async function updateAdminVariantOption(
+  id: number | string,
+  payload: Partial<{ value: string; value_ar: string }>,
+): Promise<VariantOption> {
+  const { data } = await api.patch<VariantOption>(`/api/admin/variant-options/${id}/`, payload)
+  return data
+}
+
+export async function deleteAdminVariantOption(id: number | string): Promise<void> {
+  await api.delete(`/api/admin/variant-options/${id}/`)
+}
+
+// ─── Product Variants ─────────────────────────────────────────────────
+export async function getProductVariants(productId: number | string): Promise<ProductVariant[]> {
+  const { data } = await api.get<ProductVariant[] | PaginatedResponse<ProductVariant>>(
+    `/api/admin/products/${productId}/variants/`,
+  )
+  return unwrap(data)
+}
+
+export async function addProductVariant(
+  productId: number | string,
+  payload: { option_id: number; price: number | string; stock: number; is_available: boolean },
+): Promise<ProductVariant> {
+  const { data } = await api.post<ProductVariant>(`/api/admin/products/${productId}/variants/`, payload)
+  return data
+}
+
+export async function updateProductVariant(
+  variantId: number | string,
+  payload: Partial<{ price: number | string; stock: number; is_available: boolean }>,
+): Promise<ProductVariant> {
+  const { data } = await api.patch<ProductVariant>(`/api/admin/product-variants/${variantId}/`, payload)
+  return data
+}
+
+export async function deleteProductVariant(variantId: number | string): Promise<void> {
+  await api.delete(`/api/admin/product-variants/${variantId}/`)
+}
+
+export async function uploadVariantImage(
+  variantId: number | string,
+  formData: FormData,
+): Promise<void> {
+  await api.post(`/api/admin/product-variants/${variantId}/images/`, formData)
+}
+
+export async function deleteVariantImage(imageId: number | string): Promise<void> {
+  await api.delete(`/api/admin/product-variant-images/${imageId}/`)
+}
+
+// ─── Related Products ─────────────────────────────────────────────────
+export async function getRelatedProducts(productId: number | string): Promise<ProductListItem[]> {
+  const { data } = await api.get<ProductListItem[] | PaginatedResponse<ProductListItem>>(
+    `/api/admin/products/${productId}/related/`,
+  )
+  return unwrap(data)
+}
+
+export async function addRelatedProduct(
+  productId: number | string,
+  relatedProductId: number,
+): Promise<void> {
+  await api.post(`/api/admin/products/${productId}/related/`, { related_product_id: relatedProductId })
+}
+
+export async function removeRelatedProduct(
+  productId: number | string,
+  relatedId: number | string,
+): Promise<void> {
+  await api.delete(`/api/admin/products/${productId}/related/${relatedId}/`)
 }

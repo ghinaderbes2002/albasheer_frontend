@@ -127,7 +127,7 @@ export function AdminProductsPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3 hidden sm:table-cell" dir="ltr">
-                    {Number(p.price).toLocaleString()} {t('common.currency')}
+                    {Number(p.price).toLocaleString('en-US')} {t('common.currency')}
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
                     {p.category_name ?? p.category}

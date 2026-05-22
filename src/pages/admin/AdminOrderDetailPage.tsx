@@ -32,7 +32,7 @@ export function AdminOrderDetailPage() {
   const [shippingFee, setShippingFee] = useState('')
 
   const currency = t('common.currency')
-  const fmt = (v: string | number) => Number(v).toLocaleString()
+  const fmt = (v: string | number) => Number(v).toLocaleString('en-US')
 
   const handleCancel = async () => {
     try {

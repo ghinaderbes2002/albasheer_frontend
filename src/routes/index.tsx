@@ -45,6 +45,7 @@ import { AdminAdDetailPage } from '@/pages/admin/AdminAdDetailPage'
 import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
 import { AdminOrderDetailPage } from '@/pages/admin/AdminOrderDetailPage'
 import { AdminPaymentMethodsPage } from '@/pages/admin/AdminPaymentMethodsPage'
+import { AdminVariantTypesPage } from '@/pages/admin/AdminVariantTypesPage'
 import { AdminReportsPage } from '@/pages/admin/AdminReportsPage'
 import { AdminSettingsPage } from '@/pages/admin/AdminSettingsPage'
 
@@ -145,6 +146,7 @@ export const router = createBrowserRouter([
               { path: 'admin/orders', element: <AdminOrdersPage /> },
               { path: 'admin/orders/:id', element: <AdminOrderDetailPage /> },
               { path: 'admin/payment-methods', element: <AdminPaymentMethodsPage /> },
+              { path: 'admin/variant-types', element: <AdminVariantTypesPage /> },
               { path: 'admin/reports', element: <AdminReportsPage /> },
               { path: 'admin/settings', element: <AdminSettingsPage /> },
             ],
