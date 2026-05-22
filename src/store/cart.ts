@@ -3,12 +3,14 @@ import { persist } from 'zustand/middleware'
 
 export interface CartItem {
   product_id: number
+  variant_id: number | null
   slug: string
   name: string
   name_ar: string
   price: string
   image: string | null
   quantity: number
+  variant_label?: string | null
 }
 
 export interface CartBundleItem {
@@ -27,8 +29,8 @@ interface CartState {
   bundles: CartBundleItem[]
 
   addItem: (item: Omit<CartItem, 'quantity'>, quantity?: number) => void
-  updateQuantity: (productId: number, quantity: number) => void
-  removeItem: (productId: number) => void
+  updateQuantity: (productId: number, quantity: number, variantId?: number | null) => void
+  removeItem: (productId: number, variantId?: number | null) => void
 
   addBundle: (
     bundle: Omit<CartBundleItem, 'quantity'>,
@@ -49,34 +51,44 @@ export const useCartStore = create<CartState>()(
       // ─── Products ──────────────────────────────────────────────────
       addItem: (item, quantity = 1) =>
         set((state) => {
-          const existing = state.items.find(
-            (i) => i.product_id === item.product_id,
-          )
+          const match = (i: CartItem) =>
+            i.product_id === item.product_id &&
+            (i.variant_id ?? null) === (item.variant_id ?? null)
+          const existing = state.items.find(match)
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.product_id === item.product_id
-                  ? { ...i, quantity: i.quantity + quantity }
-                  : i,
+                match(i) ? { ...i, quantity: i.quantity + quantity } : i,
               ),
             }
           }
           return { items: [...state.items, { ...item, quantity }] }
         }),
 
-      updateQuantity: (productId, quantity) =>
-        set((state) => ({
-          items:
-            quantity <= 0
-              ? state.items.filter((i) => i.product_id !== productId)
-              : state.items.map((i) =>
-                  i.product_id === productId ? { ...i, quantity } : i,
-                ),
-        })),
+      updateQuantity: (productId, quantity, variantId = null) =>
+        set((state) => {
+          const match = (i: CartItem) =>
+            i.product_id === productId &&
+            (i.variant_id ?? null) === (variantId ?? null)
+          return {
+            items:
+              quantity <= 0
+                ? state.items.filter((i) => !match(i))
+                : state.items.map((i) =>
+                    match(i) ? { ...i, quantity } : i,
+                  ),
+          }
+        }),
 
-      removeItem: (productId) =>
+      removeItem: (productId, variantId = null) =>
         set((state) => ({
-          items: state.items.filter((i) => i.product_id !== productId),
+          items: state.items.filter(
+            (i) =>
+              !(
+                i.product_id === productId &&
+                (i.variant_id ?? null) === (variantId ?? null)
+              ),
+          ),
         })),
 
       // ─── Bundles ───────────────────────────────────────────────────
@@ -116,19 +128,22 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'albasheer-cart',
-      version: 2,
+      version: 3,
       partialize: (state) => ({
         items: state.items,
         bundles: state.bundles,
       }),
-      // Old persisted versions had only `items`; bring them forward by
-      // ensuring `bundles` is always a real array.
       migrate: (persistedState: unknown) => {
         const s = persistedState as
           | { items?: unknown; bundles?: unknown }
           | null
         const next = {
-          items: Array.isArray(s?.items) ? (s.items as CartItem[]) : [],
+          items: Array.isArray(s?.items)
+            ? (s.items as CartItem[]).map((i) => ({
+                ...i,
+                variant_id: i.variant_id ?? null,
+              }))
+            : [],
           bundles: Array.isArray(s?.bundles)
             ? (s.bundles as CartBundleItem[])
             : [],

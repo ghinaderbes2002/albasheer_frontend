@@ -64,7 +64,7 @@ export function CartPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
         <div className="space-y-3">
           {items.map((it) => (
-            <CartItemRow key={it.product_id} item={it} />
+            <CartItemRow key={`${it.product_id}-${it.variant_id ?? 'base'}`} item={it} />
           ))}
           {bundles.map((b) => (
             <CartBundleRow key={b.bundle_id} item={b} />

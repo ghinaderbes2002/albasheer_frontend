@@ -140,10 +140,19 @@ export function CheckoutPage() {
         customer_note: values.customer_note || undefined,
         payment_method_id: values.payment_method_id,
         items: items.length
-          ? items.map((i) => ({
-              product_id: i.product_id,
-              quantity: i.quantity,
-            }))
+          ? Object.values(
+              items.reduce<Record<number, { product_id: number; quantity: number }>>(
+                (acc, i) => {
+                  if (acc[i.product_id]) {
+                    acc[i.product_id].quantity += i.quantity
+                  } else {
+                    acc[i.product_id] = { product_id: i.product_id, quantity: i.quantity }
+                  }
+                  return acc
+                },
+                {},
+              ),
+            )
           : undefined,
         bundle_items: bundles.length
           ? bundles.map((b) => ({

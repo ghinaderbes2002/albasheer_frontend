@@ -165,7 +165,7 @@ export function ProductDetailPage() {
 
             {/* Add to cart */}
             <div className="mt-1">
-              <AddToCartButton product={product} />
+              <AddToCartButton product={product} variant={selectedVariant} />
             </div>
 
             {/* Specs */}

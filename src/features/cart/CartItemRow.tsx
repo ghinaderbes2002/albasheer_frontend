@@ -59,7 +59,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => removeItem(item.product_id)}
+            onClick={() => removeItem(item.product_id, item.variant_id)}
             aria-label={t('common.delete')}
             className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
           >
@@ -67,8 +67,15 @@ export function CartItemRow({ item }: CartItemRowProps) {
           </Button>
         </div>
 
-        <div className="text-xs text-muted-foreground sm:text-sm">
-          {formatPrice(item.price, i18n.language)} {t('common.currency')}
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <span className="text-xs text-muted-foreground sm:text-sm">
+            {formatPrice(item.price, i18n.language)} {t('common.currency')}
+          </span>
+          {item.variant_label && (
+            <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
+              {item.variant_label}
+            </span>
+          )}
         </div>
 
         <div className="mt-auto flex items-center justify-between gap-3">
@@ -82,7 +89,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
               size="icon"
               className="size-8 rounded-none"
               onClick={() =>
-                updateQuantity(item.product_id, item.quantity - 1)
+                updateQuantity(item.product_id, item.quantity - 1, item.variant_id)
               }
               aria-label="-"
             >
@@ -97,7 +104,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
               size="icon"
               className="size-8 rounded-none"
               onClick={() =>
-                updateQuantity(item.product_id, item.quantity + 1)
+                updateQuantity(item.product_id, item.quantity + 1, item.variant_id)
               }
               aria-label="+"
             >
