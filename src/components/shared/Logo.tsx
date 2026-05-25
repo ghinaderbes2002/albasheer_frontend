@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 
 interface LogoProps {
@@ -18,6 +19,7 @@ export function Logo({
   showText = true,
   tone = 'default',
 }: LogoProps) {
+  const { t } = useTranslation()
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
       <img
@@ -33,10 +35,10 @@ export function Logo({
               tone === 'shimmer' ? 'logo-shimmer' : 'text-foreground',
             )}
           >
-            البشير
+            {t('common.appName')}
           </div>
           <div className="text-[10px] font-medium text-foreground">
-            لتجارة الأدوات المنزلية
+            {t('common.taglineSub')}
           </div>
         </div>
       )}

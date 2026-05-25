@@ -2,6 +2,7 @@
   "common": {
     "appName": "Al Basheer",
     "tagline": "Al Basheer Home Appliances Trading",
+    "taglineSub": "Home Appliances Trading",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
