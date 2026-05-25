@@ -108,8 +108,6 @@ function TypeCard({
   onEdit: () => void
   onDelete: () => void
 }) {
-  const { t } = useTranslation()
-
   return (
     <div className="rounded-xl border border-border overflow-hidden">
       <div

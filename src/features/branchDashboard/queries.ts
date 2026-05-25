@@ -21,7 +21,6 @@ import {
   type BranchOrdersParams,
 } from '@/api/branchOrders'
 import type {
-  AdminUser,
   AssignDeliveryPayload,
   CreateBranchStaffPayload,
   RejectOrderPayload,

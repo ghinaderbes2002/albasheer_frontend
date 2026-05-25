@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { CreditCard, Inbox, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { CreditCard, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'

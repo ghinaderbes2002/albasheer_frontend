@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams, Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowRight, ExternalLink, Image, Loader2, Pencil, Power, Trash2, Video } from 'lucide-react'
+import { ExternalLink, Image, Loader2, Pencil, Power, Trash2, Video } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -24,9 +24,7 @@ export function AdminAdDetailPage() {
   const deleteAd = useDeleteAdminAd()
 
   const isRtl = i18n.language.startsWith('ar')
-  const BackIcon = isRtl ? ArrowRight : ArrowRight
-
-  const fileUrl = resolveMediaUrl(ad?.file ?? '')
+const fileUrl = resolveMediaUrl(ad?.file ?? '')
 
   const handleDelete = async () => {
     try {

@@ -9,14 +9,12 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { PageHero } from '@/components/shared/PageHero'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ProductCard } from '@/features/catalog/ProductCard'
 import { useCategories, useProducts } from '@/features/catalog/queries'
 import { AdsCarousel } from '@/features/ads/AdsCarousel'
 import { resolveMediaUrl } from '@/lib/api'
 import { pickLang } from '@/lib/format'
-import { cn } from '@/lib/utils'
 
 export function HomePage() {
   const { t, i18n } = useTranslation()

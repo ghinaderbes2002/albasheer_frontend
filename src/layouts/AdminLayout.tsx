@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   BarChart3,
@@ -46,7 +46,6 @@ const NAV_ITEMS = [
 export function AdminLayout() {
   const { t } = useTranslation()
   const logout = useAuthStore((s) => s.logout)
-  const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
