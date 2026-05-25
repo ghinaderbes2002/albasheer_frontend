@@ -34,6 +34,19 @@ export function useMyOrders() {
   })
 }
 
+export function useHasPendingReceipt(enabled = true) {
+  return useQuery({
+    queryKey: [...orderKeys.myList(), 'pending-receipt'] as const,
+    queryFn: getMyOrders,
+    enabled,
+    staleTime: 30 * 1000,
+    select: (orders) =>
+      orders.some(
+        (o) => o.status === 'pending' && parseFloat(o.deposit_amount) > 0,
+      ),
+  })
+}
+
 export function useOrder(id: number | string | undefined) {
   return useQuery({
     queryKey: orderKeys.detail(id ?? ''),

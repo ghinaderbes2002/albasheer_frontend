@@ -17,6 +17,7 @@ import { Logo } from '@/components/shared/Logo'
 import { LangSwitcher } from '@/components/shared/LangSwitcher'
 import { useAuthStore } from '@/store/auth'
 import { useCartCount } from '@/store/cart'
+import { useHasPendingReceipt } from '@/features/orders/queries'
 import { cn } from '@/lib/utils'
 
 export function Header() {
@@ -29,6 +30,7 @@ export function Header() {
   const isAuthed = !!accessToken
   const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin' || role === 'content_manager'
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { data: hasPendingReceipt } = useHasPendingReceipt(isAuthed && !isStaff)
 
   // Close drawer on route change.
   useEffect(() => {
@@ -53,7 +55,7 @@ export function Header() {
     { to: '/branches', label: t('nav.branches'), end: false },
     ...(isAuthed && !isStaff
       ? [
-          { to: '/orders', label: t('nav.myOrders'), end: false },
+          { to: '/orders', label: t('nav.myOrders'), end: false, dot: hasPendingReceipt },
           { to: '/addresses', label: t('nav.addresses'), end: false },
         ]
       : []),
@@ -89,7 +91,12 @@ export function Header() {
                 )
               }
             >
-              {link.label}
+              <span className="relative">
+                {link.label}
+                {'dot' in link && link.dot && (
+                  <span className="absolute -top-0.5 -inset-e-2 size-1.5 rounded-full bg-destructive" />
+                )}
+              </span>
             </NavLink>
           ))}
         </nav>
@@ -164,16 +171,20 @@ export function Header() {
           )}
 
           {/* Hamburger — mobile only */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileOpen((o) => !o)}
-            aria-label={t('common.search')}
-            aria-expanded={mobileOpen}
-            className="md:hidden"
-          >
-            {mobileOpen ? <X /> : <Menu />}
-          </Button>
+          <div className="relative md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileOpen((o) => !o)}
+              aria-label={t('common.search')}
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? <X /> : <Menu />}
+            </Button>
+            {hasPendingReceipt && !mobileOpen && (
+              <span className="absolute top-1 inset-e-1 size-2.5 rounded-full bg-destructive ring-2 ring-background animate-pulse" />
+            )}
+          </div>
         </div>
       </div>
 
@@ -195,7 +206,12 @@ export function Header() {
                   )
                 }
               >
-                {link.label}
+                <span className="relative">
+                  {link.label}
+                  {'dot' in link && link.dot && (
+                    <span className="absolute -top-0.5 -inset-e-2 size-1.5 rounded-full bg-destructive" />
+                  )}
+                </span>
               </NavLink>
             ))}
 
