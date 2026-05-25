@@ -7,7 +7,7 @@ import { useAuthStore } from '@/store/auth'
 
 export const API_BASE =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-  'http://localhost:8000'
+  'http://localhost'
 
 export const MEDIA_BASE =
   (import.meta.env.VITE_MEDIA_BASE_URL as string | undefined) ?? API_BASE
@@ -100,7 +100,20 @@ export function resolveMediaUrl(
   path: string | null | undefined,
 ): string | null {
   if (!path) return null
-  if (path.startsWith('http://') || path.startsWith('https://')) return path
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    // Replace the backend origin with MEDIA_BASE so absolute URLs from the
+    // backend still resolve correctly after a host/port change (e.g. 8000→80).
+    try {
+      const url = new URL(path)
+      const base = new URL(MEDIA_BASE)
+      url.hostname = base.hostname
+      url.port = base.port
+      url.protocol = base.protocol
+      return url.toString()
+    } catch {
+      return path
+    }
+  }
   return `${MEDIA_BASE}${path.startsWith('/') ? '' : '/'}${path}`
 }
 

@@ -29,6 +29,7 @@ import { OrderTrackingPage } from '@/pages/customer/OrderTrackingPage'
 import { BranchOrdersPage } from '@/pages/dashboard/BranchOrdersPage'
 import { BranchOrderDetailPage } from '@/pages/dashboard/BranchOrderDetailPage'
 import { BranchPaymentMethodsPage } from '@/pages/dashboard/BranchPaymentMethodsPage'
+import { BranchDeliveryStaffPage } from '@/pages/dashboard/BranchDeliveryStaffPage'
 import { DeliveryOrdersPage } from '@/pages/dashboard/DeliveryOrdersPage'
 import { DeliveryOrderDetailPage } from '@/pages/dashboard/DeliveryOrderDetailPage'
 
@@ -106,6 +107,7 @@ export const router = createBrowserRouter([
               { path: 'dashboard/branch', element: <BranchOrdersPage /> },
               { path: 'dashboard/branch/orders/:id', element: <BranchOrderDetailPage /> },
               { path: 'dashboard/branch/payment-methods', element: <BranchPaymentMethodsPage /> },
+              { path: 'dashboard/branch/delivery-staff', element: <BranchDeliveryStaffPage /> },
             ],
           },
           {
@@ -170,6 +172,7 @@ export const router = createBrowserRouter([
               { path: 'content/categories', element: <AdminCategoriesPage /> },
               { path: 'content/products', element: <AdminProductsPage /> },
               { path: 'content/products/:id', element: <AdminProductDetailPage /> },
+              { path: 'content/variant-types', element: <AdminVariantTypesPage /> },
               { path: 'content/bundles', element: <AdminBundlesPage /> },
               { path: 'content/ads', element: <AdminAdsPage /> },
               { path: 'content/ads/:id', element: <AdminAdDetailPage /> },

@@ -7,17 +7,23 @@ import {
 import {
   assignBranchDelivery,
   confirmBranchOrder,
+  createBranchStaff,
+  deleteBranchStaff,
   getBranchDeliveryStaff,
   getBranchOrder,
   getBranchOrders,
+  listBranchStaff,
   markBranchOrderReady,
   prepareBranchOrder,
   rejectBranchOrder,
   setShippingFee,
+  updateBranchStaff,
   type BranchOrdersParams,
 } from '@/api/branchOrders'
 import type {
+  AdminUser,
   AssignDeliveryPayload,
+  CreateBranchStaffPayload,
   RejectOrderPayload,
 } from '@/types/api'
 
@@ -100,5 +106,42 @@ export function useBranchDeliveryStaffList() {
     queryKey: [...branchOrderKeys.all, 'delivery-staff'] as const,
     queryFn: getBranchDeliveryStaff,
     staleTime: 2 * 60 * 1000,
+  })
+}
+
+const staffKeys = {
+  all: ['branchStaff'] as const,
+  list: () => [...staffKeys.all, 'list'] as const,
+}
+
+export function useBranchStaffList() {
+  return useQuery({
+    queryKey: staffKeys.list(),
+    queryFn: listBranchStaff,
+    staleTime: 2 * 60 * 1000,
+  })
+}
+
+export function useCreateBranchStaff() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: CreateBranchStaffPayload) => createBranchStaff(payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: staffKeys.all }),
+  })
+}
+
+export function useUpdateBranchStaff(id: number) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: Partial<CreateBranchStaffPayload>) => updateBranchStaff(id, payload),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: staffKeys.all }),
+  })
+}
+
+export function useDeleteBranchStaff() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => deleteBranchStaff(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: staffKeys.all }),
   })
 }

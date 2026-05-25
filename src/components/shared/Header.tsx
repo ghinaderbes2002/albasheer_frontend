@@ -27,7 +27,7 @@ export function Header() {
   const logout = useAuthStore((s) => s.logout)
   const cartCount = useCartCount()
   const isAuthed = !!accessToken
-  const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin'
+  const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin' || role === 'content_manager'
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Close drawer on route change.
@@ -42,7 +42,9 @@ export function Header() {
         ? { to: '/dashboard/branch', label: t('dashboard.branch.short') }
         : role === 'delivery'
           ? { to: '/dashboard/delivery', label: t('dashboard.delivery.short') }
-          : null
+          : role === 'content_manager'
+            ? { to: '/content', label: t('admin.nav.dashboard') }
+            : null
 
   const links = [
     { to: '/', label: t('nav.home'), end: true },
@@ -57,7 +59,10 @@ export function Header() {
       : []),
     ...(dashboardLink ? [{ ...dashboardLink, end: false }] : []),
     ...(role === 'branch_manager'
-      ? [{ to: '/dashboard/branch/payment-methods', label: t('paymentMethods.title'), end: false }]
+      ? [
+          { to: '/dashboard/branch/payment-methods', label: t('paymentMethods.title'), end: false },
+          { to: '/dashboard/branch/delivery-staff', label: t('dashboard.staff.title'), end: false },
+        ]
       : []),
   ]
 

@@ -69,3 +69,17 @@ export async function staffLogin(
   )
   return data
 }
+
+export interface StaffMe {
+  id: number
+  phone: string
+  full_name: string
+  role: string
+  branch_id: number | null
+  branch_name: string | null
+}
+
+export async function getStaffMe(): Promise<StaffMe> {
+  const { data } = await api.get<StaffMe>('/api/auth/staff/me/')
+  return data
+}

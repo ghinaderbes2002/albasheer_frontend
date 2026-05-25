@@ -269,6 +269,7 @@
     },
     "rate": {
       "title": "Rate your experience",
+      "customerRating": "Customer Rating",
       "commentLabel": "Comment (optional)",
       "commentPlaceholder": "Share your thoughts on the service and delivery...",
       "submit": "Submit rating",
@@ -717,6 +718,19 @@
         "question": "Did you actually hand over the order and collect the amount?",
         "hint": "This action is final and cannot be undone."
       }
+    },
+    "staff": {
+      "title": "Delivery Staff",
+      "subtitle": "Manage delivery staff in your branch",
+      "add": "Add Staff",
+      "addTitle": "Add Delivery Staff",
+      "editTitle": "Edit Delivery Staff",
+      "name": "Name",
+      "empty": "No delivery staff in your branch yet",
+      "created": "Staff member added successfully",
+      "updated": "Staff member updated",
+      "deleted": "Staff member deleted",
+      "leaveBlankToKeep": "leave blank to keep current password"
     }
   }
 }

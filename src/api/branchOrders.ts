@@ -1,8 +1,10 @@
 import { api } from '@/lib/api'
 import type {
+  AdminUser,
   AssignDeliveryPayload,
   BranchOrderDetail,
   BranchOrderListItem,
+  CreateBranchStaffPayload,
   DeliveryStaff,
   OrderStatus,
   PaginatedResponse,
@@ -89,6 +91,31 @@ export async function getBranchDeliveryStaff(): Promise<DeliveryStaff[]> {
     '/api/branch/delivery-staff/',
   )
   return Array.isArray(data) ? data : data.results
+}
+
+export async function listBranchStaff(): Promise<AdminUser[]> {
+  const { data } = await api.get<AdminUser[] | PaginatedResponse<AdminUser>>(
+    '/api/admin/users/',
+    { params: { role: 'delivery' } },
+  )
+  return Array.isArray(data) ? data : data.results
+}
+
+export async function createBranchStaff(payload: CreateBranchStaffPayload): Promise<AdminUser> {
+  const { data } = await api.post<AdminUser>('/api/admin/users/', {
+    ...payload,
+    role: 'delivery',
+  })
+  return data
+}
+
+export async function updateBranchStaff(id: number, payload: Partial<CreateBranchStaffPayload>): Promise<AdminUser> {
+  const { data } = await api.patch<AdminUser>(`/api/admin/users/${id}/`, payload)
+  return data
+}
+
+export async function deleteBranchStaff(id: number): Promise<void> {
+  await api.delete(`/api/admin/users/${id}/`)
 }
 
 export async function setShippingFee(

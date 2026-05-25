@@ -292,7 +292,7 @@ export function OrderDetailPage() {
 
           {/* Rating — only after delivery */}
           {order.status === 'delivered' && (
-            <RateOrderCard orderId={order.id} />
+            <RateOrderCard orderId={order.id} existingRating={order.rating} />
           )}
         </div>
 

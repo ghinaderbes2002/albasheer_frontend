@@ -6,6 +6,7 @@ import {
   MapPin,
   Phone,
   Receipt,
+  Star,
   User as UserIcon,
 } from 'lucide-react'
 
@@ -175,6 +176,33 @@ export function BranchOrderDetailPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Rating */}
+          {order.rating && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Star className="size-4" />
+                  {t('orders.rate.customerRating')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`size-6 ${i < order.rating!.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`}
+                    />
+                  ))}
+                </div>
+                {order.rating.comment && (
+                  <p className="text-sm text-muted-foreground rounded-xl border border-border bg-muted/30 px-3 py-2">
+                    {order.rating.comment}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Actions */}
           <Card>

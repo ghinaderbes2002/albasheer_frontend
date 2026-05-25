@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   getMe,
+  getStaffMe,
   requestCode,
   staffLogin,
   updateMe,
@@ -51,6 +52,16 @@ export function useUpdateProfile() {
       setUser(user)
       queryClient.setQueryData(meQueryKey, user)
     },
+  })
+}
+
+export function useStaffMe() {
+  const accessToken = useAuthStore((s) => s.accessToken)
+  return useQuery({
+    queryKey: ['auth', 'staff-me'] as const,
+    queryFn: getStaffMe,
+    enabled: !!accessToken,
+    staleTime: 5 * 60 * 1000,
   })
 }
 

@@ -7,18 +7,24 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useRateOrder, useOrderRating } from '@/features/orders/queries'
+import { useRateOrder } from '@/features/orders/queries'
 import { extractApiError } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
-interface RateOrderCardProps {
-  orderId: number | string
+interface ExistingRating {
+  id: number
+  rating: number
+  comment: string
+  created_at: string
 }
 
-export function RateOrderCard({ orderId }: RateOrderCardProps) {
+interface RateOrderCardProps {
+  orderId: number | string
+  existingRating?: ExistingRating | null
+}
+
+export function RateOrderCard({ orderId, existingRating }: RateOrderCardProps) {
   const { t } = useTranslation()
-  const { data: existingRating, isLoading } = useOrderRating(orderId)
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [comment, setComment] = useState('')
@@ -32,16 +38,6 @@ export function RateOrderCard({ orderId }: RateOrderCardProps) {
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
-  }
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardContent className="py-6">
-          <Skeleton className="h-8 w-40" />
-        </CardContent>
-      </Card>
-    )
   }
 
   // Already rated — show read-only view

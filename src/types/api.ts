@@ -52,6 +52,23 @@ export interface DeliveryStaff {
   last_name: string
 }
 
+export interface BranchStaffMember {
+  id: number
+  phone: string
+  full_name: string
+  role: string
+  branch_id: number | null
+  branch_name: string | null
+}
+
+export interface CreateBranchStaffPayload {
+  phone: string
+  first_name?: string
+  last_name?: string
+  password: string
+  branch_id?: number
+}
+
 export interface ProfilePatch {
   first_name?: string
   last_name?: string
@@ -218,6 +235,7 @@ export interface OrderDetail {
   items: OrderItem[]
   bundle_items?: OrderBundleItem[]
   logs: OrderLog[]
+  rating?: { id: number; rating: number; comment: string; created_at: string } | null
   created_at: string
   updated_at: string
 }
@@ -295,6 +313,7 @@ export interface BranchOrderDetail {
   delivery_address: string
   receipt_image: string | null
   items: BranchOrderItem[]
+  rating?: { id: number; rating: number; comment: string; created_at: string } | null
   created_at: string
 }
 

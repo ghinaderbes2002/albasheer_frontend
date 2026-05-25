@@ -10,6 +10,7 @@ import {
   Megaphone,
   Menu,
   Package,
+  Sliders,
   Tag,
   X,
 } from 'lucide-react'
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { to: '/content', label: 'admin.nav.dashboard', icon: LayoutDashboard, end: true },
   { to: '/content/categories', label: 'admin.nav.categories', icon: Tag },
   { to: '/content/products', label: 'admin.nav.products', icon: Package },
+  { to: '/content/variant-types', label: 'admin.nav.variantTypes', icon: Sliders },
   { to: '/content/bundles', label: 'admin.nav.bundles', icon: Boxes },
   { to: '/content/ads', label: 'admin.nav.ads', icon: Megaphone },
 ]
