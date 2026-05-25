@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"d:\\\\D\\\\flutterProjects\\\\albasheer_front\" -Filter \".env\" -Force)",
+      "Bash(Select-Object FullName)"
+    ]
+  }
+}

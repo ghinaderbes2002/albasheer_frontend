@@ -5,9 +5,11 @@ import axios, {
 } from 'axios'
 import { useAuthStore } from '@/store/auth'
 
-const API_BASE =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-  'http://localhost:8000'
+const API_BASE: string = import.meta.env.VITE_API_BASE_URL ?? ''
+
+if (!API_BASE && import.meta.env.PROD) {
+  throw new Error('VITE_API_BASE_URL is not set — rebuild with the correct env var')
+}
 
 export const MEDIA_BASE =
   (import.meta.env.VITE_MEDIA_BASE_URL as string | undefined) ?? API_BASE
