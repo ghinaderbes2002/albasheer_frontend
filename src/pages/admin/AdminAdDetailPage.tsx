@@ -11,7 +11,7 @@ import { extractApiError, resolveMediaUrl } from '@/lib/api'
 import { AdFormDialog } from './AdminAdsPage'
 
 export function AdminAdDetailPage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const location = useLocation()
@@ -23,7 +23,6 @@ export function AdminAdDetailPage() {
   const toggle = useToggleAdActive(id ?? '')
   const deleteAd = useDeleteAdminAd()
 
-  const isRtl = i18n.language.startsWith('ar')
 const fileUrl = resolveMediaUrl(ad?.file ?? '')
 
   const handleDelete = async () => {
