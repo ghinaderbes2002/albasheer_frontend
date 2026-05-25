@@ -30,14 +30,14 @@ export function HomePage() {
       <section className="relative overflow-hidden">
         {/* Blurred background image */}
         <img
-          src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80&auto=format&fit=crop"
+          src="/images/al_basheer.jpg"
           alt=""
           aria-hidden
           className="absolute inset-0 h-full w-full scale-105 object-cover blur-sm"
         />
-        <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-black/50" />
 
-        <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-20 text-center md:py-28">
+        <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-20 text-center md:py-28 relative z-10">
           <div className="relative">
             <span
               aria-hidden
@@ -50,10 +50,10 @@ export function HomePage() {
             />
           </div>
 
-          <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-foreground md:text-6xl animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500">
+          <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow-md md:text-6xl animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500">
             {t('home.hero.title')}
           </h1>
-          <p className="max-w-2xl text-base text-foreground/65 md:text-lg animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500 delay-100">
+          <p className="max-w-2xl text-base text-white/80 md:text-lg animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500 delay-100">
             {t('home.hero.subtitle')}
           </p>
 
