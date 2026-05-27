@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
+  ChevronDown,
   LayoutDashboard,
   LogIn,
   LogOut,
@@ -18,6 +19,9 @@ import { LangSwitcher } from '@/components/shared/LangSwitcher'
 import { useAuthStore } from '@/store/auth'
 import { useCartCount } from '@/store/cart'
 import { useHasPendingReceipt } from '@/features/orders/queries'
+import { useCategories } from '@/features/catalog/queries'
+import { resolveMediaUrl } from '@/lib/api'
+import { pickLang } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export function Header() {
@@ -30,7 +34,10 @@ export function Header() {
   const isAuthed = !!accessToken
   const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin' || role === 'content_manager'
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [catOpen, setCatOpen] = useState(false)
   const { data: hasPendingReceipt } = useHasPendingReceipt(isAuthed && !isStaff)
+  const { data: categories } = useCategories()
+  const { i18n } = useTranslation()
 
   // Close drawer on route change.
   useEffect(() => {
@@ -80,7 +87,80 @@ export function Header() {
 
         {/* Desktop nav — center */}
         <nav className="hidden items-center gap-0.5 md:flex">
-          {links.map((link) => (
+          {/* الرئيسية — first link */}
+          {links.slice(0, 1).map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              end={link.end}
+              className={({ isActive }) =>
+                cn(
+                  'rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                  isActive
+                    ? 'bg-foreground text-background font-semibold'
+                    : 'text-muted-foreground hover:text-foreground',
+                )
+              }
+            >
+              <span className="relative">
+                {link.label}
+                {'dot' in link && link.dot && (
+                  <span className="absolute -top-0.5 -inset-e-2 size-1.5 rounded-full bg-destructive" />
+                )}
+              </span>
+            </NavLink>
+          ))}
+
+          {/* Categories dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setCatOpen(true)}
+            onMouseLeave={() => setCatOpen(false)}
+          >
+            <button
+              type="button"
+              className={cn(
+                'flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
+                catOpen ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {t('home.categories.title')}
+              <ChevronDown className={cn('size-3.5 transition-transform duration-200', catOpen && 'rotate-180')} />
+            </button>
+
+            {catOpen && categories && categories.length > 0 && (
+              <div className="absolute inset-s-0 top-full z-50 mt-2 w-105 rounded-2xl border border-border bg-background p-4 shadow-warm-lg">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t('home.categories.title')}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {categories.map((c) => {
+                    const icon = resolveMediaUrl(c.icon)
+                    const name = pickLang(c.name, c.name_ar, i18n.language)
+                    return (
+                      <Link
+                        key={c.id}
+                        to={`/products?category=${c.slug}`}
+                        onClick={() => setCatOpen(false)}
+                        className="flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted"
+                      >
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/8">
+                          {icon
+                            ? <img src={icon} alt="" className="size-6 object-contain" />
+                            : <span className="text-sm font-bold text-primary">{name.charAt(0)}</span>
+                          }
+                        </div>
+                        <span className="text-sm font-medium text-foreground leading-tight">{name}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Remaining links after home */}
+          {links.slice(1).map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
