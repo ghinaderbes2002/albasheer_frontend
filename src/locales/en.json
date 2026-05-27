@@ -45,7 +45,8 @@
     "hero": {
       "title": "Al Basheer Home Appliances",
       "subtitle": "Top-quality home appliances at the best prices, with a genuine warranty",
-      "cta": "Browse products"
+      "cta": "Browse products",
+      "searchPlaceholder": "Search for a product..."
     },
     "trust": {
       "warranty": "Real warranty",
@@ -134,7 +135,12 @@
     "addedToCart": "Added to cart",
     "outOfStock": "Out of stock",
     "view": "View",
-    "relatedProducts": "Related Products"
+    "relatedProducts": "Related Products",
+    "sort": {
+      "default": "Default order",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low"
+    }
   },
   "branches": {
     "subtitle": "Visit your nearest branch — every store offers the same quality service",

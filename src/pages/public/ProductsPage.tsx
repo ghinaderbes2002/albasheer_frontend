@@ -7,7 +7,7 @@ import { CategoryFilter } from '@/features/catalog/CategoryFilter'
 import { SearchBar } from '@/features/catalog/SearchBar'
 import { Pagination } from '@/features/catalog/Pagination'
 import { useProducts } from '@/features/catalog/queries'
-import { PRODUCTS_PAGE_SIZE } from '@/api/products'
+import { PRODUCTS_PAGE_SIZE, type ProductOrdering } from '@/api/products'
 import { PageHero } from '@/components/shared/PageHero'
 
 const PAGE_SIZE = PRODUCTS_PAGE_SIZE
@@ -18,11 +18,13 @@ export function ProductsPage() {
 
   const category = searchParams.get('category') ?? null
   const search = searchParams.get('search') ?? ''
+  const ordering = (searchParams.get('ordering') ?? '') as ProductOrdering
   const page = parseInt(searchParams.get('page') ?? '1', 10) || 1
 
   const { data, isLoading, isError } = useProducts({
     category: category ?? undefined,
     search: search || undefined,
+    ordering: ordering || undefined,
     page,
   })
 
@@ -57,13 +59,22 @@ export function ProductsPage() {
       />
     <div className="mx-auto w-full max-w-7xl px-4 py-8">
 
-      <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <SearchBar
           value={search}
           onChange={(v) => updateParam('search', v)}
           placeholder={t('catalog.searchPlaceholder')}
-          className="lg:w-96"
+          className="sm:w-96"
         />
+        <select
+          value={ordering}
+          onChange={(e) => updateParam('ordering', e.target.value)}
+          className="h-10 rounded-full border border-border bg-card px-4 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          <option value="">{t('catalog.sort.default')}</option>
+          <option value="price_asc">{t('catalog.sort.priceAsc')}</option>
+          <option value="price_desc">{t('catalog.sort.priceDesc')}</option>
+        </select>
       </div>
 
       <div className="mb-6">

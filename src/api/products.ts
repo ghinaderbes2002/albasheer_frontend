@@ -6,10 +6,13 @@ import type {
   ProductListItem,
 } from '@/types/api'
 
+export type ProductOrdering = 'price_asc' | 'price_desc' | ''
+
 export interface ProductListParams {
   category?: string
   search?: string
   page?: number
+  ordering?: ProductOrdering
 }
 
 /**
@@ -29,23 +32,34 @@ export async function getCategories(): Promise<Category[]> {
 export async function getProducts(
   params: ProductListParams = {},
 ): Promise<PaginatedResponse<ProductListItem>> {
-  const { page, ...filterParams } = params
+  const { page, ordering, ...filterParams } = params
   const { data } = await api.get<
     ProductListItem[] | PaginatedResponse<ProductListItem>
   >('/api/products/', { params: filterParams })
 
+  const sortFn =
+    ordering === 'price_asc'
+      ? (a: ProductListItem, b: ProductListItem) => parseFloat(a.price) - parseFloat(b.price)
+      : ordering === 'price_desc'
+        ? (a: ProductListItem, b: ProductListItem) => parseFloat(b.price) - parseFloat(a.price)
+        : null
+
   if (Array.isArray(data)) {
-    // Backend returns the full filtered list as an array — slice client-side.
+    const items = sortFn ? [...data].sort(sortFn) : data
     const pageNum = Math.max(1, page ?? 1)
     const start = (pageNum - 1) * PRODUCTS_PAGE_SIZE
     const end = start + PRODUCTS_PAGE_SIZE
-    const total = data.length
     return {
-      count: total,
-      next: end < total ? `?page=${pageNum + 1}` : null,
+      count: items.length,
+      next: end < items.length ? `?page=${pageNum + 1}` : null,
       previous: pageNum > 1 ? `?page=${pageNum - 1}` : null,
-      results: data.slice(start, end),
+      results: items.slice(start, end),
     }
+  }
+
+  // Paginated backend response — sort the current page
+  if (sortFn) {
+    return { ...data, results: [...data.results].sort(sortFn) }
   }
   return data
 }

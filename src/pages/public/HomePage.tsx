@@ -1,9 +1,11 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   ArrowLeft,
   ArrowRight,
   Award,
+  Search,
   ShieldCheck,
   Truck,
 } from 'lucide-react'
@@ -18,7 +20,15 @@ import { pickLang } from '@/lib/format'
 
 export function HomePage() {
   const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const Arrow = i18n.language.startsWith('ar') ? ArrowLeft : ArrowRight
+  const [query, setQuery] = useState('')
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const q = query.trim()
+    navigate(q ? `/products?search=${encodeURIComponent(q)}` : '/products')
+  }
 
   const { data: categories, isLoading: catLoading } = useCategories()
   const { data: products, isLoading: prodLoading } = useProducts({ page: 1 })
@@ -28,7 +38,6 @@ export function HomePage() {
     <>
       {/* Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
-        {/* Blurred background image */}
         <img
           src="/images/al_basheer.jpg"
           alt=""
@@ -56,6 +65,27 @@ export function HomePage() {
           <p className="max-w-2xl text-base text-white/80 md:text-lg animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500 delay-100">
             {t('home.hero.subtitle')}
           </p>
+
+          {/* Search */}
+          <form
+            onSubmit={handleSearch}
+            className="mt-2 flex w-full max-w-lg items-center overflow-hidden rounded-full border border-white/20 bg-background/90 shadow-xl backdrop-blur-sm focus-within:ring-2 focus-within:ring-primary/60"
+          >
+            <Search className="ms-4 size-4 shrink-0 text-muted-foreground" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t('home.hero.searchPlaceholder')}
+              className="flex-1 bg-transparent px-3 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="m-1 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              {t('common.search')}
+            </button>
+          </form>
 
           <Button asChild size="lg" className="mt-2 shadow-lg shadow-primary/20">
             <Link to="/products">
@@ -111,20 +141,17 @@ export function HomePage() {
                 <Link
                   key={c.id}
                   to={`/products?category=${c.slug}`}
-                  className="group relative flex flex-col items-center gap-3 overflow-hidden rounded-2xl bg-card p-5 text-center shadow-sm ring-1 ring-border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-primary/40"
+                  className="group relative flex aspect-[3/4] overflow-hidden rounded-2xl bg-muted transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
-                  {/* Gold shimmer line at top on hover */}
-                  <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-primary to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-                  <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/8 transition-all duration-300 group-hover:bg-primary/15 group-hover:scale-110">
-                    {icon ? (
-                      <img src={icon} alt="" className="size-8 object-contain" />
-                    ) : (
-                      <span className="text-xl font-bold text-primary">{name.charAt(0)}</span>
-                    )}
-                  </div>
-
-                  <span className="text-xs font-semibold leading-snug text-muted-foreground line-clamp-2 transition-colors duration-300 group-hover:text-primary">
+                  {icon && (
+                    <img
+                      src={icon}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  )}
+                  <span aria-hidden className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
+                  <span className="absolute inset-x-2 bottom-3 z-10 line-clamp-2 text-center text-xs font-bold leading-snug text-white drop-shadow-sm">
                     {name}
                   </span>
                 </Link>
@@ -153,10 +180,7 @@ export function HomePage() {
         {prodLoading ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="overflow-hidden rounded-xl border border-border"
-              >
+              <div key={i} className="overflow-hidden rounded-xl border border-border">
                 <Skeleton className="aspect-square w-full rounded-none" />
                 <div className="space-y-2 p-4">
                   <Skeleton className="h-4 w-3/4" />

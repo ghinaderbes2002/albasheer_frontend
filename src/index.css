@@ -38,30 +38,30 @@
   --color-ink-950: #050506;
 
   /* shadcn semantic tokens (light) */
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
+  --color-background: oklch(0.977 0.008 85);
+  --color-foreground: oklch(0.13 0.01 260);
   --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.145 0 0);
+  --color-card-foreground: oklch(0.13 0.01 260);
   --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.145 0 0);
+  --color-popover-foreground: oklch(0.13 0.01 260);
   --color-primary: var(--color-brand-500);
   --color-primary-foreground: var(--color-ink-950);
   --color-secondary: var(--color-ink-900);
   --color-secondary-foreground: oklch(0.985 0 0);
-  --color-muted: oklch(0.97 0 0);
-  --color-muted-foreground: oklch(0.556 0 0);
+  --color-muted: oklch(0.965 0.006 85);
+  --color-muted-foreground: oklch(0.52 0.01 260);
   --color-accent: var(--color-brand-100);
   --color-accent-foreground: var(--color-brand-900);
   --color-destructive: oklch(0.577 0.245 27.325);
   --color-destructive-foreground: oklch(0.985 0 0);
-  --color-border: oklch(0.922 0 0);
-  --color-input: oklch(0.922 0 0);
+  --color-border: oklch(0.91 0.006 85);
+  --color-input: oklch(0.91 0.006 85);
   --color-ring: var(--color-brand-500);
 
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
 /* Dark theme overrides — applied when .dark class is on <html> */
@@ -206,6 +206,18 @@
   box-shadow:
     0 0 0 1px rgba(212, 175, 55, 0.18),
     0 4px 24px rgba(212, 175, 55, 0.12);
+}
+
+/* Warm card shadow */
+.shadow-warm {
+  box-shadow:
+    0 1px 3px rgba(100, 60, 10, 0.06),
+    0 4px 16px rgba(100, 60, 10, 0.07);
+}
+.shadow-warm-lg {
+  box-shadow:
+    0 2px 6px rgba(100, 60, 10, 0.07),
+    0 12px 40px rgba(100, 60, 10, 0.12);
 }
 
 /* Shimmer loading keyframe */

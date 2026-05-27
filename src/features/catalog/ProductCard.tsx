@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, ArrowRight, ImageOff } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Heart, ImageOff, ShoppingCart } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { resolveMediaUrl } from '@/lib/api'
@@ -28,12 +28,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
     <Link
       to={`/products/${product.slug}`}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-300',
-        'hover:-translate-y-1.5 hover:border-primary/60 hover:shadow-2xl hover:shadow-primary/15',
+        'group relative flex flex-col overflow-hidden rounded-3xl bg-card text-card-foreground shadow-warm transition-all duration-300',
+        'hover:-translate-y-1.5 hover:shadow-warm-lg',
         className,
       )}
     >
-      <div className="relative aspect-square overflow-hidden bg-muted">
+      {/* Image container */}
+      <div className="relative aspect-square overflow-hidden bg-muted/60">
         {image ? (
           <img
             src={image}
@@ -42,47 +43,63 @@ export function ProductCard({ product, className }: ProductCardProps) {
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-            <ImageOff className="size-10" />
+          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground/40">
+            <ImageOff className="size-12" />
           </div>
         )}
 
-        {/* Gradient overlay on hover */}
-        <span
-          aria-hidden
-          className="absolute inset-0 bg-linear-to-t from-black/40 via-black/0 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        />
-
-        {/* Category chip */}
+        {/* Category chip top-left */}
         <Badge
           variant="secondary"
-          className="absolute top-2 inset-s-2 backdrop-blur-sm"
+          className="absolute top-3 inset-s-3 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm bg-background/80 text-foreground border-0"
         >
           {categoryName}
         </Badge>
 
-        {/* "View" pill — appears on hover */}
-        <div className="pointer-events-none absolute inset-x-3 bottom-3 flex translate-y-3 justify-center opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-lg">
+        {/* Wishlist top-right */}
+        <button
+          type="button"
+          onClick={(e) => e.preventDefault()}
+          className="absolute top-3 inset-e-3 flex size-8 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm text-muted-foreground shadow-sm transition-all duration-200 hover:scale-110 hover:bg-background hover:text-primary"
+          aria-label="Add to wishlist"
+        >
+          <Heart className="size-4" />
+        </button>
+
+        {/* Hover overlay gradient */}
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        />
+
+        {/* Add to cart — slides up on hover */}
+        <div className="absolute inset-x-3 bottom-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="flex items-center justify-center gap-1.5 rounded-full border border-background/60 bg-background/90 backdrop-blur-sm px-4 py-2 text-xs font-semibold text-foreground shadow-sm">
+            <ShoppingCart className="size-3.5" />
             {t('catalog.view')}
-            <Arrow className="size-3.5" />
-          </span>
+            <Arrow className="size-3" />
+          </div>
         </div>
       </div>
 
+      {/* Info */}
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-2 text-sm font-semibold leading-tight transition-colors group-hover:text-primary">
+        <h3 className="line-clamp-2 text-sm font-semibold leading-snug transition-colors group-hover:text-primary">
           {name}
         </h3>
-        <div className="mt-auto">
-          <div className="inline-flex items-baseline gap-1 rounded-lg bg-primary/10 px-2.5 py-1 ring-1 ring-primary/20">
-            <span className="text-base font-extrabold tabular-nums text-primary">
+
+        <div className="mt-auto flex items-center justify-between gap-2">
+          <div className="inline-flex items-baseline gap-0.5">
+            <span className="text-base font-extrabold tabular-nums text-foreground">
               {formatPrice(product.price, i18n.language)}
             </span>
-            <span className="text-[11px] font-semibold text-primary/70">
-              {t('common.currency')}
+            <span className="text-[11px] font-medium text-muted-foreground">
+              {' '}{t('common.currency')}
             </span>
           </div>
+          <span className="text-[10px] text-muted-foreground rounded-full bg-muted px-2 py-0.5">
+            {t('catalog.inStock', { defaultValue: 'متوفر' })}
+          </span>
         </div>
       </div>
     </Link>
