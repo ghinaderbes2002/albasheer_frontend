@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, ArrowRight, Info, Loader2, Banknote, CreditCard } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Info, Loader2, Banknote, CreditCard, LocateFixed } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -107,6 +107,54 @@ export function CheckoutPage() {
       customer_note: '',
     },
   })
+
+  const [locating, setLocating] = useState(false)
+
+  async function detectCity() {
+    if (!navigator.geolocation) return
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude, longitude } = pos.coords
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=ar`,
+            { headers: { 'Accept-Language': 'ar' } },
+          )
+          const json = await res.json()
+          const detected: string =
+            json.address?.city ||
+            json.address?.town ||
+            json.address?.county ||
+            json.address?.state_district ||
+            ''
+          if (detected && cities) {
+            const match = cities.find(
+              (c) =>
+                c.name === detected ||
+                c.name.includes(detected) ||
+                detected.includes(c.name),
+            )
+            if (match) {
+              setValue('city', match.name, { shouldValidate: true })
+              toast.success(t('checkout.city.detected', { city: match.name }))
+            } else {
+              toast(t('checkout.city.notFound', { city: detected }), { icon: '📍' })
+            }
+          }
+        } catch {
+          toast.error(t('errors.generic'))
+        } finally {
+          setLocating(false)
+        }
+      },
+      () => {
+        setLocating(false)
+        toast.error(t('branches.locationDenied'))
+      },
+      { timeout: 8000 },
+    )
+  }
 
   const selectedCityName = watch('city')
   const selectedCity = cities?.find((c) => c.name === selectedCityName)
@@ -236,7 +284,21 @@ export function CheckoutPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <Label htmlFor="city">{t('checkout.city.label')}</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="city">{t('checkout.city.label')}</Label>
+                <button
+                  type="button"
+                  onClick={detectCity}
+                  disabled={locating || busy}
+                  className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline disabled:opacity-50"
+                >
+                  {locating
+                    ? <Loader2 className="size-3 animate-spin" />
+                    : <LocateFixed className="size-3" />
+                  }
+                  {t('checkout.city.detectLocation')}
+                </button>
+              </div>
               {citiesLoading ? (
                 <Skeleton className="h-10 w-full rounded-md" />
               ) : (

@@ -199,7 +199,10 @@
     "city": {
       "title": "Delivery city",
       "label": "City",
-      "placeholder": "Select your city"
+      "placeholder": "Select your city",
+      "detectLocation": "Use my location",
+      "detected": "City detected: {{city}}",
+      "notFound": "You're in {{city}} — please select the nearest city manually"
     },
     "branch": {
       "title": "Pickup branch",

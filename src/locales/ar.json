@@ -202,7 +202,10 @@
     "city": {
       "title": "مدينة التوصيل",
       "label": "المدينة",
-      "placeholder": "اختر مدينتك"
+      "placeholder": "اختر مدينتك",
+      "detectLocation": "استخدم موقعي",
+      "detected": "تم تحديد مدينتك: {{city}}",
+      "notFound": "موقعك في {{city}} — اختر أقرب مدينة يدوياً"
     },
     "branch": {
       "title": "فرع الاستلام",
