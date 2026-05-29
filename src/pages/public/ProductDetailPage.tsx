@@ -70,6 +70,7 @@ export function ProductDetailPage() {
   const isAvailable = selectedVariant ? selectedVariant.is_available : product.is_available
 
   function handleBuyNow() {
+    if (!product) return
     const effectivePrice = selectedVariant?.effective_price ?? product.price
     const variantMainImage =
       selectedVariant?.images?.find((img) => img.is_main)?.image ??
