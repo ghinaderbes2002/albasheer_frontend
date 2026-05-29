@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, ArrowRight, Info, Loader2, Banknote, CreditCard } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -24,7 +24,7 @@ import {
 import { useAddresses } from '@/features/addresses/queries'
 import { useCities } from '@/features/branches/queries'
 import { usePaymentMethods } from '@/features/paymentMethods/queries'
-import { useCartStore } from '@/store/cart'
+import { useCartStore, type CartItem } from '@/store/cart'
 import { extractApiError } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { formatPrice, pickLang } from '@/lib/format'
@@ -43,7 +43,9 @@ const errorKey = (msg?: string) => {
 export function CheckoutPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
+  const buyNowItem = (location.state as { buyNowItem?: CartItem } | null)?.buyNowItem
   const allItems = useCartStore((s) => s.items)
   const allBundles = useCartStore((s) => s.bundles)
   const removeItem = useCartStore((s) => s.removeItem)
@@ -59,22 +61,24 @@ export function CheckoutPage() {
   const isSingleItem = !!(onlyProductId || onlyBundleId)
 
   const items = useMemo(() => {
+    if (buyNowItem) return [buyNowItem]
     if (onlyBundleId) return []
     if (onlyProductId)
       return allItems.filter(
         (i) => String(i.product_id) === onlyProductId,
       )
     return allItems
-  }, [allItems, onlyProductId, onlyBundleId])
+  }, [buyNowItem, allItems, onlyProductId, onlyBundleId])
 
   const bundles = useMemo(() => {
+    if (buyNowItem) return []
     if (onlyProductId) return []
     if (onlyBundleId)
       return allBundles.filter(
         (b) => String(b.bundle_id) === onlyBundleId,
       )
     return allBundles
-  }, [allBundles, onlyProductId, onlyBundleId])
+  }, [buyNowItem, allBundles, onlyProductId, onlyBundleId])
 
   const subtotal = useMemo(
     () =>

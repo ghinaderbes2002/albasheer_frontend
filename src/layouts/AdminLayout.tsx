@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   BarChart3,
@@ -48,11 +48,11 @@ export function AdminLayout() {
   const logout = useAuthStore((s) => s.logout)
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const location = useLocation()
 
-  // close mobile drawer on route change
-  useState(() => {
+  useEffect(() => {
     setMobileOpen(false)
-  })
+  }, [location.pathname])
 
   return (
     <div className="flex min-h-svh bg-muted/30" dir="rtl">
@@ -129,7 +129,7 @@ export function AdminLayout() {
       {/* Sidebar — mobile drawer */}
       <aside
         className={cn(
-          'fixed inset-y-0 inset-e-0 z-50 flex w-64 flex-col border-s border-border bg-background transition-transform duration-200 md:hidden',
+          'fixed inset-y-0 inset-s-0 z-50 flex w-64 flex-col border-e border-border bg-background transition-transform duration-200 md:hidden',
           mobileOpen ? 'translate-x-0' : 'translate-x-full',
         )}
       >

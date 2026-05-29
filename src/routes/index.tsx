@@ -12,6 +12,7 @@ import { ProductDetailPage } from '@/pages/public/ProductDetailPage'
 import { BundlesPage } from '@/pages/public/BundlesPage'
 import { BundleDetailPage } from '@/pages/public/BundleDetailPage'
 import { BranchesPage } from '@/pages/public/BranchesPage'
+import { CategoriesPage } from '@/pages/public/CategoriesPage'
 
 import { LoginPage } from '@/pages/auth/LoginPage'
 import { VerifyOtpPage } from '@/pages/auth/VerifyOtpPage'
@@ -66,6 +67,7 @@ export const router = createBrowserRouter([
       { path: 'products/:slug', element: <ProductDetailPage /> },
       { path: 'bundles', element: <BundlesPage /> },
       { path: 'bundles/:id', element: <BundleDetailPage /> },
+      { path: 'categories', element: <CategoriesPage /> },
       { path: 'branches', element: <BranchesPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'login', element: <LoginPage /> },

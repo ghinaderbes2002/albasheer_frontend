@@ -130,9 +130,15 @@ export function Header() {
 
             {catOpen && categories && categories.length > 0 && (
               <div className="absolute inset-s-0 top-full z-50 mt-2 w-105 rounded-2xl border border-border bg-background p-4 shadow-warm-lg">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {t('home.categories.title')}
-                </p>
+                <div className="mb-3">
+                  <Link
+                    to="/categories"
+                    onClick={() => setCatOpen(false)}
+                    className="text-xs font-semibold uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {t('nav.allCategories')}
+                  </Link>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   {categories.map((c) => {
                     const icon = resolveMediaUrl(c.icon)

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Zap } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -9,6 +9,8 @@ import { ProductGallery } from '@/features/catalog/ProductGallery'
 import { ProductSpecs } from '@/features/catalog/ProductSpecs'
 import { AddToCartButton } from '@/features/catalog/AddToCartButton'
 import { useProduct } from '@/features/catalog/queries'
+import { Button } from '@/components/ui/button'
+import type { CartItem } from '@/store/cart'
 import { formatPrice, pickLang } from '@/lib/format'
 import { resolveMediaUrl } from '@/lib/api'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
@@ -17,6 +19,7 @@ import type { PublicProductVariant } from '@/types/api'
 export function ProductDetailPage() {
   const { t, i18n } = useTranslation()
   const { slug } = useParams<{ slug: string }>()
+  const navigate = useNavigate()
   const { data: product, isLoading, isError } = useProduct(slug)
 
   const [selectedVariant, setSelectedVariant] = useState<PublicProductVariant | null>(null)
@@ -65,6 +68,30 @@ export function ProductDetailPage() {
     : formatPrice(product.price, lang)
 
   const isAvailable = selectedVariant ? selectedVariant.is_available : product.is_available
+
+  function handleBuyNow() {
+    const effectivePrice = selectedVariant?.effective_price ?? product.price
+    const variantMainImage =
+      selectedVariant?.images?.find((img) => img.is_main)?.image ??
+      selectedVariant?.images?.[0]?.image ?? null
+    const productMainImage =
+      product.images?.find((img) => img.is_main)?.image ??
+      product.images?.[0]?.image ??
+      product.main_image ?? null
+
+    const buyNowItem: CartItem = {
+      product_id: product.id,
+      variant_id: selectedVariant?.id ?? null,
+      slug: product.slug,
+      name: product.name,
+      name_ar: product.name_ar,
+      price: effectivePrice,
+      image: variantMainImage ?? productMainImage,
+      quantity: 1,
+      variant_label: selectedVariant ? `${selectedVariant.type}: ${selectedVariant.option_value}` : null,
+    }
+    navigate('/checkout', { state: { buyNowItem } })
+  }
 
   // The gallery images: use selected variant's images if available, else product images
   const galleryImages = selectedVariant?.images?.length
@@ -163,9 +190,20 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            {/* Add to cart */}
-            <div className="mt-1">
+            {/* Add to cart + Buy now */}
+            <div className="mt-1 flex flex-wrap gap-3">
               <AddToCartButton product={product} variant={selectedVariant} />
+              <Button
+                type="button"
+                size="lg"
+                variant="outline"
+                disabled={!isAvailable}
+                onClick={handleBuyNow}
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                <Zap className="size-4" />
+                {t('cart.buyNow')}
+              </Button>
             </div>
 
             {/* Specs */}

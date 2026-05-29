@@ -33,7 +33,8 @@
     "logout": "تسجيل الخروج",
     "dashboard": "لوحة التحكم",
     "bundles": "الباقات",
-    "addresses": "عناوين التوصيل"
+    "addresses": "عناوين التوصيل",
+    "allCategories": "كل التصنيفات"
   },
   "errors": {
     "notFound": "الصفحة غير موجودة",
