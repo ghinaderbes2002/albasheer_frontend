@@ -382,6 +382,7 @@ export interface AdminBranch {
   id: number
   name: string
   name_ar: string
+  city?: string
   address: string
   phone: string
   maps_url: string
