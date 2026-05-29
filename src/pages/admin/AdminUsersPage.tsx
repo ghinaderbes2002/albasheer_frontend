@@ -98,8 +98,8 @@ export function AdminUsersPage() {
             <tbody className="divide-y divide-border">
               {data.map((u) => (
                 <tr key={u.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 text-muted-foreground" dir="ltr">#{u.id}</td>
-                  <td className="px-4 py-3 font-medium" dir="ltr">{u.phone}</td>
+                  <td className="px-4 py-3 text-muted-foreground"><span dir="ltr">#{u.id}</span></td>
+                  <td className="px-4 py-3 font-medium"><span dir="ltr">{u.phone}</span></td>
                   <td className="px-4 py-3 hidden sm:table-cell">
                     {[u.first_name, u.last_name].filter(Boolean).join(' ') || '—'}
                   </td>

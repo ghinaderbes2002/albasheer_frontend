@@ -127,9 +127,9 @@ export function AdminReportsPage() {
               <tbody className="divide-y divide-border">
                 {dailyRows.map((s, i) => (
                   <tr key={i} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-2.5 font-mono text-sm" dir="ltr">{s.date}</td>
+                    <td className="px-4 py-2.5 font-mono text-sm"><span dir="ltr">{s.date}</span></td>
                     <td className="px-4 py-2.5">{s.orders}</td>
-                    <td className="px-4 py-2.5 tabular-nums" dir="ltr">{fmt(s.revenue)} {currency}</td>
+                    <td className="px-4 py-2.5 tabular-nums"><span dir="ltr">{fmt(s.revenue)} {currency}</span></td>
                   </tr>
                 ))}
               </tbody>
@@ -137,7 +137,7 @@ export function AdminReportsPage() {
                 <tr>
                   <td className="px-4 py-2.5 font-semibold">{t('admin.reports.total')}</td>
                   <td className="px-4 py-2.5 font-semibold">{totalOrders}</td>
-                  <td className="px-4 py-2.5 font-semibold tabular-nums text-primary" dir="ltr">{fmt(totalRevenue)} {currency}</td>
+                  <td className="px-4 py-2.5 font-semibold tabular-nums text-primary"><span dir="ltr">{fmt(totalRevenue)} {currency}</span></td>
                 </tr>
               </tfoot>
             </table>
@@ -173,7 +173,7 @@ export function AdminReportsPage() {
                       </td>
                       <td className="px-4 py-2.5 font-medium">{p.name_ar || '—'}</td>
                       <td className="px-4 py-2.5">{p.total_sold}</td>
-                      <td className="px-4 py-2.5 tabular-nums" dir="ltr">{fmt(p.total_revenue)} {currency}</td>
+                      <td className="px-4 py-2.5 tabular-nums"><span dir="ltr">{fmt(p.total_revenue)} {currency}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -208,7 +208,7 @@ export function AdminReportsPage() {
                       </td>
                       <td className="px-4 py-2.5 font-medium">{b.name_ar || '—'}</td>
                       <td className="px-4 py-2.5">{b.total_orders}</td>
-                      <td className="px-4 py-2.5 tabular-nums" dir="ltr">{fmt(b.total_revenue)} {currency}</td>
+                      <td className="px-4 py-2.5 tabular-nums"><span dir="ltr">{fmt(b.total_revenue)} {currency}</span></td>
                     </tr>
                   ))}
                 </tbody>

@@ -130,19 +130,19 @@ export function AdminOrdersPage() {
                   className="hover:bg-muted/30 transition-colors cursor-pointer"
                   onClick={() => navigate(`/admin/orders/${o.id}`)}
                 >
-                  <td className="px-4 py-3 text-muted-foreground font-mono" dir="ltr">#{o.id}</td>
-                  <td className="px-4 py-3 font-medium" dir="ltr">{o.customer_phone}</td>
+                  <td className="px-4 py-3 text-muted-foreground font-mono"><span dir="ltr">#{o.id}</span></td>
+                  <td className="px-4 py-3 font-medium"><span dir="ltr">{o.customer_phone}</span></td>
                   <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">{o.branch_name}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(o.status)}`}>
                       {t(`status.${o.status}`)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 hidden md:table-cell tabular-nums" dir="ltr">
-                    {Number(o.total_price).toLocaleString('en-US')} {t('common.currency')}
+                  <td className="px-4 py-3 hidden md:table-cell tabular-nums">
+                    <span dir="ltr">{Number(o.total_price).toLocaleString('en-US')} {t('common.currency')}</span>
                   </td>
-                  <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground font-mono text-xs" dir="ltr">
-                    {o.created_at.slice(0, 10)}
+                  <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground font-mono text-xs">
+                    <span dir="ltr">{o.created_at.slice(0, 10)}</span>
                   </td>
                 </tr>
               ))}

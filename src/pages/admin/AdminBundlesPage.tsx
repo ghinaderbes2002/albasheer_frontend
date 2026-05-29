@@ -80,8 +80,8 @@ export function AdminBundlesPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 hidden sm:table-cell" dir="ltr">
-                    {Number(b.price).toLocaleString('en-US')} {t('common.currency')}
+                  <td className="px-4 py-3 hidden sm:table-cell">
+                    <span dir="ltr">{Number(b.price).toLocaleString('en-US')} {t('common.currency')}</span>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
                     {b.products?.length ?? 0}

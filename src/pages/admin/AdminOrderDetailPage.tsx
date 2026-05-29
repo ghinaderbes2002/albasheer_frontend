@@ -170,8 +170,8 @@ export function AdminOrderDetailPage() {
                 <tr key={item.id}>
                   <td className="px-4 py-2.5">{item.product_name}</td>
                   <td className="px-4 py-2.5">{item.quantity}</td>
-                  <td className="px-4 py-2.5 tabular-nums" dir="ltr">{fmt(item.unit_price)} {currency}</td>
-                  <td className="px-4 py-2.5 tabular-nums" dir="ltr">{fmt(item.subtotal ?? item.unit_price)} {currency}</td>
+                  <td className="px-4 py-2.5 tabular-nums"><span dir="ltr">{fmt(item.unit_price)} {currency}</span></td>
+                  <td className="px-4 py-2.5 tabular-nums"><span dir="ltr">{fmt(item.subtotal ?? item.unit_price)} {currency}</span></td>
                 </tr>
               ))}
             </tbody>

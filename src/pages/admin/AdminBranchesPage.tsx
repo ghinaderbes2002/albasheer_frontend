@@ -89,7 +89,7 @@ export function AdminBranchesPage() {
               <tr>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground w-12">ID</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.branches.nameAr')}</th>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.branches.city')}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.branches.nameEn')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.branches.phone')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden lg:table-cell">{t('admin.branches.address')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.branches.status')}</th>
@@ -103,10 +103,10 @@ export function AdminBranchesPage() {
                   className="hover:bg-muted/30 transition-colors cursor-pointer"
                   onClick={() => setViewBranch(b)}
                 >
-                  <td className="px-4 py-3 text-muted-foreground" dir="ltr">#{b.id}</td>
+                  <td className="px-4 py-3 text-muted-foreground"><span dir="ltr">#{b.id}</span></td>
                   <td className="px-4 py-3 font-medium">{b.name_ar || b.name}</td>
-                  <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">{b.city || '—'}</td>
-                  <td className="px-4 py-3 hidden sm:table-cell" dir="ltr">{b.phone || '—'}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">{b.name || '—'}</td>
+                  <td className="px-4 py-3 hidden sm:table-cell"><span dir="ltr">{b.phone || '—'}</span></td>
                   <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground truncate max-w-[200px]">{b.address || '—'}</td>
                   <td className="px-4 py-3 hidden md:table-cell">
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${b.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
