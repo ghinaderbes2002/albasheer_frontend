@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /content/
+Disallow: /checkout
+Disallow: /cart
+Disallow: /profile
+Disallow: /addresses
+Disallow: /orders
+
+Sitemap: http://152.239.112.38/sitemap.xml

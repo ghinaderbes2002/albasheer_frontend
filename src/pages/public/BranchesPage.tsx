@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Building2 } from 'lucide-react'
+import { Seo } from '@/components/shared/Seo'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { BranchCard } from '@/features/branches/BranchCard'
@@ -12,6 +13,7 @@ export function BranchesPage() {
 
   return (
     <div>
+      <Seo title={t('nav.branches')} description={t('branches.subtitle')} url="/branches" />
       <PageHero
         title={t('nav.branches')}
         subtitle={t('branches.subtitle')}

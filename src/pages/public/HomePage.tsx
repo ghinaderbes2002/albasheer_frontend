@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Seo } from '@/components/shared/Seo'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ProductCard } from '@/features/catalog/ProductCard'
 import { useCategories, useProducts } from '@/features/catalog/queries'
@@ -36,6 +37,7 @@ export function HomePage() {
 
   return (
     <>
+      <Seo url="/" />
       {/* Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <img

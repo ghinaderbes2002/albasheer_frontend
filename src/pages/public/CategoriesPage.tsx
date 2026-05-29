@@ -7,6 +7,7 @@ import { useCategories } from '@/features/catalog/queries'
 import { resolveMediaUrl } from '@/lib/api'
 import { pickLang } from '@/lib/format'
 import { PageHero } from '@/components/shared/PageHero'
+import { Seo } from '@/components/shared/Seo'
 
 export function CategoriesPage() {
   const { t, i18n } = useTranslation()
@@ -15,6 +16,7 @@ export function CategoriesPage() {
 
   return (
     <div>
+      <Seo title={t('home.categories.title')} url="/categories" />
       <PageHero
         title={t('home.categories.title')}
         subtitle={t('catalog.heroSubtitle')}

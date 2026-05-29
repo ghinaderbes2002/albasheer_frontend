@@ -10,6 +10,7 @@ import { ProductSpecs } from '@/features/catalog/ProductSpecs'
 import { AddToCartButton } from '@/features/catalog/AddToCartButton'
 import { useProduct } from '@/features/catalog/queries'
 import { Button } from '@/components/ui/button'
+import { Seo } from '@/components/shared/Seo'
 import type { CartItem } from '@/store/cart'
 import { formatPrice, pickLang } from '@/lib/format'
 import { resolveMediaUrl } from '@/lib/api'
@@ -106,8 +107,19 @@ export function ProductDetailPage() {
     return acc
   }, {})
 
+  const seoImage = resolveMediaUrl(
+    product.images?.find((i) => i.is_main)?.image ?? product.images?.[0]?.image ?? product.main_image,
+  )
+
   return (
     <div>
+      <Seo
+        title={name}
+        description={description || `${name} — ${t('common.currency')} ${product.price}`}
+        image={seoImage ?? undefined}
+        url={`/products/${product.slug}`}
+        type="product"
+      />
       {/* Breadcrumb */}
       <div className="border-b border-border/60 bg-muted/30">
         <nav

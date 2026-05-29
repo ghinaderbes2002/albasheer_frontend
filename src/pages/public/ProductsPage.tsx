@@ -9,6 +9,7 @@ import { Pagination } from '@/features/catalog/Pagination'
 import { useProducts } from '@/features/catalog/queries'
 import { PRODUCTS_PAGE_SIZE, type ProductOrdering } from '@/api/products'
 import { PageHero } from '@/components/shared/PageHero'
+import { Seo } from '@/components/shared/Seo'
 
 const PAGE_SIZE = PRODUCTS_PAGE_SIZE
 
@@ -52,6 +53,7 @@ export function ProductsPage() {
 
   return (
     <div>
+      <Seo title={t('nav.products')} description={t('catalog.heroSubtitle')} url="/products" />
       <PageHero
         title={t('nav.products')}
         subtitle={t('catalog.heroSubtitle')}

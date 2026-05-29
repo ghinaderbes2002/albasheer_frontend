@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { BundleCard } from '@/features/bundles/BundleCard'
 import { useBundles } from '@/features/bundles/queries'
 import { PageHero } from '@/components/shared/PageHero'
+import { Seo } from '@/components/shared/Seo'
 
 export function BundlesPage() {
   const { t } = useTranslation()
@@ -12,6 +13,7 @@ export function BundlesPage() {
 
   return (
     <div>
+      <Seo title={t('nav.bundles')} description={t('bundles.subtitle')} url="/bundles" />
       <PageHero
         title={t('nav.bundles')}
         subtitle={t('bundles.subtitle')}

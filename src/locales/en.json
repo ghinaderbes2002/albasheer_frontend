@@ -146,7 +146,11 @@
   "branches": {
     "subtitle": "Visit your nearest branch — every store offers the same quality service",
     "empty": "No branches available right now",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "viewMap": "View on map",
+    "navigate": "Navigate from my location",
+    "locating": "Locating you...",
+    "locationDenied": "Location access denied — opening map without origin"
   },
   "bundles": {
     "label": "Bundle",

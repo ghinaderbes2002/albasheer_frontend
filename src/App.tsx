@@ -2,6 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { RouterProvider } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { HelmetProvider } from 'react-helmet-async'
 
 import '@/lib/i18n'
 import { queryClient } from '@/lib/queryClient'
@@ -12,6 +13,7 @@ import { AuthBootstrap } from '@/components/shared/AuthBootstrap'
 function App() {
   useDirectionSync()
   return (
+    <HelmetProvider>
     <QueryClientProvider client={queryClient}>
       <AuthBootstrap />
       <RouterProvider router={router} />
@@ -46,6 +48,7 @@ function App() {
       />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
+    </HelmetProvider>
   )
 }
 
