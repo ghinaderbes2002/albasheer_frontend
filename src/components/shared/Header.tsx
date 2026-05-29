@@ -281,7 +281,39 @@ export function Header() {
       {mobileOpen && (
         <div className="border-t border-border bg-background md:hidden animate-in slide-in-from-top-2 fade-in duration-200">
           <nav className="flex flex-col gap-1 p-2">
-            {links.map((link) => (
+            {links.slice(0, 1).map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.end}
+                className={({ isActive }) =>
+                  cn(
+                    'rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                    isActive
+                      ? 'bg-primary/10 text-foreground font-semibold'
+                      : 'text-foreground hover:bg-muted',
+                  )
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+
+            <NavLink
+              to="/categories"
+              className={({ isActive }) =>
+                cn(
+                  'rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
+                  isActive
+                    ? 'bg-primary/10 text-foreground font-semibold'
+                    : 'text-foreground hover:bg-muted',
+                )
+              }
+            >
+              {t('nav.allCategories')}
+            </NavLink>
+
+            {links.slice(1).map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
