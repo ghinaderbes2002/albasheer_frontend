@@ -220,7 +220,7 @@ export async function createAdminProduct(payload: FormData): Promise<AdminProduc
 
 export async function updateAdminProduct(
   id: number | string,
-  payload: Partial<Omit<AdminProduct, 'id' | 'slug' | 'images' | 'specs' | 'main_image'>> & { brand?: number | null },
+  payload: Omit<Partial<Omit<AdminProduct, 'id' | 'slug' | 'images' | 'specs' | 'main_image'>>, 'brand'> & { brand?: number | null },
 ): Promise<AdminProduct> {
   const { data } = await api.patch<AdminProduct>(
     `/api/admin/products/${id}/`,
