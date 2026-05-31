@@ -169,7 +169,7 @@ function ProductsTable({ products }: { products: AdminProduct[] }) {
                 </div>
               </td>
               <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground text-sm">
-                {p.brand || '—'}
+                {p.brand?.name_ar || '—'}
               </td>
               <td className="px-4 py-3 tabular-nums">
                 <span dir="ltr">{Number(p.price).toLocaleString('en-US')} {t('common.currency')}</span>
