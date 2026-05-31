@@ -71,6 +71,7 @@ import {
   removeRelatedProduct,
 } from '@/api/admin'
 import type { AdminAd, CreateUserPayload, OrderStatus } from '@/types/api'
+import { catalogKeys } from '@/features/catalog/queries'
 
 export const adminKeys = {
   all: ['admin'] as const,
@@ -231,7 +232,10 @@ export function useCreateAdminCategory() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (payload: FormData) => createAdminCategory(payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.categories() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.categories() })
+      qc.invalidateQueries({ queryKey: catalogKeys.categories() })
+    },
   })
 }
 
@@ -240,7 +244,10 @@ export function useUpdateAdminCategory(id: number | string) {
   return useMutation({
     mutationFn: (payload: Parameters<typeof updateAdminCategory>[1]) =>
       updateAdminCategory(id, payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.categories() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.categories() })
+      qc.invalidateQueries({ queryKey: catalogKeys.categories() })
+    },
   })
 }
 
@@ -248,7 +255,10 @@ export function useDeleteAdminCategory() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: number | string) => deleteAdminCategory(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.categories() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.categories() })
+      qc.invalidateQueries({ queryKey: catalogKeys.categories() })
+    },
   })
 }
 
@@ -278,7 +288,10 @@ export function useCreateAdminProduct() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (payload: FormData) => createAdminProduct(payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.products() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.products() })
+      qc.invalidateQueries({ queryKey: catalogKeys.allProducts() })
+    },
   })
 }
 
@@ -290,6 +303,8 @@ export function useUpdateAdminProduct(id: number | string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: adminKeys.products() })
       qc.invalidateQueries({ queryKey: adminKeys.product(id) })
+      qc.invalidateQueries({ queryKey: catalogKeys.allProducts() })
+      qc.invalidateQueries({ queryKey: catalogKeys.all })
     },
   })
 }
@@ -298,7 +313,10 @@ export function useDeleteAdminProduct() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (id: number | string) => deleteAdminProduct(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.products() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.products() })
+      qc.invalidateQueries({ queryKey: catalogKeys.allProducts() })
+    },
   })
 }
 
@@ -309,6 +327,8 @@ export function useToggleProductAvailability(id: number | string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: adminKeys.products() })
       qc.invalidateQueries({ queryKey: adminKeys.product(id) })
+      qc.invalidateQueries({ queryKey: catalogKeys.allProducts() })
+      qc.invalidateQueries({ queryKey: catalogKeys.all })
     },
   })
 }
@@ -317,7 +337,10 @@ export function useUploadProductImages(id: number | string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (formData: FormData) => uploadProductImages(id, formData),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.product(id) }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.product(id) })
+      qc.invalidateQueries({ queryKey: catalogKeys.all })
+    },
   })
 }
 

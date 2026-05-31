@@ -8,9 +8,10 @@ import type { ProductImage } from '@/types/api'
 interface ProductGalleryProps {
   images: ProductImage[]
   alt: string
+  lang?: string
 }
 
-export function ProductGallery({ images, alt }: ProductGalleryProps) {
+export function ProductGallery({ images, alt, lang = 'ar' }: ProductGalleryProps) {
   const ordered = [...images].sort((a, b) =>
     a.is_main === b.is_main ? a.id - b.id : a.is_main ? -1 : 1,
   )
@@ -24,7 +25,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
         {activeUrl ? (
           <img
             src={activeUrl}
-            alt={alt}
+            alt={(lang.startsWith('ar') ? active?.alt_text_ar : active?.alt_text) || alt}
             className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (

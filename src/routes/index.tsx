@@ -39,6 +39,7 @@ import { AdminUsersPage } from '@/pages/admin/AdminUsersPage'
 import { AdminBranchesPage } from '@/pages/admin/AdminBranchesPage'
 import { AdminCitiesPage } from '@/pages/admin/AdminCitiesPage'
 import { AdminCategoriesPage } from '@/pages/admin/AdminCategoriesPage'
+import { AdminCategoryDetailPage } from '@/pages/admin/AdminCategoryDetailPage'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
 import { AdminProductDetailPage } from '@/pages/admin/AdminProductDetailPage'
 import { AdminBundlesPage } from '@/pages/admin/AdminBundlesPage'
@@ -142,6 +143,7 @@ export const router = createBrowserRouter([
               { path: 'admin/branches', element: <AdminBranchesPage /> },
               { path: 'admin/cities', element: <AdminCitiesPage /> },
               { path: 'admin/categories', element: <AdminCategoriesPage /> },
+              { path: 'admin/categories/:id', element: <AdminCategoryDetailPage /> },
               { path: 'admin/products', element: <AdminProductsPage /> },
               { path: 'admin/products/:id', element: <AdminProductDetailPage /> },
               { path: 'admin/bundles', element: <AdminBundlesPage /> },

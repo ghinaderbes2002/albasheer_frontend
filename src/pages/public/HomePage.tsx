@@ -37,7 +37,17 @@ export function HomePage() {
 
   return (
     <>
-      <Seo url="/" />
+      <Seo
+        url="/"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'البشير للأدوات المنزلية',
+          url: 'https://albasheercomplex.com',
+          logo: 'https://albasheercomplex.com/images/logo_al_basheer-removebg-preview.png',
+          sameAs: [],
+        }}
+      />
       {/* Hero ──────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <img
@@ -137,18 +147,18 @@ export function HomePage() {
         ) : categories && categories.length > 0 ? (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
             {categories.map((c) => {
-              const icon = resolveMediaUrl(c.icon)
+              const displayImage = resolveMediaUrl(c.image) || resolveMediaUrl(c.icon)
               const name = pickLang(c.name, c.name_ar, i18n.language)
               return (
                 <Link
                   key={c.id}
                   to={`/products?category=${c.slug}`}
-                  className="group relative flex aspect-[3/4] overflow-hidden rounded-2xl bg-muted transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group relative flex aspect-3/4 overflow-hidden rounded-2xl bg-muted transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
-                  {icon && (
+                  {displayImage && (
                     <img
-                      src={icon}
-                      alt=""
+                      src={displayImage}
+                      alt={name}
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   )}

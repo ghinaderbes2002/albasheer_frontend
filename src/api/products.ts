@@ -69,3 +69,23 @@ export async function getProduct(slug: string): Promise<ProductDetail> {
   return data
 }
 
+export interface ProductMeta {
+  title_ar: string
+  title_en: string
+  description_ar: string
+  description_en: string
+  image: string | null
+  slug: string
+  price: string
+  is_available: boolean
+  canonical_ar: string
+  canonical_en: string
+  seo_title: string
+  meta_description: string
+}
+
+export async function getProductMeta(slug: string): Promise<ProductMeta> {
+  const { data } = await api.get<ProductMeta>(`/api/products/${slug}/meta/`)
+  return data
+}
+

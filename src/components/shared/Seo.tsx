@@ -9,7 +9,9 @@ interface SeoProps {
   description?: string
   image?: string
   url?: string
+  canonical?: string
   type?: 'website' | 'product'
+  jsonLd?: Record<string, unknown>
 }
 
 export function Seo({
@@ -17,10 +19,12 @@ export function Seo({
   description = 'أحدث الأجهزة الكهربائية المنزلية بأفضل الأسعار وضمان حقيقي — البشير للأدوات المنزلية',
   image = DEFAULT_IMAGE,
   url,
+  canonical: canonicalOverride,
   type = 'website',
+  jsonLd,
 }: SeoProps) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME
-  const canonical = url ? `${BASE_URL}${url}` : undefined
+  const canonical = canonicalOverride ?? (url ? `${BASE_URL}${url}` : undefined)
 
   return (
     <Helmet>
@@ -43,6 +47,13 @@ export function Seo({
 
       {/* Canonical */}
       {canonical && <link rel="canonical" href={canonical} />}
+
+      {/* JSON-LD Structured Data */}
+      {jsonLd && (
+        <script type="application/ld+json">
+          {JSON.stringify(jsonLd)}
+        </script>
+      )}
     </Helmet>
   )
 }

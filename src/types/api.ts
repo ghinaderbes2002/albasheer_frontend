@@ -82,6 +82,9 @@ export interface Category {
   name_ar: string
   slug: string
   icon: string | null
+  image: string | null
+  seo_title?: string | null
+  meta_description?: string | null
 }
 
 // ─── Products ─────────────────────────────────────────────────────────
@@ -89,6 +92,8 @@ export interface ProductImage {
   id: number
   image: string
   is_main: boolean
+  alt_text?: string | null
+  alt_text_ar?: string | null
 }
 
 export interface ProductSpec {
@@ -125,6 +130,8 @@ export interface ProductDetail extends ProductListItem {
   images: ProductImage[]
   specs: ProductSpec[]
   is_available: boolean
+  seo_title?: string | null
+  meta_description?: string | null
   variants?: PublicProductVariant[]
   related_products?: ProductListItem[]
 }
@@ -405,8 +412,11 @@ export interface AdminCategory {
   name_ar: string
   slug: string
   icon: string | null
+  image: string | null
   is_active: boolean
   order: number
+  seo_title?: string
+  meta_description?: string
 }
 
 export interface AdminProduct {

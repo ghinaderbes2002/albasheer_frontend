@@ -16,7 +16,10 @@ export function CategoriesPage() {
 
   return (
     <div>
-      <Seo title={t('home.categories.title')} url="/categories" />
+      <Seo
+        title={t('home.categories.title')}
+        url="/categories"
+      />
       <PageHero
         title={t('home.categories.title')}
         subtitle={t('catalog.heroSubtitle')}
@@ -34,7 +37,7 @@ export function CategoriesPage() {
         ) : categories && categories.length > 0 ? (
           categories.map((c, idx) => {
             const isEven = idx % 2 === 0
-            const icon = resolveMediaUrl(c.icon)
+            const displayImage = resolveMediaUrl(c.image) || resolveMediaUrl(c.icon)
             const name = pickLang(c.name, c.name_ar, i18n.language)
 
             return (
@@ -45,9 +48,9 @@ export function CategoriesPage() {
                 {/* Image card */}
                 <div className={!isEven ? 'md:order-2' : ''}>
                   <div className="relative h-72 overflow-hidden rounded-3xl bg-muted md:h-full min-h-64">
-                    {icon ? (
+                    {displayImage ? (
                       <img
-                        src={icon}
+                        src={displayImage}
                         alt={name}
                         className="h-full w-full object-cover"
                       />

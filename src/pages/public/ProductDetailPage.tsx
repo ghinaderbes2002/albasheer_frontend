@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ProductGallery } from '@/features/catalog/ProductGallery'
 import { ProductSpecs } from '@/features/catalog/ProductSpecs'
 import { AddToCartButton } from '@/features/catalog/AddToCartButton'
-import { useProduct } from '@/features/catalog/queries'
+import { useProduct, useProductMeta } from '@/features/catalog/queries'
 import { Button } from '@/components/ui/button'
 import { Seo } from '@/components/shared/Seo'
 import type { CartItem } from '@/store/cart'
@@ -22,6 +22,7 @@ export function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { data: product, isLoading, isError } = useProduct(slug)
+  const { data: meta } = useProductMeta(slug)
 
   const [selectedVariant, setSelectedVariant] = useState<PublicProductVariant | null>(null)
 
@@ -114,11 +115,30 @@ export function ProductDetailPage() {
   return (
     <div>
       <Seo
-        title={name}
-        description={description || `${name} — ${t('common.currency')} ${product.price}`}
-        image={seoImage ?? undefined}
+        title={meta?.title_ar || product.seo_title || name}
+        description={meta?.description_ar || product.meta_description || description || `${name} — ${t('common.currency')} ${product.price}`}
+        image={meta?.image || seoImage || undefined}
         url={`/products/${product.slug}`}
         type="product"
+        canonical={lang.startsWith('ar') ? meta?.canonical_ar : meta?.canonical_en}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'Product',
+          name: lang.startsWith('ar') ? product.name_ar : product.name,
+          description: description || undefined,
+          image: seoImage ?? undefined,
+          sku: product.slug,
+          brand: { '@type': 'Brand', name: 'البشير' },
+          offers: {
+            '@type': 'Offer',
+            price: product.price,
+            priceCurrency: 'SYP',
+            availability: product.is_available
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
+            url: meta?.canonical_ar ?? `https://albasheercomplex.com/products/${product.slug}`,
+          },
+        }}
       />
       {/* Breadcrumb */}
       <div className="border-b border-border/60 bg-muted/30">
@@ -136,7 +156,7 @@ export function ProductDetailPage() {
 
       <div className="mx-auto w-full max-w-7xl px-4 py-8 lg:py-12">
         <div className="grid gap-8 md:gap-12 md:grid-cols-2">
-          <ProductGallery images={galleryImages} alt={name} />
+          <ProductGallery images={galleryImages} alt={name} lang={lang} />
 
           <div className="flex flex-col gap-5">
             {/* Category + availability */}
