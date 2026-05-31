@@ -168,6 +168,12 @@ export async function deleteAdminCategory(id: number | string): Promise<void> {
   await api.delete(`/api/admin/categories/${id}/`)
 }
 
+// ─── Brands ───────────────────────────────────────────────────────────
+export async function getBrands(): Promise<string[]> {
+  const { data } = await api.get<string[]>('/api/products/brands/')
+  return data
+}
+
 // ─── Products ─────────────────────────────────────────────────────────
 export async function getAdminProducts(params?: {
   category?: number | string

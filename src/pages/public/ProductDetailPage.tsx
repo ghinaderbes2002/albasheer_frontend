@@ -183,7 +183,18 @@ export function ProductDetailPage() {
             {/* Variant selectors */}
             {Object.entries(variantGroups).map(([typeName, options]) => (
               <div key={typeName} className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">{typeName}</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-muted-foreground">{typeName}</p>
+                  {selectedVariant && options.some((v) => v.id === selectedVariant.id) && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedVariant(null)}
+                      className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
+                    >
+                      {t('catalog.clearSelection', { defaultValue: 'إلغاء الاختيار' })}
+                    </button>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {options.map((v) => {
                     const isSelected = selectedVariant?.id === v.id
@@ -193,7 +204,7 @@ export function ProductDetailPage() {
                         type="button"
                         disabled={!v.is_available}
                         onClick={() => setSelectedVariant(isSelected ? null : v)}
-                        className={`rounded-xl border px-4 py-2 text-sm font-medium transition-all
+                        className={`flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium transition-all
                           ${isSelected
                             ? 'border-primary bg-primary text-primary-foreground shadow-md'
                             : v.is_available
@@ -203,10 +214,11 @@ export function ProductDetailPage() {
                       >
                         {v.option_value}
                         {v.effective_price !== product.price && (
-                          <span className="ms-1.5 text-xs opacity-75">
+                          <span className="text-xs opacity-75">
                             {formatPrice(v.effective_price, lang)}
                           </span>
                         )}
+                        {isSelected && <span className="text-xs opacity-75">✕</span>}
                       </button>
                     )
                   })}

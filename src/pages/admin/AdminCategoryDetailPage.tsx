@@ -93,6 +93,12 @@ export function AdminCategoryDetailPage() {
             </Row>
             <Row label={t('admin.categories.nameEn')}><span>{category.name}</span></Row>
             <Row label={t('admin.categories.nameAr')}><span>{category.name_ar}</span></Row>
+            {category.seo_title && (
+              <Row label="SEO Title"><span className="truncate text-xs">{category.seo_title}</span></Row>
+            )}
+            {category.meta_description && (
+              <Row label="Meta Description"><span className="line-clamp-2 text-xs text-muted-foreground">{category.meta_description}</span></Row>
+            )}
           </div>
         </div>
       </div>
@@ -134,9 +140,10 @@ function ProductsTable({ products }: { products: AdminProduct[] }) {
         <thead className="bg-muted/50">
           <tr>
             <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.nameAr')}</th>
-            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.products.nameEn')}</th>
+            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.products.brand', { defaultValue: 'الشركة' })}</th>
             <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.price')}</th>
-            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.categories.active')}</th>
+            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.available')}</th>
+            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.inStock', { defaultValue: 'المخزن' })}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
@@ -155,16 +162,26 @@ function ProductsTable({ products }: { products: AdminProduct[] }) {
                       className="size-8 rounded object-cover"
                     />
                   )}
-                  {i18n.language.startsWith('ar') ? p.name_ar : p.name}
+                  <div>
+                    <p>{i18n.language.startsWith('ar') ? p.name_ar : p.name}</p>
+                    <p className="text-xs text-muted-foreground">{p.name}</p>
+                  </div>
                 </div>
               </td>
-              <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">{p.name}</td>
+              <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground text-sm">
+                {p.brand || '—'}
+              </td>
               <td className="px-4 py-3 tabular-nums">
                 <span dir="ltr">{Number(p.price).toLocaleString('en-US')} {t('common.currency')}</span>
               </td>
               <td className="px-4 py-3 hidden md:table-cell">
                 <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${p.is_available ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
-                  {p.is_available ? t('admin.categories.active') : t('catalog.outOfStock')}
+                  {p.is_available ? t('admin.products.available') : t('catalog.outOfStock')}
+                </span>
+              </td>
+              <td className="px-4 py-3 hidden md:table-cell">
+                <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${p.in_stock ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+                  {p.in_stock ? t('admin.products.inStock', { defaultValue: 'متوفر' }) : t('catalog.outOfStock')}
                 </span>
               </td>
             </tr>

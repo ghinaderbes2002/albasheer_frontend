@@ -427,13 +427,17 @@ export interface AdminProduct {
   price: string
   category: number
   category_name?: string
+  brand: string
   is_available: boolean
+  in_stock: boolean
   is_featured: boolean
   main_image: string | null
   images: ProductImage[]
   specs: ProductSpec[]
   description: string
   description_ar: string
+  seo_title: string
+  meta_description: string
 }
 
 export interface AdminBundle {

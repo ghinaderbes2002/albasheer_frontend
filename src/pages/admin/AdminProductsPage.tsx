@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { ImagePlus, Inbox, Loader2, Pencil, Plus, Search, Star, Trash2, X } from 'lucide-react'
@@ -19,6 +19,7 @@ import {
   useDeleteProductImage,
   useUpdateAdminProduct,
   useUploadProductImages,
+  useBrands,
 } from '@/features/admin/queries'
 import { uploadProductImages } from '@/api/admin'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
@@ -216,6 +217,7 @@ export function ProductFormDialog({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
+  const [brand, setBrand] = useState(initialProduct?.brand ?? '')
 
   const isEdit = !!initialProduct
 
@@ -238,7 +240,10 @@ export function ProductFormDialog({
       price: initialProduct?.price ?? '',
       category: initialProduct?.category ?? 0,
       is_available: initialProduct?.is_available ?? true,
+      in_stock: initialProduct?.in_stock ?? true,
       is_featured: initialProduct?.is_featured ?? false,
+      seo_title: initialProduct?.seo_title ?? '',
+      meta_description: initialProduct?.meta_description ?? '',
     },
   })
 
@@ -271,7 +276,8 @@ export function ProductFormDialog({
 
   const onSubmit = async (values: {
     name: string; name_ar: string; description: string; description_ar: string
-    price: string; category: number; is_available: boolean; is_featured: boolean
+    price: string; category: number; is_available: boolean; in_stock: boolean; is_featured: boolean
+    seo_title: string; meta_description: string
   }) => {
     try {
       if (isEdit) {
@@ -283,13 +289,18 @@ export function ProductFormDialog({
           price: values.price,
           category: values.category,
           is_available: values.is_available,
+          in_stock: values.in_stock,
           is_featured: values.is_featured,
+          brand: brand.trim(),
+          seo_title: values.seo_title,
+          meta_description: values.meta_description,
         })
         toast.success(t('admin.products.updated'))
         onClose()
       } else {
         const fd = new FormData()
         Object.entries(values).forEach(([k, v]) => fd.append(k, String(v)))
+        fd.append('brand', brand.trim())
         const newProduct = await create.mutateAsync(fd)
         toast.success(t('admin.products.created'))
 
@@ -352,13 +363,28 @@ export function ProductFormDialog({
               </select>
             </Field>
           </div>
-          <div className="flex gap-4">
+          <Field label={t('admin.products.brand', { defaultValue: 'الشركة المصنعة' })}>
+            <BrandCombobox value={brand} onChange={setBrand} />
+          </Field>
+
+          <Field label={t('admin.products.seoTitle', { defaultValue: 'عنوان SEO' })}>
+            <Input {...register('seo_title')} dir="auto" />
+          </Field>
+          <Field label={t('admin.products.metaDescription', { defaultValue: 'وصف meta' })}>
+            <Textarea {...register('meta_description')} rows={2} dir="auto" />
+          </Field>
+
+          <div className="flex flex-wrap gap-4">
             {isEdit && (
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" {...register('is_available')} className="size-4" />
                 {t('admin.products.available')}
               </label>
             )}
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" {...register('in_stock')} className="size-4" />
+              {t('admin.products.inStock', { defaultValue: 'متوفر في المخزن' })}
+            </label>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" {...register('is_featured')} className="size-4" />
               {t('admin.products.featured')}
@@ -459,6 +485,56 @@ export function ProductFormDialog({
           </div>
         </form>
       </div>
+    </div>
+  )
+}
+
+function BrandCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { t } = useTranslation()
+  const { data: brands = [] } = useBrands()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const filtered = brands.filter((b) => b.toLowerCase().includes(value.toLowerCase()))
+  const showDropdown = open && (filtered.length > 0 || (value.trim() && !brands.includes(value.trim())))
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative">
+      <Input
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        placeholder={t('admin.products.brandPlaceholder', { defaultValue: 'مثال: LG، سامسونج...' })}
+        autoComplete="off"
+      />
+      {showDropdown && (
+        <div className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-background shadow-lg overflow-hidden">
+          {filtered.map((b) => (
+            <button
+              key={b}
+              type="button"
+              className="flex w-full items-center px-3 py-2 text-sm hover:bg-muted/50 text-start"
+              onMouseDown={(e) => { e.preventDefault(); onChange(b); setOpen(false) }}
+            >
+              {b}
+            </button>
+          ))}
+          {value.trim() && !brands.includes(value.trim()) && (
+            <div className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted-foreground border-t border-border">
+              <Plus className="size-3.5 shrink-0" />
+              {t('admin.products.addBrand', { defaultValue: 'إضافة' })} &ldquo;{value.trim()}&rdquo;
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

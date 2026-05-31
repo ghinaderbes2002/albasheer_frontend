@@ -69,6 +69,7 @@ import {
   getRelatedProducts,
   addRelatedProduct,
   removeRelatedProduct,
+  getBrands,
 } from '@/api/admin'
 import type { AdminAd, CreateUserPayload, OrderStatus } from '@/types/api'
 import { catalogKeys } from '@/features/catalog/queries'
@@ -97,6 +98,11 @@ export const adminKeys = {
   variantOptions: (typeId: number | string) => [...adminKeys.all, 'variantOptions', typeId] as const,
   productVariants: (productId: number | string) => [...adminKeys.all, 'productVariants', productId] as const,
   relatedProducts: (productId: number | string) => [...adminKeys.all, 'relatedProducts', productId] as const,
+  brands: () => [...adminKeys.all, 'brands'] as const,
+}
+
+export function useBrands() {
+  return useQuery({ queryKey: adminKeys.brands(), queryFn: getBrands, staleTime: 1000 * 60 * 5 })
 }
 
 // ─── Stats ────────────────────────────────────────────────────────────

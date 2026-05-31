@@ -170,12 +170,27 @@ export function AdminProductDetailPage() {
             <span className="text-base font-medium text-muted-foreground">{t('common.currency')}</span>
           </p>
 
-          {product.category_name && (
-            <p className="text-sm text-muted-foreground">
-              {t('admin.products.category')}:{' '}
-              <span className="font-medium text-foreground">{product.category_name}</span>
-            </p>
-          )}
+          <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+            {product.category_name && (
+              <span>
+                {t('admin.products.category')}:{' '}
+                <span className="font-medium text-foreground">{product.category_name}</span>
+              </span>
+            )}
+            {product.brand && (
+              <span>
+                {t('admin.products.brand', { defaultValue: 'الشركة' })}:{' '}
+                <span className="font-medium text-foreground">{product.brand}</span>
+              </span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${product.in_stock ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+              {product.in_stock
+                ? t('admin.products.inStock', { defaultValue: 'متوفر في المخزن' })
+                : t('admin.products.outOfStock', { defaultValue: 'غير متوفر في المخزن' })}
+            </span>
+          </div>
 
           {product.description_ar && (
             <div className="rounded-xl border border-border bg-muted/30 p-3">
@@ -186,6 +201,18 @@ export function AdminProductDetailPage() {
           {product.description && (
             <div className="rounded-xl border border-border bg-muted/30 p-3" dir="ltr">
               <p className="text-left text-sm leading-relaxed text-muted-foreground">{product.description}</p>
+            </div>
+          )}
+          {(product.seo_title || product.meta_description) && (
+            <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-1">
+              {product.seo_title && (
+                <p className="text-xs text-muted-foreground">
+                  SEO: <span className="font-medium text-foreground">{product.seo_title}</span>
+                </p>
+              )}
+              {product.meta_description && (
+                <p className="text-xs text-muted-foreground line-clamp-2">{product.meta_description}</p>
+              )}
             </div>
           )}
         </div>

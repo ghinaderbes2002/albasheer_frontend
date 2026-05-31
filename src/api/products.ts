@@ -65,7 +65,7 @@ export async function getProducts(
 }
 
 export async function getProduct(slug: string): Promise<ProductDetail> {
-  const { data } = await api.get<ProductDetail>(`/api/products/${slug}/`)
+  const { data } = await api.get<ProductDetail>(`/api/products/${encodeURIComponent(slug)}/`)
   return data
 }
 
@@ -85,7 +85,7 @@ export interface ProductMeta {
 }
 
 export async function getProductMeta(slug: string): Promise<ProductMeta> {
-  const { data } = await api.get<ProductMeta>(`/api/products/${slug}/meta/`)
+  const { data } = await api.get<ProductMeta>(`/api/products/${encodeURIComponent(slug)}/meta/`)
   return data
 }
 
