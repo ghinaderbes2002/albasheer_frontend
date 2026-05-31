@@ -35,6 +35,7 @@ const NAV_ITEMS = [
   { to: '/admin/categories', label: 'admin.nav.categories', icon: Tag },
   { to: '/admin/products', label: 'admin.nav.products', icon: Package },
   { to: '/admin/bundles', label: 'admin.nav.bundles', icon: Boxes },
+  { to: '/admin/brands', label: 'admin.nav.brands', icon: Tag },
   { to: '/admin/variant-types', label: 'admin.nav.variantTypes', icon: Sliders },
   { to: '/admin/ads', label: 'admin.nav.ads', icon: Megaphone },
   { to: '/admin/orders', label: 'admin.nav.orders', icon: ClipboardList },

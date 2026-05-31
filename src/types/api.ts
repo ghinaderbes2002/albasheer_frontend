@@ -104,6 +104,14 @@ export interface ProductSpec {
   value_ar: string
 }
 
+export interface Brand {
+  id: number
+  name: string
+  name_ar: string
+  slug: string
+  logo: string | null
+}
+
 export interface ProductListItem {
   id: number
   name: string
@@ -427,7 +435,7 @@ export interface AdminProduct {
   price: string
   category: number
   category_name?: string
-  brand: string
+  brand: Brand | null
   is_available: boolean
   in_stock: boolean
   is_featured: boolean

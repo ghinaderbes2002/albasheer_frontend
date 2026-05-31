@@ -70,6 +70,10 @@ import {
   addRelatedProduct,
   removeRelatedProduct,
   getBrands,
+  getAdminBrands,
+  createBrand,
+  updateAdminBrand,
+  deleteAdminBrand,
 } from '@/api/admin'
 import type { AdminAd, CreateUserPayload, OrderStatus } from '@/types/api'
 import { catalogKeys } from '@/features/catalog/queries'
@@ -103,6 +107,35 @@ export const adminKeys = {
 
 export function useBrands() {
   return useQuery({ queryKey: adminKeys.brands(), queryFn: getBrands, staleTime: 1000 * 60 * 5 })
+}
+
+export function useAdminBrands() {
+  return useQuery({ queryKey: adminKeys.brands(), queryFn: getAdminBrands })
+}
+
+export function useCreateBrand() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: createBrand,
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.brands() }),
+  })
+}
+
+export function useUpdateAdminBrand() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: Parameters<typeof updateAdminBrand>[1] }) =>
+      updateAdminBrand(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.brands() }),
+  })
+}
+
+export function useDeleteAdminBrand() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: deleteAdminBrand,
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.brands() }),
+  })
 }
 
 // ─── Stats ────────────────────────────────────────────────────────────

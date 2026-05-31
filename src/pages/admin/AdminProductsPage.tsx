@@ -20,7 +20,9 @@ import {
   useUpdateAdminProduct,
   useUploadProductImages,
   useBrands,
+  useCreateBrand,
 } from '@/features/admin/queries'
+import type { Brand } from '@/types/api'
 import { uploadProductImages } from '@/api/admin'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
 import type { AdminProduct } from '@/types/api'
@@ -217,7 +219,9 @@ export function ProductFormDialog({
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [pendingFiles, setPendingFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
-  const [brand, setBrand] = useState(initialProduct?.brand ?? '')
+  const [brand, setBrand] = useState<Brand | null>(
+    initialProduct?.brand ? { id: initialProduct.brand.id, name: initialProduct.brand.name, name_ar: initialProduct.brand.name_ar, slug: initialProduct.brand.slug, logo: initialProduct.brand.logo } : null
+  )
 
   const isEdit = !!initialProduct
 
@@ -291,7 +295,7 @@ export function ProductFormDialog({
           is_available: values.is_available,
           in_stock: values.in_stock,
           is_featured: values.is_featured,
-          brand: brand.trim(),
+          brand: brand?.id ?? null,
           seo_title: values.seo_title,
           meta_description: values.meta_description,
         })
@@ -300,7 +304,7 @@ export function ProductFormDialog({
       } else {
         const fd = new FormData()
         Object.entries(values).forEach(([k, v]) => fd.append(k, String(v)))
-        fd.append('brand', brand.trim())
+        if (brand?.id) fd.append('brand', String(brand.id))
         const newProduct = await create.mutateAsync(fd)
         toast.success(t('admin.products.created'))
 
@@ -489,14 +493,27 @@ export function ProductFormDialog({
   )
 }
 
-function BrandCombobox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function BrandCombobox({
+  value,
+  onChange,
+}: {
+  value: Brand | null
+  onChange: (v: Brand | null) => void
+}) {
   const { t } = useTranslation()
   const { data: brands = [] } = useBrands()
+  const createBrandMutation = useCreateBrand()
+  const [input, setInput] = useState(value?.name_ar ?? '')
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const filtered = brands.filter((b) => b.toLowerCase().includes(value.toLowerCase()))
-  const showDropdown = open && (filtered.length > 0 || (value.trim() && !brands.includes(value.trim())))
+  const filtered = brands.filter((b) =>
+    b.name_ar.toLowerCase().includes(input.toLowerCase()) ||
+    b.name.toLowerCase().includes(input.toLowerCase())
+  )
+  const isNew = input.trim() && !brands.some(
+    (b) => b.name_ar === input.trim() || b.name === input.trim()
+  )
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -506,32 +523,67 @@ function BrandCombobox({ value, onChange }: { value: string; onChange: (v: strin
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
+  const handleSelect = (b: Brand) => {
+    onChange(b)
+    setInput(b.name_ar)
+    setOpen(false)
+  }
+
+  const handleAddNew = async () => {
+    const name = input.trim()
+    if (!name) return
+    try {
+      const brand = await createBrandMutation.mutateAsync({ name, name_ar: name })
+      handleSelect(brand)
+    } catch {
+      toast.error(t('errors.generic'))
+    }
+  }
+
+  const handleClear = () => { onChange(null); setInput('') }
+
   return (
     <div ref={ref} className="relative">
-      <Input
-        value={value}
-        onChange={(e) => { onChange(e.target.value); setOpen(true) }}
-        onFocus={() => setOpen(true)}
-        placeholder={t('admin.products.brandPlaceholder', { defaultValue: 'مثال: LG، سامسونج...' })}
-        autoComplete="off"
-      />
-      {showDropdown && (
+      <div className="flex gap-2">
+        <Input
+          value={input}
+          onChange={(e) => { setInput(e.target.value); setOpen(true); if (!e.target.value) onChange(null) }}
+          onFocus={() => setOpen(true)}
+          placeholder={t('admin.products.brandPlaceholder', { defaultValue: 'مثال: LG، سامسونج...' })}
+          autoComplete="off"
+          className="flex-1"
+        />
+        {value && (
+          <Button type="button" variant="ghost" size="icon" onClick={handleClear}>
+            <X className="size-4" />
+          </Button>
+        )}
+      </div>
+      {open && (filtered.length > 0 || isNew) && (
         <div className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-background shadow-lg overflow-hidden">
           {filtered.map((b) => (
             <button
-              key={b}
+              key={b.id}
               type="button"
               className="flex w-full items-center px-3 py-2 text-sm hover:bg-muted/50 text-start"
-              onMouseDown={(e) => { e.preventDefault(); onChange(b); setOpen(false) }}
+              onMouseDown={(e) => { e.preventDefault(); handleSelect(b) }}
             >
-              {b}
+              <span className="font-medium">{b.name_ar}</span>
+              {b.name !== b.name_ar && <span className="ms-2 text-xs text-muted-foreground">{b.name}</span>}
             </button>
           ))}
-          {value.trim() && !brands.includes(value.trim()) && (
-            <div className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted-foreground border-t border-border">
-              <Plus className="size-3.5 shrink-0" />
-              {t('admin.products.addBrand', { defaultValue: 'إضافة' })} &ldquo;{value.trim()}&rdquo;
-            </div>
+          {isNew && (
+            <button
+              type="button"
+              className="flex w-full items-center gap-1.5 px-3 py-2 text-sm text-primary hover:bg-muted/50 border-t border-border"
+              onMouseDown={(e) => { e.preventDefault(); handleAddNew() }}
+              disabled={createBrandMutation.isPending}
+            >
+              {createBrandMutation.isPending
+                ? <Loader2 className="size-3.5 animate-spin" />
+                : <Plus className="size-3.5" />}
+              {t('admin.products.addBrand', { defaultValue: 'إضافة' })} &ldquo;{input.trim()}&rdquo;
+            </button>
           )}
         </div>
       )}

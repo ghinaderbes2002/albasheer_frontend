@@ -3,6 +3,7 @@ import type {
   AdminAd,
   AdminBranch,
   AdminPaymentMethod,
+  Brand,
   ContentStats,
   SiteSettings,
   AdminBundle,
@@ -168,10 +169,30 @@ export async function deleteAdminCategory(id: number | string): Promise<void> {
   await api.delete(`/api/admin/categories/${id}/`)
 }
 
-// ─── Brands ───────────────────────────────────────────────────────────
-export async function getBrands(): Promise<string[]> {
-  const { data } = await api.get<string[]>('/api/products/brands/')
+// ─── Brands (public list for product form) ────────────────────────────
+export async function getBrands(): Promise<Brand[]> {
+  const { data } = await api.get<Brand[] | PaginatedResponse<Brand>>('/api/products/brands/')
+  return Array.isArray(data) ? data : data.results ?? []
+}
+
+// ─── Admin Brands (full CRUD) ─────────────────────────────────────────
+export async function getAdminBrands(): Promise<Brand[]> {
+  const { data } = await api.get<Brand[] | PaginatedResponse<Brand>>('/api/admin/brands/')
+  return unwrap(data)
+}
+
+export async function createBrand(payload: { name: string; name_ar: string }): Promise<Brand> {
+  const { data } = await api.post<Brand>('/api/admin/brands/', payload)
   return data
+}
+
+export async function updateAdminBrand(id: number, payload: Partial<Omit<Brand, 'id' | 'slug'>>): Promise<Brand> {
+  const { data } = await api.patch<Brand>(`/api/admin/brands/${id}/`, payload)
+  return data
+}
+
+export async function deleteAdminBrand(id: number): Promise<void> {
+  await api.delete(`/api/admin/brands/${id}/`)
 }
 
 // ─── Products ─────────────────────────────────────────────────────────
