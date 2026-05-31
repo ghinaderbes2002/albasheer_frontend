@@ -20,7 +20,6 @@ import {
   useUpdateAdminProduct,
   useUploadProductImages,
   useBrands,
-  useCreateBrand,
 } from '@/features/admin/queries'
 import type { Brand } from '@/types/api'
 import { uploadProductImages } from '@/api/admin'
@@ -502,7 +501,6 @@ function BrandCombobox({
 }) {
   const { t } = useTranslation()
   const { data: brands = [] } = useBrands()
-  const createBrandMutation = useCreateBrand()
   const [input, setInput] = useState(value?.name_ar ?? '')
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -510,9 +508,6 @@ function BrandCombobox({
   const filtered = brands.filter((b) =>
     b.name_ar.toLowerCase().includes(input.toLowerCase()) ||
     b.name.toLowerCase().includes(input.toLowerCase())
-  )
-  const isNew = input.trim() && !brands.some(
-    (b) => b.name_ar === input.trim() || b.name === input.trim()
   )
 
   useEffect(() => {
@@ -529,17 +524,6 @@ function BrandCombobox({
     setOpen(false)
   }
 
-  const handleAddNew = async () => {
-    const name = input.trim()
-    if (!name) return
-    try {
-      const brand = await createBrandMutation.mutateAsync({ name, name_ar: name })
-      handleSelect(brand)
-    } catch {
-      toast.error(t('errors.generic'))
-    }
-  }
-
   const handleClear = () => { onChange(null); setInput('') }
 
   return (
@@ -549,7 +533,7 @@ function BrandCombobox({
           value={input}
           onChange={(e) => { setInput(e.target.value); setOpen(true); if (!e.target.value) onChange(null) }}
           onFocus={() => setOpen(true)}
-          placeholder={t('admin.products.brandPlaceholder', { defaultValue: 'مثال: LG، سامسونج...' })}
+          placeholder={t('admin.products.brandPlaceholder', { defaultValue: 'ابحث عن الشركة...' })}
           autoComplete="off"
           className="flex-1"
         />
@@ -559,7 +543,7 @@ function BrandCombobox({
           </Button>
         )}
       </div>
-      {open && (filtered.length > 0 || isNew) && (
+      {open && filtered.length > 0 && (
         <div className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-background shadow-lg overflow-hidden">
           {filtered.map((b) => (
             <button
@@ -572,19 +556,6 @@ function BrandCombobox({
               {b.name !== b.name_ar && <span className="ms-2 text-xs text-muted-foreground">{b.name}</span>}
             </button>
           ))}
-          {isNew && (
-            <button
-              type="button"
-              className="flex w-full items-center gap-1.5 px-3 py-2 text-sm text-primary hover:bg-muted/50 border-t border-border"
-              onMouseDown={(e) => { e.preventDefault(); handleAddNew() }}
-              disabled={createBrandMutation.isPending}
-            >
-              {createBrandMutation.isPending
-                ? <Loader2 className="size-3.5 animate-spin" />
-                : <Plus className="size-3.5" />}
-              {t('admin.products.addBrand', { defaultValue: 'إضافة' })} &ldquo;{input.trim()}&rdquo;
-            </button>
-          )}
         </div>
       )}
     </div>
