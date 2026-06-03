@@ -1,28 +1,34 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, Zap } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Heart, Zap } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ProductGallery } from '@/features/catalog/ProductGallery'
 import { ProductSpecs } from '@/features/catalog/ProductSpecs'
 import { AddToCartButton } from '@/features/catalog/AddToCartButton'
-import { useProduct, useProductMeta } from '@/features/catalog/queries'
+import { useProduct, useProductMeta, useFavorites, useToggleFavorite } from '@/features/catalog/queries'
 import { Button } from '@/components/ui/button'
 import { Seo } from '@/components/shared/Seo'
 import type { CartItem } from '@/store/cart'
 import { formatPrice, pickLang } from '@/lib/format'
 import { resolveMediaUrl } from '@/lib/api'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
+import { useAuthStore } from '@/store/auth'
+import { cn } from '@/lib/utils'
 import type { PublicProductVariant } from '@/types/api'
 
 export function ProductDetailPage() {
   const { t, i18n } = useTranslation()
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const isLoggedIn = !!useAuthStore((s) => s.accessToken)
   const { data: product, isLoading, isError } = useProduct(slug)
   const { data: meta } = useProductMeta(slug)
+  const { data: favorites } = useFavorites()
+  const toggleFav = useToggleFavorite()
+  const isFav = product ? (favorites?.some((f) => f.id === product.id) ?? product.is_favorited ?? false) : false
 
   const [selectedVariant, setSelectedVariant] = useState<PublicProductVariant | null>(null)
 
@@ -235,7 +241,7 @@ export function ProductDetailPage() {
               </div>
             )}
 
-            {/* Add to cart + Buy now */}
+            {/* Add to cart + Buy now + Favorite */}
             <div className="mt-1 flex flex-wrap gap-3">
               <AddToCartButton product={product} variant={selectedVariant} />
               <Button
@@ -249,6 +255,27 @@ export function ProductDetailPage() {
                 <Zap className="size-4" />
                 {t('cart.buyNow')}
               </Button>
+              {isLoggedIn && (
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="outline"
+                  disabled={toggleFav.isPending}
+                  onClick={() => toggleFav.mutate(product.id)}
+                  className={cn(
+                    'transition-colors',
+                    isFav
+                      ? 'border-red-400 bg-red-50 text-red-500 hover:bg-red-100'
+                      : 'border-border text-muted-foreground hover:border-red-400 hover:text-red-500',
+                  )}
+                  aria-label={isFav ? t('catalog.removeFromFavorites', { defaultValue: 'إزالة من المفضلة' }) : t('catalog.addToFavorites', { defaultValue: 'إضافة للمفضلة' })}
+                >
+                  <Heart className={cn('size-4', isFav && 'fill-current text-red-500')} />
+                  {isFav
+                    ? t('catalog.removeFromFavorites', { defaultValue: 'إزالة من المفضلة' })
+                    : t('catalog.addToFavorites', { defaultValue: 'إضافة للمفضلة' })}
+                </Button>
+              )}
             </div>
 
             {/* Specs */}

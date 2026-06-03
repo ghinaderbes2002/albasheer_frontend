@@ -1,20 +1,34 @@
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   getCategories,
   getProduct,
   getProductMeta,
   getProducts,
+  getFavorites,
+  toggleFavorite,
   type ProductListParams,
 } from '@/api/products'
+import { getBrands } from '@/api/admin'
+import { useAuthStore } from '@/store/auth'
 
 export const catalogKeys = {
   all: ['catalog'] as const,
   categories: () => [...catalogKeys.all, 'categories'] as const,
+  brands: () => [...catalogKeys.all, 'brands'] as const,
+  favorites: () => [...catalogKeys.all, 'favorites'] as const,
   allProducts: () => [...catalogKeys.all, 'products'] as const,
   products: (params: ProductListParams) =>
     [...catalogKeys.all, 'products', params] as const,
   product: (slug: string) =>
     [...catalogKeys.all, 'product', slug] as const,
+}
+
+export function useCatalogBrands() {
+  return useQuery({
+    queryKey: catalogKeys.brands(),
+    queryFn: getBrands,
+    staleTime: 5 * 60 * 1000,
+  })
 }
 
 export function useCategories() {
@@ -40,6 +54,27 @@ export function useProduct(slug: string | undefined) {
     queryFn: () => getProduct(slug as string),
     enabled: !!slug,
     staleTime: 60 * 1000,
+  })
+}
+
+export function useFavorites() {
+  const isLoggedIn = !!useAuthStore((s) => s.accessToken)
+  return useQuery({
+    queryKey: catalogKeys.favorites(),
+    queryFn: getFavorites,
+    enabled: isLoggedIn,
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useToggleFavorite() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: toggleFavorite,
+    onSuccess: (_, productId) => {
+      qc.invalidateQueries({ queryKey: catalogKeys.favorites() })
+      qc.invalidateQueries({ queryKey: catalogKeys.allProducts() })
+    },
   })
 }
 

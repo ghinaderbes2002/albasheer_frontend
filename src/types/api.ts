@@ -138,6 +138,7 @@ export interface ProductDetail extends ProductListItem {
   images: ProductImage[]
   specs: ProductSpec[]
   is_available: boolean
+  is_favorited?: boolean
   seo_title?: string | null
   meta_description?: string | null
   variants?: PublicProductVariant[]
@@ -452,11 +453,19 @@ export interface AdminBundle {
   id: number
   name: string
   name_ar: string
-  description_ar: string
+  description_ar?: string
   price: string
   is_available: boolean
   image: string | null
-  products: ProductListItem[]
+  product_count?: number
+  products?: { id: number; name_ar: string; price: string; main_image: string | null }[]
+}
+
+export interface AdminBundleDetail extends AdminBundle {
+  description: string
+  description_ar: string
+  created_at: string
+  products: { id: number; name_ar: string; price: string; main_image: string | null }[]
 }
 
 export interface AdminOrder {

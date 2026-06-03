@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ProductGrid } from '@/features/catalog/ProductGrid'
 import { CategoryFilter } from '@/features/catalog/CategoryFilter'
+import { BrandFilter } from '@/features/catalog/BrandFilter'
 import { SearchBar } from '@/features/catalog/SearchBar'
 import { Pagination } from '@/features/catalog/Pagination'
 import { useProducts } from '@/features/catalog/queries'
@@ -18,12 +19,14 @@ export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const category = searchParams.get('category') ?? null
+  const brand = searchParams.get('brand') ?? null
   const search = searchParams.get('search') ?? ''
   const ordering = (searchParams.get('ordering') ?? '') as ProductOrdering
   const page = parseInt(searchParams.get('page') ?? '1', 10) || 1
 
   const { data, isLoading, isError } = useProducts({
     category: category ?? undefined,
+    brand: brand ?? undefined,
     search: search || undefined,
     ordering: ordering || undefined,
     page,
@@ -79,10 +82,17 @@ export function ProductsPage() {
         </select>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-3">
         <CategoryFilter
           active={category}
           onChange={(slug) => updateParam('category', slug)}
+        />
+      </div>
+
+      <div className="mb-6">
+        <BrandFilter
+          active={brand}
+          onChange={(slug) => updateParam('brand', slug)}
         />
       </div>
 

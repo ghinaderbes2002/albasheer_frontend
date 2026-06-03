@@ -20,6 +20,7 @@ import { CompleteProfilePage } from '@/pages/auth/CompleteProfilePage'
 import { StaffLoginPage } from '@/pages/auth/StaffLoginPage'
 
 import { ProfilePage } from '@/pages/customer/ProfilePage'
+import { FavoritesPage } from '@/pages/customer/FavoritesPage'
 import { AddressesPage } from '@/pages/customer/AddressesPage'
 import { CartPage } from '@/pages/customer/CartPage'
 import { CheckoutPage } from '@/pages/customer/CheckoutPage'
@@ -43,6 +44,7 @@ import { AdminCategoryDetailPage } from '@/pages/admin/AdminCategoryDetailPage'
 import { AdminProductsPage } from '@/pages/admin/AdminProductsPage'
 import { AdminProductDetailPage } from '@/pages/admin/AdminProductDetailPage'
 import { AdminBundlesPage } from '@/pages/admin/AdminBundlesPage'
+import { AdminBundleDetailPage } from '@/pages/admin/AdminBundleDetailPage'
 import { AdminAdsPage } from '@/pages/admin/AdminAdsPage'
 import { AdminAdDetailPage } from '@/pages/admin/AdminAdDetailPage'
 import { AdminOrdersPage } from '@/pages/admin/AdminOrdersPage'
@@ -66,6 +68,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'products', element: <ProductsPage /> },
+      { path: 'favorites', element: <FavoritesPage /> },
       { path: 'products/:slug', element: <ProductDetailPage /> },
       { path: 'bundles', element: <BundlesPage /> },
       { path: 'bundles/:id', element: <BundleDetailPage /> },
@@ -148,6 +151,7 @@ export const router = createBrowserRouter([
               { path: 'admin/products', element: <AdminProductsPage /> },
               { path: 'admin/products/:id', element: <AdminProductDetailPage /> },
               { path: 'admin/bundles', element: <AdminBundlesPage /> },
+              { path: 'admin/bundles/:id', element: <AdminBundleDetailPage /> },
               { path: 'admin/ads', element: <AdminAdsPage /> },
               { path: 'admin/ads/:id', element: <AdminAdDetailPage /> },
               { path: 'admin/orders', element: <AdminOrdersPage /> },

@@ -6,6 +6,8 @@ import { Badge } from '@/components/ui/badge'
 import { resolveMediaUrl } from '@/lib/api'
 import { formatPrice, pickLang } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { useFavorites, useToggleFavorite } from '@/features/catalog/queries'
+import { useAuthStore } from '@/store/auth'
 import type { ProductListItem } from '@/types/api'
 
 interface ProductCardProps {
@@ -15,6 +17,10 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const { t, i18n } = useTranslation()
+  const isLoggedIn = !!useAuthStore((s) => s.accessToken)
+  const { data: favorites } = useFavorites()
+  const toggleFav = useToggleFavorite()
+  const isFav = favorites?.some((f) => f.id === product.id) ?? false
   const Arrow = i18n.language.startsWith('ar') ? ArrowLeft : ArrowRight
   const name = pickLang(product.name, product.name_ar, i18n.language)
   const categoryName = pickLang(
@@ -57,14 +63,22 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </Badge>
 
         {/* Wishlist top-right */}
-        <button
-          type="button"
-          onClick={(e) => e.preventDefault()}
-          className="absolute top-3 inset-e-3 flex size-8 items-center justify-center rounded-full bg-background/80 backdrop-blur-sm text-muted-foreground shadow-sm transition-all duration-200 hover:scale-110 hover:bg-background hover:text-primary"
-          aria-label="Add to wishlist"
-        >
-          <Heart className="size-4" />
-        </button>
+        {isLoggedIn && (
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); toggleFav.mutate(product.id) }}
+            disabled={toggleFav.isPending}
+            className={cn(
+              'absolute top-3 inset-e-3 flex size-8 items-center justify-center rounded-full backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110',
+              isFav
+                ? 'bg-red-500 text-white hover:bg-red-600'
+                : 'bg-background/80 text-muted-foreground hover:bg-background hover:text-red-500',
+            )}
+            aria-label={isFav ? t('catalog.removeFromFavorites', { defaultValue: 'إزالة من المفضلة' }) : t('catalog.addToFavorites', { defaultValue: 'إضافة للمفضلة' })}
+          >
+            <Heart className={cn('size-4', isFav && 'fill-current')} />
+          </button>
+        )}
 
         {/* Hover overlay gradient */}
         <span

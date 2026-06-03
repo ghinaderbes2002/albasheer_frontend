@@ -29,6 +29,7 @@ import {
   getAdminAds,
   getAdminBranches,
   getAdminBundles,
+  getAdminBundle,
   getAdminCategories,
   getAdminCities,
   getAdminOrder,
@@ -43,6 +44,8 @@ import {
   resetUserPassword,
   toggleAdActive,
   toggleBundleAvailability,
+  addProductToBundle,
+  removeProductFromBundle,
   toggleProductAvailability,
   updateAdminAd,
   updateAdminBranch,
@@ -411,6 +414,14 @@ export function useAdminBundles() {
   })
 }
 
+export function useAdminBundle(id: number | string | undefined) {
+  return useQuery({
+    queryKey: ['admin', 'bundles', id],
+    queryFn: () => getAdminBundle(id!),
+    enabled: !!id,
+  })
+}
+
 export function useCreateAdminBundle() {
   const qc = useQueryClient()
   return useMutation({
@@ -440,6 +451,22 @@ export function useToggleBundleAvailability(id: number | string) {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: () => toggleBundleAvailability(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.bundles() }),
+  })
+}
+
+export function useAddProductToBundle(bundleId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (productId: number) => addProductToBundle(bundleId, productId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.bundles() }),
+  })
+}
+
+export function useRemoveProductFromBundle(bundleId: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (productId: number) => removeProductFromBundle(bundleId, productId),
     onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.bundles() }),
   })
 }

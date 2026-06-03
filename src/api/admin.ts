@@ -2,6 +2,7 @@ import { api } from '@/lib/api'
 import type {
   AdminAd,
   AdminBranch,
+  AdminBundleDetail,
   AdminPaymentMethod,
   Brand,
   ContentStats,
@@ -278,6 +279,11 @@ export async function getAdminBundles(): Promise<AdminBundle[]> {
   return unwrap(data)
 }
 
+export async function getAdminBundle(id: number | string): Promise<AdminBundleDetail> {
+  const { data } = await api.get<AdminBundleDetail>(`/api/admin/bundles/${id}/`)
+  return data
+}
+
 export async function createAdminBundle(payload: FormData): Promise<AdminBundle> {
   const { data } = await api.post<AdminBundle>('/api/admin/bundles/', payload)
   return data
@@ -303,6 +309,24 @@ export async function toggleBundleAvailability(
     `/api/admin/bundles/${id}/toggle-active/`,
   )
   return data
+}
+
+export async function addProductToBundle(
+  bundleId: number | string,
+  productId: number,
+): Promise<AdminBundle> {
+  const { data } = await api.post<AdminBundle>(
+    `/api/admin/bundles/${bundleId}/add-product/`,
+    { product_id: productId },
+  )
+  return data
+}
+
+export async function removeProductFromBundle(
+  bundleId: number | string,
+  productId: number,
+): Promise<void> {
+  await api.delete(`/api/admin/bundles/${bundleId}/remove-product/${productId}/`)
 }
 
 // ─── Orders ───────────────────────────────────────────────────────────

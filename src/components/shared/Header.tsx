@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
   ChevronDown,
+  Heart,
   LayoutDashboard,
   LogIn,
   LogOut,
@@ -193,6 +194,14 @@ export function Header() {
         {/* Actions — end */}
         <div className="flex flex-1 items-center justify-end gap-1">
           <LangSwitcher />
+
+          {isAuthed && !isStaff && (
+            <Button asChild variant="ghost" size="icon" aria-label={t('catalog.favorites', { defaultValue: 'المفضلة' })}>
+              <Link to="/favorites">
+                <Heart className="size-5" />
+              </Link>
+            </Button>
+          )}
 
           {!isStaff && (
             <Button

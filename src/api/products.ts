@@ -6,10 +6,24 @@ import type {
   ProductListItem,
 } from '@/types/api'
 
+// ─── Favorites ────────────────────────────────────────────────────────
+export async function getFavorites(): Promise<ProductListItem[]> {
+  const { data } = await api.get<ProductListItem[]>('/api/products/favorites/')
+  return Array.isArray(data) ? data : (data as any).results ?? []
+}
+
+export async function toggleFavorite(productId: number): Promise<{ is_favorited: boolean }> {
+  const { data } = await api.post<{ is_favorited: boolean }>(
+    `/api/products/favorites/${productId}/toggle/`,
+  )
+  return data
+}
+
 export type ProductOrdering = 'price_asc' | 'price_desc' | ''
 
 export interface ProductListParams {
   category?: string
+  brand?: string
   search?: string
   page?: number
   ordering?: ProductOrdering
