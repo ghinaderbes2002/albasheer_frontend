@@ -71,7 +71,7 @@ export function useToggleFavorite() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: toggleFavorite,
-    onSuccess: (_, productId) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: catalogKeys.favorites() })
       qc.invalidateQueries({ queryKey: catalogKeys.allProducts() })
     },

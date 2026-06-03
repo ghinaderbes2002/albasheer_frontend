@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronRight, ImageOff, Loader2, Pencil, Plus, Power, Trash2, X } from 'lucide-react'
+import { ChevronRight, ImageOff, Loader2, Plus, Power, Trash2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
