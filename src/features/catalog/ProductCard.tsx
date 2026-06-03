@@ -66,7 +66,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {isLoggedIn && (
           <button
             type="button"
-            onClick={(e) => { e.preventDefault(); toggleFav.mutate(product.id) }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFav.mutate(product.id) }}
             disabled={toggleFav.isPending}
             className={cn(
               'absolute top-3 inset-e-3 flex size-8 items-center justify-center rounded-full backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110',
