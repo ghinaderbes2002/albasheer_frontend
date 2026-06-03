@@ -22,11 +22,14 @@ export function FavoritesPage() {
       />
 
       {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-6">
+      <div className="relative overflow-hidden border-b border-border">
+        {/* Background blur layer */}
+        <div className="absolute inset-0 bg-linear-to-br from-red-500/10 via-primary/5 to-background" />
+        <div className="absolute inset-0 backdrop-blur-3xl" />
+        <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-8">
           <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-full bg-red-100 text-red-500">
-              <Heart className="size-5 fill-current" />
+            <div className="flex size-12 items-center justify-center rounded-full bg-red-500/20 backdrop-blur-sm ring-1 ring-red-500/30 text-red-500">
+              <Heart className="size-6 fill-current" />
             </div>
             <div>
               <h1 className="text-xl font-bold">
