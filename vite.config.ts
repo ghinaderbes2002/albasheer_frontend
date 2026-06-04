@@ -15,6 +15,9 @@ export default defineConfig({
     host: true,
   },
   build: {
+    // Source maps fix the "Missing source maps" Best Practices audit.
+    // They're only fetched by devtools, never by normal users.
+    sourcemap: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
