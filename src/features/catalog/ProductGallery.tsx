@@ -26,6 +26,11 @@ export function ProductGallery({ images, alt, lang = 'ar' }: ProductGalleryProps
           <img
             src={activeUrl}
             alt={(lang.startsWith('ar') ? active?.alt_text_ar : active?.alt_text) || alt}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            width={600}
+            height={600}
             className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (
@@ -56,6 +61,10 @@ export function ProductGallery({ images, alt, lang = 'ar' }: ProductGalleryProps
                   <img
                     src={url}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
+                    width={120}
+                    height={120}
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 )}

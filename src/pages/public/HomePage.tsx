@@ -54,6 +54,11 @@ export function HomePage() {
           src="/images/al_basheer.jpg"
           alt=""
           aria-hidden
+          loading="eager"
+          fetchPriority="high"
+          decoding="sync"
+          width={1200}
+          height={600}
           className="absolute inset-0 h-full w-full scale-105 object-cover blur-sm"
         />
         <div className="absolute inset-0 bg-black/50" />
@@ -67,6 +72,11 @@ export function HomePage() {
             <img
               src="/images/logo_al_basheer-removebg-preview.png"
               alt="البشير"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              width={96}
+              height={96}
               className="h-24 w-24 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]"
             />
           </div>
@@ -159,6 +169,11 @@ export function HomePage() {
                     <img
                       src={displayImage}
                       alt={name}
+                      loading="lazy"
+                      decoding="async"
+                      width={200}
+                      height={267}
+                      sizes="(max-width: 640px) 33vw, (max-width: 1024px) 25vw, 16vw"
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   )}

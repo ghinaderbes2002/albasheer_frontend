@@ -35,6 +35,10 @@ export function PageHero({
           src={image}
           alt=""
           aria-hidden
+          width={1200}
+          height={400}
+          fetchPriority="high"
+          decoding="async"
           className="absolute inset-0 h-full w-full scale-105 object-cover blur-sm"
         />
       )}

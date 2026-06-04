@@ -36,12 +36,16 @@ export function BundleCard({ bundle, className }: BundleCardProps) {
         className,
       )}
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+      <div className="relative aspect-16/10 overflow-hidden bg-muted">
         {image ? (
           <img
             src={image}
             alt={name}
             loading="lazy"
+            decoding="async"
+            width={400}
+            height={250}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -52,18 +56,18 @@ export function BundleCard({ bundle, className }: BundleCardProps) {
 
         <span
           aria-hidden
-          className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/0 to-transparent opacity-80 transition-opacity duration-300"
+          className="absolute inset-0 bg-linear-to-t from-black/45 via-black/0 to-transparent opacity-80 transition-opacity duration-300"
         />
 
         <Badge
           variant="default"
-          className="absolute top-3 start-3 inline-flex items-center gap-1.5 backdrop-blur-sm"
+          className="absolute top-3 inset-s-3 inline-flex items-center gap-1.5 backdrop-blur-sm"
         >
           <Boxes className="size-3.5" />
           {t('bundles.label')}
         </Badge>
 
-        <span className="absolute bottom-3 start-3 inline-flex items-center gap-1.5 rounded-full bg-background/85 px-2.5 py-1 text-[11px] font-medium text-foreground backdrop-blur-sm">
+        <span className="absolute bottom-3 inset-s-3 inline-flex items-center gap-1.5 rounded-full bg-background/85 px-2.5 py-1 text-[11px] font-medium text-foreground backdrop-blur-sm">
           <Package className="size-3" />
           {t('bundles.productsCount', { count: bundle.products.length })}
         </span>

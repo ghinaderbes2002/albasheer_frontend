@@ -25,6 +25,10 @@ export function Logo({
       <img
         src="/images/logo_al_basheer-removebg-preview.png"
         alt="البشير"
+        width={40}
+        height={40}
+        fetchPriority="high"
+        decoding="async"
         className="h-10 w-10 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]"
       />
       {showText && (

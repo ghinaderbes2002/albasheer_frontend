@@ -77,6 +77,7 @@ export function AdsCarousel() {
             key={ad.id}
             ad={ad}
             isActive={idx === activeIdx}
+            isFirst={idx === 0}
             label={t('ads.slideOf', { current: idx + 1, total: ads.length })}
           />
         ))}
@@ -127,10 +128,11 @@ export function AdsCarousel() {
 interface AdSlideProps {
   ad: Ad
   isActive: boolean
+  isFirst: boolean
   label: string
 }
 
-function AdSlide({ ad, isActive, label }: AdSlideProps) {
+function AdSlide({ ad, isActive, isFirst, label }: AdSlideProps) {
   const fileUrl = resolveMediaUrl(ad.file) ?? ''
   const hasLink = ad.link?.length > 0
 
@@ -144,13 +146,17 @@ function AdSlide({ ad, isActive, label }: AdSlideProps) {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload={isFirst ? 'auto' : 'metadata'}
         />
       ) : (
         <img
           src={fileUrl}
           alt={ad.title}
-          loading="lazy"
+          loading={isFirst ? 'eager' : 'lazy'}
+          fetchPriority={isFirst ? 'high' : 'low'}
+          decoding={isFirst ? 'sync' : 'async'}
+          width={1200}
+          height={450}
           className="absolute inset-0 h-full w-full object-cover"
         />
       )}

@@ -60,7 +60,7 @@ export function ProductsPage() {
       <PageHero
         title={t('nav.products')}
         subtitle={t('catalog.heroSubtitle')}
-        image="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1920&q=80&auto=format&fit=crop"
+        image="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&q=75&auto=format&fit=crop"
       />
     <div className="mx-auto w-full max-w-7xl px-4 py-8">
 
