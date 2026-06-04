@@ -53,7 +53,6 @@ export function HomePage() {
         <img
           src="/images/al_basheer.jpg"
           alt=""
-          aria-hidden
           loading="eager"
           fetchPriority="high"
           decoding="sync"

@@ -12,9 +12,10 @@
     <link rel="preconnect" href="http://152.239.112.38" />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
 
-    <!-- Preload hero image — critical for LCP -->
-    <link rel="preload" as="image" href="/images/al_basheer.jpg" fetchpriority="high" />
-    <link rel="preload" as="image" href="/images/logo_al_basheer-removebg-preview.png" />
+    <!-- Preload hero image — critical for LCP (both viewports) -->
+    <link rel="preload" as="image" href="/images/al_basheer.jpg" fetchpriority="high" media="(max-width: 768px)" />
+    <link rel="preload" as="image" href="/images/al_basheer.jpg" fetchpriority="high" media="(min-width: 769px)" />
+    <link rel="preload" as="image" href="/images/logo_al_basheer-removebg-preview.png" fetchpriority="high" />
 
     <!-- Non-blocking font load -->
     <link rel="preload" as="style"
@@ -35,7 +36,7 @@
       <div style="position:relative;overflow:hidden;min-height:420px;background:#0d0d0f">
         <img
           src="/images/al_basheer.jpg"
-          alt=""
+          alt="البشير"
           fetchpriority="high"
           decoding="sync"
           width="1200"
