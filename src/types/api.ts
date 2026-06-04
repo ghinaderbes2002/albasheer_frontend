@@ -143,6 +143,7 @@ export interface ProductDetail extends ProductListItem {
   meta_description?: string | null
   variants?: PublicProductVariant[]
   related_products?: ProductListItem[]
+  brand_name?: string | null
 }
 
 // ─── Bundles ──────────────────────────────────────────────────────────

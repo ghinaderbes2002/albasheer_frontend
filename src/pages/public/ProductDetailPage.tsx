@@ -159,11 +159,16 @@ export function ProductDetailPage() {
           <ProductGallery images={galleryImages} alt={name} lang={lang} />
 
           <div className="flex flex-col gap-5">
-            {/* Category + availability */}
+            {/* Category + brand + availability */}
             <div className="flex items-center gap-2 flex-wrap">
               <Link to={`/products?category=${product.category.slug}`}>
                 <Badge variant="accent">{categoryName}</Badge>
               </Link>
+              {product.brand_name && (
+                <span className="text-sm text-muted-foreground">
+                  {product.brand_name}
+                </span>
+              )}
               {!isAvailable && (
                 <Badge variant="destructive">{t('catalog.outOfStock')}</Badge>
               )}
