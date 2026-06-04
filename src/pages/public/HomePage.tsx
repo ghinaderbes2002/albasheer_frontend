@@ -67,7 +67,7 @@ export function HomePage() {
           <div className="relative">
             <span
               aria-hidden
-              className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/20 blur-xl"
+              className="absolute inset-0 -z-10 animate-pulse rounded-full bg-primary/20 blur-xl will-change-[opacity]"
             />
             <img
               src="/images/logo_al_basheer-removebg-preview.png"
@@ -163,7 +163,7 @@ export function HomePage() {
                 <Link
                   key={c.id}
                   to={`/products?category=${c.slug}`}
-                  className="group relative flex aspect-3/4 overflow-hidden rounded-2xl bg-muted transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group relative flex aspect-3/4 overflow-hidden rounded-2xl bg-muted transition-transform duration-300 hover:-translate-y-1 will-change-transform"
                 >
                   {displayImage && (
                     <img

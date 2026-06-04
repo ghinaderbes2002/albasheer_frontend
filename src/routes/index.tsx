@@ -10,10 +10,10 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 // — Critical public pages (eager)
 import { HomePage } from '@/pages/public/HomePage'
-import { ProductsPage } from '@/pages/public/ProductsPage'
-import { ProductDetailPage } from '@/pages/public/ProductDetailPage'
 
 // — Lazy public pages
+const ProductsPage = lazy(() => import('@/pages/public/ProductsPage').then(m => ({ default: m.ProductsPage })))
+const ProductDetailPage = lazy(() => import('@/pages/public/ProductDetailPage').then(m => ({ default: m.ProductDetailPage })))
 const BundlesPage = lazy(() => import('@/pages/public/BundlesPage').then(m => ({ default: m.BundlesPage })))
 const BundleDetailPage = lazy(() => import('@/pages/public/BundleDetailPage').then(m => ({ default: m.BundleDetailPage })))
 const BranchesPage = lazy(() => import('@/pages/public/BranchesPage').then(m => ({ default: m.BranchesPage })))
@@ -87,8 +87,8 @@ export const router = createBrowserRouter([
     element: <PublicLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'products', element: <ProductsPage /> },
-      { path: 'products/:slug', element: <ProductDetailPage /> },
+      { path: 'products', element: <S><ProductsPage /></S> },
+      { path: 'products/:slug', element: <S><ProductDetailPage /></S> },
       { path: 'favorites', element: <S><FavoritesPage /></S> },
       { path: 'bundles', element: <S><BundlesPage /></S> },
       { path: 'bundles/:id', element: <S><BundleDetailPage /></S> },

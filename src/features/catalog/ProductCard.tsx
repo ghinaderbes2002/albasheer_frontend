@@ -33,8 +33,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
   return (
     <div
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-3xl bg-card text-card-foreground shadow-warm transition-[transform,box-shadow] duration-300',
-        'hover:-translate-y-1.5 hover:shadow-warm-lg',
+        'group relative flex flex-col overflow-hidden rounded-3xl bg-card text-card-foreground shadow-warm transition-transform duration-300 will-change-transform',
+        'hover:-translate-y-1.5',
         className,
       )}
     >

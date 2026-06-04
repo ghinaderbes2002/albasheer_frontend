@@ -18,11 +18,15 @@ export default defineConfig({
     // Source maps fix the "Missing source maps" Best Practices audit.
     // They're only fetched by devtools, never by normal users.
     sourcemap: true,
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('node_modules/react-router-dom/')) {
             return 'vendor-react'
+          }
+          if (id.includes('node_modules/@tanstack/react-query-devtools')) {
+            return 'vendor-devtools'
           }
           if (id.includes('node_modules/@tanstack/')) {
             return 'vendor-query'
@@ -32,6 +36,9 @@ export default defineConfig({
           }
           if (id.includes('node_modules/lucide-react') || id.includes('node_modules/react-hot-toast')) {
             return 'vendor-ui'
+          }
+          if (id.includes('node_modules/react-helmet-async') || id.includes('node_modules/axios') || id.includes('node_modules/zustand')) {
+            return 'vendor-misc'
           }
         },
       },

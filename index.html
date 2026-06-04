@@ -30,7 +30,32 @@
     <title>البشير | Al Basheer</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Static LCP shell — visible before JS loads, replaced by React -->
+    <div id="root">
+      <div style="position:relative;overflow:hidden;min-height:420px;background:#0d0d0f">
+        <img
+          src="/images/al_basheer.jpg"
+          alt=""
+          fetchpriority="high"
+          decoding="sync"
+          width="1200"
+          height="600"
+          style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(4px);transform:scale(1.05)"
+        />
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5)"></div>
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:420px;padding:2rem 1rem;text-align:center">
+          <img
+            src="/images/logo_al_basheer-removebg-preview.png"
+            alt="البشير"
+            fetchpriority="high"
+            width="96"
+            height="96"
+            style="width:96px;height:96px;object-fit:contain"
+          />
+          <h1 style="color:#fff;font-family:Cairo,sans-serif;font-size:clamp(1.75rem,5vw,3.5rem);font-weight:800;margin:1rem 0 0.5rem;line-height:1.2">البشير لتجارة الأدوات المنزلية</h1>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
