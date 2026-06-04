@@ -72,7 +72,7 @@ export function AdminBrandsPage() {
                   <td className="px-4 py-3 font-medium">
                     <div className="flex items-center gap-3">
                       {b.logo && (
-                        <img src={b.logo} alt={b.name_ar} className="size-8 rounded object-contain bg-muted p-0.5" />
+                        <img src={b.logo} alt={b.name_ar} loading="lazy" decoding="async" width={32} height={32} className="size-8 rounded object-contain bg-muted p-0.5" />
                       )}
                       {b.name_ar}
                     </div>

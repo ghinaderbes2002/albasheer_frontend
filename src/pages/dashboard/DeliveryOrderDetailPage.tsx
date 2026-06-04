@@ -191,6 +191,8 @@ export function DeliveryOrderDetailPage() {
                   <img
                     src={receiptUrl}
                     alt={t('orders.receipt.title')}
+                    loading="lazy"
+                    decoding="async"
                     className="max-h-120 w-full bg-muted object-contain"
                   />
                 </a>

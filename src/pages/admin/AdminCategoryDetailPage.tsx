@@ -66,7 +66,7 @@ export function AdminCategoryDetailPage() {
         {/* Image */}
         <div className="overflow-hidden rounded-2xl border border-border bg-card">
           {image ? (
-            <img src={image} alt={category.name_ar} className="h-52 w-full object-cover" />
+            <img src={image} alt={category.name_ar} loading="lazy" decoding="async" width={600} height={208} className="h-52 w-full object-cover" />
           ) : (
             <div className="flex h-52 items-center justify-center bg-muted text-muted-foreground/30">
               <ImageOff className="size-12" />
@@ -78,7 +78,7 @@ export function AdminCategoryDetailPage() {
         <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5">
           {icon && (
             <div className="flex items-center gap-3">
-              <img src={icon} alt="" className="size-10 rounded-lg object-contain" />
+              <img src={icon} alt="" loading="lazy" decoding="async" width={40} height={40} className="size-10 rounded-lg object-contain" />
               <span className="text-sm text-muted-foreground">{t('admin.categories.icon')}</span>
             </div>
           )}
@@ -159,6 +159,10 @@ function ProductsTable({ products }: { products: AdminProduct[] }) {
                     <img
                       src={resolveMediaUrl(p.main_image) ?? ''}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width={32}
+                      height={32}
                       className="size-8 rounded object-cover"
                     />
                   )}

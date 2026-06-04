@@ -354,7 +354,7 @@ export function AdminProductDetailPage() {
               <div key={rp.id} className="group relative overflow-hidden rounded-xl border border-border bg-card">
                 <div className="aspect-square bg-muted">
                   {rp.main_image ? (
-                    <img src={resolveMediaUrl(rp.main_image) ?? rp.main_image} alt={rp.name_ar} className="h-full w-full object-cover" />
+                    <img src={resolveMediaUrl(rp.main_image) ?? rp.main_image} alt={rp.name_ar} loading="lazy" decoding="async" width={120} height={120} className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <ImagePlus className="size-8 text-muted-foreground/30" />
@@ -750,7 +750,7 @@ function AddRelatedDialog({
               >
                 <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-muted">
                   {p.main_image ? (
-                    <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" className="h-full w-full object-cover" />
+                    <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" loading="lazy" decoding="async" width={40} height={40} className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <ImagePlus className="size-4 text-muted-foreground/40" />

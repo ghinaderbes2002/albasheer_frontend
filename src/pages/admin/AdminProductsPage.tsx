@@ -119,7 +119,7 @@ export function AdminProductsPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {p.main_image
-                        ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" className="size-8 rounded object-cover shrink-0" />
+                        ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" loading="lazy" decoding="async" width={32} height={32} className="size-8 rounded object-cover shrink-0" />
                         : <div className="size-8 rounded bg-muted shrink-0" />
                       }
                       <div>
@@ -404,6 +404,10 @@ export function ProductFormDialog({
                     <img
                       src={resolveMediaUrl(img.image) ?? img.image}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width={120}
+                      height={120}
                       className="h-full w-full object-cover"
                     />
                     {img.is_main && (
@@ -462,6 +466,10 @@ export function ProductFormDialog({
                     <img
                       src={URL.createObjectURL(file)}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
+                      width={120}
+                      height={120}
                       className="h-full w-full object-cover"
                     />
                     <button

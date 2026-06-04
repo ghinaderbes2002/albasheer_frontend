@@ -91,7 +91,7 @@ export function AdminBundleDetailPage() {
         {/* Image */}
         <div className="flex aspect-square items-center justify-center overflow-hidden rounded-2xl border border-border bg-muted">
           {bundle.image ? (
-            <img src={resolveMediaUrl(bundle.image) ?? bundle.image} alt={bundle.name_ar} className="h-full w-full object-contain" />
+            <img src={resolveMediaUrl(bundle.image) ?? bundle.image} alt={bundle.name_ar} loading="lazy" decoding="async" width={600} height={600} className="h-full w-full object-contain" />
           ) : (
             <ImageOff className="size-16 text-muted-foreground/30" />
           )}
@@ -156,7 +156,7 @@ export function AdminBundleDetailPage() {
               <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                 <div className="size-12 shrink-0 overflow-hidden rounded-xl border border-border bg-muted">
                   {p.main_image ? (
-                    <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" className="h-full w-full object-cover" />
+                    <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" loading="lazy" decoding="async" width={40} height={40} className="h-full w-full object-cover" />
                   ) : (
                     <div className="flex h-full items-center justify-center">
                       <ImageOff className="size-5 text-muted-foreground/30" />
@@ -244,7 +244,7 @@ function AddProductDialog({
               >
                 <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-muted">
                   {p.main_image
-                    ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" className="h-full w-full object-cover" />
+                    ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" loading="lazy" decoding="async" width={40} height={40} className="h-full w-full object-cover" />
                     : <div className="flex h-full items-center justify-center"><ImageOff className="size-4 text-muted-foreground/30" /></div>
                   }
                 </div>

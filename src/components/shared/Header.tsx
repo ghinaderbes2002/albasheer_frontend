@@ -153,7 +153,7 @@ export function Header() {
                       >
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/8">
                           {icon
-                            ? <img src={icon} alt="" className="size-6 object-contain" />
+                            ? <img src={icon} alt="" loading="lazy" decoding="async" width={24} height={24} className="size-6 object-contain" />
                             : <span className="text-sm font-bold text-primary">{name.charAt(0)}</span>
                           }
                         </div>

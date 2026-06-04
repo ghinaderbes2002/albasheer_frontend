@@ -141,7 +141,7 @@ function BundleRow({
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           {b.image
-            ? <img src={resolveMediaUrl(b.image) ?? b.image} alt="" className="size-8 rounded object-cover shrink-0" />
+            ? <img src={resolveMediaUrl(b.image) ?? b.image} alt="" loading="lazy" decoding="async" width={32} height={32} className="size-8 rounded object-cover shrink-0" />
             : <div className="size-8 rounded bg-muted shrink-0 flex items-center justify-center"><ImageOff className="size-4 text-muted-foreground/40" /></div>
           }
           <div>
@@ -270,7 +270,7 @@ function ManageProductsDialog({
                 <div key={p.id} className="flex items-center gap-3 rounded-xl border border-border p-3">
                   <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-muted">
                     {p.main_image
-                      ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" className="h-full w-full object-cover" />
+                      ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" loading="lazy" decoding="async" width={40} height={40} className="h-full w-full object-cover" />
                       : <div className="flex h-full items-center justify-center"><ImageOff className="size-4 text-muted-foreground/30" /></div>
                     }
                   </div>
@@ -310,7 +310,7 @@ function ManageProductsDialog({
                   >
                     <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-muted">
                       {p.main_image
-                        ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" className="h-full w-full object-cover" />
+                        ? <img src={resolveMediaUrl(p.main_image) ?? p.main_image} alt="" loading="lazy" decoding="async" width={40} height={40} className="h-full w-full object-cover" />
                         : <div className="flex h-full items-center justify-center"><ImageOff className="size-4 text-muted-foreground/30" /></div>
                       }
                     </div>

@@ -75,7 +75,7 @@ export function AdminPaymentMethodsPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {m.image
-                        ? <img src={resolveMediaUrl(m.image) ?? m.image} alt="" className="size-8 rounded-lg object-cover shrink-0" />
+                        ? <img src={resolveMediaUrl(m.image) ?? m.image} alt="" loading="lazy" decoding="async" width={32} height={32} className="size-8 rounded-lg object-cover shrink-0" />
                         : <div className="flex size-8 items-center justify-center rounded-lg bg-muted shrink-0">
                             <CreditCard className="size-4 text-muted-foreground" />
                           </div>

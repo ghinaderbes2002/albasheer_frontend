@@ -111,10 +111,10 @@ export function AdsCarousel() {
                 aria-label={t('ads.goToSlide', { index: i + 1 })}
                 aria-current={i === activeIdx ? 'true' : undefined}
                 className={cn(
-                  'h-2 rounded-full transition-all',
+                  'h-2 w-7 origin-left rounded-full transition-transform duration-300',
                   i === activeIdx
-                    ? 'w-7 bg-primary'
-                    : 'w-2 bg-white/70 hover:bg-white/90',
+                    ? 'scale-x-100 bg-primary'
+                    : 'scale-x-[0.29] bg-white/70 hover:bg-white/90',
                 )}
               />
             ))}

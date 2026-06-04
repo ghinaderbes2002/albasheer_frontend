@@ -52,6 +52,10 @@ export function CategoriesPage() {
                       <img
                         src={displayImage}
                         alt={name}
+                        loading="lazy"
+                        decoding="async"
+                        width={600}
+                        height={288}
                         className="h-full w-full object-cover"
                       />
                     ) : (

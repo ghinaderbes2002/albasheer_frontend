@@ -100,7 +100,7 @@ export function AdminCategoriesPage() {
                 >
                   <td className="px-4 py-3 font-medium">
                     <div className="flex items-center gap-2">
-                      {c.icon && <img src={c.icon} alt="" className="size-6 rounded object-cover" />}
+                      {c.icon && <img src={c.icon} alt="" loading="lazy" decoding="async" width={24} height={24} className="size-6 rounded object-cover" />}
                       {c.name_ar}
                     </div>
                   </td>
@@ -201,7 +201,7 @@ function ImagePicker({
       >
         {preview ? (
           <>
-            <img src={preview} alt="" className="h-full w-full object-cover" />
+            <img src={preview} alt="" loading="lazy" decoding="async" width={400} height={112} className="h-full w-full object-cover" />
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); onFile(null) }}

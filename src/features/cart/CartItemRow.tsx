@@ -39,6 +39,10 @@ export function CartItemRow({ item }: CartItemRowProps) {
           <img
             src={image}
             alt={name}
+            loading="lazy"
+            decoding="async"
+            width={112}
+            height={112}
             className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (

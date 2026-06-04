@@ -152,7 +152,7 @@ function AdCard({ ad, basePath, onEdit, onDelete }: { ad: AdminAd; basePath: str
             preload="auto"
           />
         ) : fileUrl ? (
-          <img src={fileUrl} alt={ad.title} className="h-full w-full object-cover" />
+          <img src={fileUrl} alt={ad.title} loading="lazy" decoding="async" width={1200} height={450} className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted-foreground">
             <Image className="size-10" />
@@ -300,7 +300,7 @@ export function AdFormDialog({ ad, onClose }: { ad: AdminAd | null; onClose: () 
                 {ad.media_type === 'video' ? (
                   <video src={resolveMediaUrl(ad.file) ?? ''} className="h-24 w-full object-cover" muted />
                 ) : (
-                  <img src={resolveMediaUrl(ad.file) ?? ''} alt="" className="h-24 w-full object-cover" />
+                  <img src={resolveMediaUrl(ad.file) ?? ''} alt="" loading="lazy" decoding="async" width={400} height={96} className="h-24 w-full object-cover" />
                 )}
               </div>
             )}

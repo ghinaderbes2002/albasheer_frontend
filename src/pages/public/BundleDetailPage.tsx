@@ -25,7 +25,7 @@ export function BundleDetailPage() {
     return (
       <div className="mx-auto w-full max-w-7xl px-4 py-8">
         <div className="grid gap-8 md:grid-cols-2">
-          <Skeleton className="aspect-[16/10] w-full rounded-xl" />
+          <Skeleton className="aspect-16/10 w-full rounded-xl" />
           <div className="flex flex-col gap-4">
             <Skeleton className="h-8 w-3/4" />
             <Skeleton className="h-6 w-1/3" />
@@ -86,11 +86,16 @@ export function BundleDetailPage() {
       </nav>
 
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border bg-muted">
+        <div className="relative aspect-16/10 overflow-hidden rounded-xl border border-border bg-muted">
           {image ? (
             <img
               src={image}
               alt={name}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              width={800}
+              height={500}
               className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (

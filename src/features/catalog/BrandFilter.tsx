@@ -52,7 +52,7 @@ export function BrandFilter({ active, onChange }: BrandFilterProps) {
           )}
         >
           {b.logo && (
-            <img src={b.logo} alt="" className="size-4 rounded-full object-contain" />
+            <img src={b.logo} alt="" loading="lazy" decoding="async" width={16} height={16} className="size-4 rounded-full object-contain" />
           )}
           {pickLang(b.name, b.name_ar, i18n.language)}
         </button>
