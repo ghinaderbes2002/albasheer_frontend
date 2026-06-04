@@ -204,7 +204,7 @@ export function ProductDetailPage() {
                         type="button"
                         disabled={!v.is_available}
                         onClick={() => setSelectedVariant(isSelected ? null : v)}
-                        className={`flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium transition-all
+                        className={`flex items-center gap-1.5 rounded-xl border px-4 py-2 text-sm font-medium transition-[background-color,border-color,color,box-shadow,opacity]
                           ${isSelected
                             ? 'border-primary bg-primary text-primary-foreground shadow-md'
                             : v.is_available

@@ -11,10 +11,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="http://152.239.112.38" />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@400;500;600&display=optional"
-      rel="stylesheet"
+
+    <!-- Preload hero image — critical for LCP -->
+    <link rel="preload" as="image" href="/images/al_basheer.jpg" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/logo_al_basheer-removebg-preview.png" />
+
+    <!-- Non-blocking font load -->
+    <link rel="preload" as="style"
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=optional"
+      onload="this.rel='stylesheet'"
     />
+    <noscript>
+      <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=optional"
+      />
+    </noscript>
 
     <title>البشير | Al Basheer</title>
   </head>

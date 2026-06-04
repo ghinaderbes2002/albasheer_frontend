@@ -31,7 +31,7 @@ export function BrandFilter({ active, onChange }: BrandFilterProps) {
         type="button"
         onClick={() => onChange(null)}
         className={cn(
-          'rounded-full border px-4 py-1.5 text-sm font-medium transition-all',
+          'rounded-full border px-4 py-1.5 text-sm font-medium transition-[background-color,border-color,color,box-shadow]',
           !active
             ? 'border-primary bg-primary text-primary-foreground shadow-sm'
             : 'border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground',
@@ -45,7 +45,7 @@ export function BrandFilter({ active, onChange }: BrandFilterProps) {
           type="button"
           onClick={() => onChange(active === b.slug ? null : b.slug)}
           className={cn(
-            'flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-all',
+            'flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-[background-color,border-color,color,box-shadow]',
             active === b.slug
               ? 'border-primary bg-primary text-primary-foreground shadow-sm'
               : 'border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground',

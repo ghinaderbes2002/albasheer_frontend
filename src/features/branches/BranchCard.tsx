@@ -52,7 +52,7 @@ export function BranchCard({ branch }: BranchCardProps) {
   }
 
   return (
-    <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/8">
+    <div className="group overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/8">
       {/* Gold accent bar */}
       <div className="h-1 bg-linear-to-r from-brand-400 to-brand-600" />
 

@@ -163,7 +163,7 @@ export function HomePage() {
                 <Link
                   key={c.id}
                   to={`/products?category=${c.slug}`}
-                  className="group relative flex aspect-3/4 overflow-hidden rounded-2xl bg-muted transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group relative flex aspect-3/4 overflow-hidden rounded-2xl bg-muted transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   {displayImage && (
                     <img

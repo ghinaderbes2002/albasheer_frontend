@@ -51,7 +51,7 @@ export function ProductGallery({ images, alt, lang = 'ar' }: ProductGalleryProps
                 onClick={() => setActiveIdx(idx)}
                 aria-label={`${alt} ${idx + 1}`}
                 className={cn(
-                  'relative aspect-square overflow-hidden rounded-md border bg-muted transition-all',
+                  'relative aspect-square overflow-hidden rounded-md border bg-muted transition-[border-color,box-shadow]',
                   idx === activeIdx
                     ? 'border-primary ring-2 ring-primary/40'
                     : 'border-border hover:border-primary/50',

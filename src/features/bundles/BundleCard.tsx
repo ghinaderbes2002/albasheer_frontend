@@ -31,8 +31,8 @@ export function BundleCard({ bundle, className }: BundleCardProps) {
     <Link
       to={`/bundles/${bundle.id}`}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-sm transition-all duration-300',
-        'hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10',
+        'group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-sm duration-300',
+        'hover:-translate-y-1 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10 transition-[transform,box-shadow,border-color]',
         className,
       )}
     >

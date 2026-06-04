@@ -33,7 +33,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
   return (
     <div
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-3xl bg-card text-card-foreground shadow-warm transition-all duration-300',
+        'group relative flex flex-col overflow-hidden rounded-3xl bg-card text-card-foreground shadow-warm transition-[transform,box-shadow] duration-300',
         'hover:-translate-y-1.5 hover:shadow-warm-lg',
         className,
       )}
@@ -71,7 +71,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           />
 
           {/* Add to cart — slides up on hover */}
-          <div className="absolute inset-x-3 bottom-3 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="absolute inset-x-3 bottom-3 translate-y-2 opacity-0 transition-[transform,opacity] duration-300 group-hover:translate-y-0 group-hover:opacity-100">
             <div className="flex items-center justify-center gap-1.5 rounded-full border border-background/60 bg-background/90 backdrop-blur-sm px-4 py-2 text-xs font-semibold text-foreground shadow-sm">
               <ShoppingCart className="size-3.5" />
               {t('catalog.view')}
@@ -109,7 +109,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           onClick={() => toggleFav.mutate(product.id)}
           disabled={toggleFav.isPending}
           className={cn(
-            'absolute top-3 inset-e-3 z-10 flex size-8 items-center justify-center rounded-full backdrop-blur-sm shadow-sm transition-all duration-200 hover:scale-110',
+            'absolute top-3 inset-e-3 z-10 flex size-8 items-center justify-center rounded-full backdrop-blur-sm shadow-sm transition-[transform,background-color,color] duration-200 hover:scale-110',
             isFav
               ? 'bg-red-500 text-white hover:bg-red-600'
               : 'bg-background/80 text-muted-foreground hover:bg-background hover:text-red-500',

@@ -36,7 +36,7 @@ export function CategoryFilter({ active, onChange }: CategoryFilterProps) {
       type="button"
       onClick={onClick}
       className={cn(
-        'rounded-full border px-4 py-1.5 text-sm font-medium transition-all',
+        'rounded-full border px-4 py-1.5 text-sm font-medium transition-[background-color,border-color,color,box-shadow]',
         isActive
           ? 'border-primary bg-primary text-primary-foreground shadow-sm'
           : 'border-border bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground',

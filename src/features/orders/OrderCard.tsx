@@ -14,7 +14,7 @@ export function OrderCard({ order }: OrderCardProps) {
   const { t, i18n } = useTranslation()
   return (
     <Link to={`/orders/${order.id}`} className="block group">
-      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-xl group-hover:shadow-primary/8">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-[transform,box-shadow,border-color] duration-300 group-hover:-translate-y-1 group-hover:border-primary/30 group-hover:shadow-xl group-hover:shadow-primary/8">
         <div className="space-y-4 p-5">
 
           {/* Header: order ID + branch + status */}
