@@ -81,10 +81,10 @@ export function HomePage() {
             />
           </div>
 
-          <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow-md md:text-6xl animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500">
+          <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow-md md:text-6xl">
             {t('home.hero.title')}
           </h1>
-          <p className="max-w-2xl text-base text-white/80 md:text-lg animate-in fade-in slide-in-from-bottom-3 fill-mode-both duration-500 delay-100">
+          <p className="max-w-2xl text-base text-white/80 md:text-lg">
             {t('home.hero.subtitle')}
           </p>
 
