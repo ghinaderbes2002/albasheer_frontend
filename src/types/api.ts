@@ -437,7 +437,8 @@ export interface AdminProduct {
   price: string
   category: number
   category_name?: string
-  brand: Brand | null
+  brand: Brand | number | null
+  brand_name?: string | null
   is_available: boolean
   in_stock: boolean
   is_featured: boolean

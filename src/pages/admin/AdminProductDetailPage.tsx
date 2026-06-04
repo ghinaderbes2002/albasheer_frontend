@@ -177,10 +177,10 @@ export function AdminProductDetailPage() {
                 <span className="font-medium text-foreground">{product.category_name}</span>
               </span>
             )}
-            {product.brand && (
+            {product.brand_name && (
               <span>
                 {t('admin.products.brand', { defaultValue: 'الشركة' })}:{' '}
-                <span className="font-medium text-foreground">{product.brand.name_ar}</span>
+                <span className="font-medium text-foreground">{product.brand_name}</span>
               </span>
             )}
           </div>
