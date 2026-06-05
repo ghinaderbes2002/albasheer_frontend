@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ChevronRight, ImagePlus, Loader2, Link2, Pencil, Plus, Power, Star, Trash2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
+import axios from 'axios'
+
+const { isAxiosError } = axios
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -71,7 +74,10 @@ export function AdminProductDetailPage() {
     try {
       await deleteImage.mutateAsync(imageId)
     } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
+      // Backend deletes the image but returns 500 — image is gone, skip error toast
+      if (!isAxiosError(err) || err.response?.status !== 500) {
+        toast.error(extractApiError(err, t('errors.generic')))
+      }
     }
   }
 

@@ -400,7 +400,7 @@ export function useDeleteProductImage(productId: number | string) {
   return useMutation({
     mutationFn: (imageId: number | string) =>
       deleteProductImage(productId, imageId),
-    onSuccess: () =>
+    onSettled: () =>
       qc.invalidateQueries({ queryKey: adminKeys.product(productId) }),
   })
 }
