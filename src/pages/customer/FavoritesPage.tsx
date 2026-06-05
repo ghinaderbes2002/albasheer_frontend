@@ -17,7 +17,7 @@ export function FavoritesPage() {
   return (
     <div className="min-h-screen bg-background">
       <Seo
-        title={t('catalog.favorites', { defaultValue: 'المفضلة' })}
+        title={t('catalog.favorites')}
         url="/favorites"
       />
 
@@ -33,15 +33,15 @@ export function FavoritesPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold">
-                {t('catalog.favorites', { defaultValue: 'المفضلة' })}
+                {t('catalog.favorites')}
               </h1>
               {isLoading ? (
                 <Skeleton className="mt-1 h-4 w-20" />
               ) : (
                 <p className="text-sm text-muted-foreground">
                   {count > 0
-                    ? t('catalog.favoritesCount', { count, defaultValue: `${count} منتج` })
-                    : t('catalog.noFavorites', { defaultValue: 'لا توجد منتجات' })}
+                    ? t('catalog.favoritesCount', { count })
+                    : t('catalog.noFavorites')}
                 </p>
               )}
             </div>
@@ -65,15 +65,15 @@ export function FavoritesPage() {
             </div>
             <div className="space-y-1">
               <p className="text-lg font-semibold text-foreground">
-                {t('catalog.noFavorites', { defaultValue: 'قائمة المفضلة فارغة' })}
+                {t('catalog.noFavorites')}
               </p>
               <p className="text-sm text-muted-foreground">
-                {t('catalog.noFavoritesHint', { defaultValue: 'اضغط على القلب بجانب أي منتج لإضافته هنا' })}
+                {t('catalog.noFavoritesHint')}
               </p>
             </div>
             <Button asChild className="mt-2">
               <Link to="/products">
-                {t('catalog.browsProducts', { defaultValue: 'تصفح المنتجات' })}
+                {t('catalog.browsProducts')}
               </Link>
             </Button>
           </div>
