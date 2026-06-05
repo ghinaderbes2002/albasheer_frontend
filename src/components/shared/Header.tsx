@@ -67,7 +67,7 @@ export function Header() {
           { to: '/addresses', label: t('nav.addresses'), end: false },
         ]
       : []),
-    ...(dashboardLink ? [{ ...dashboardLink, end: false }] : []),
+    ...(dashboardLink ? [{ ...dashboardLink, end: role === 'branch_manager' }] : []),
     ...(role === 'branch_manager'
       ? [
           { to: '/dashboard/branch/payment-methods', label: t('paymentMethods.title'), end: false },

@@ -330,12 +330,14 @@ export function OrderDetailPage() {
                 value={`${order.deposit_percent}%`}
               />
             )}
-            {!hasDeposit && (
-              <Row
-                label={t('orders.paymentMethod')}
-                value={t('checkout.deposit.codTitle')}
-              />
-            )}
+            <Row
+              label={t('orders.paymentMethod')}
+              value={
+                order.payment_method_name
+                  ? order.payment_method_name
+                  : t('checkout.deposit.codTitle')
+              }
+            />
           </CardContent>
         </Card>
       </div>

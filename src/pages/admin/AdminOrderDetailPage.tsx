@@ -251,8 +251,9 @@ export function AdminOrderDetailPage() {
                   onChange={(e) => setShippingFee(e.target.value)}
                   dir="ltr"
                   placeholder="0"
+                  className="pr-12"
                 />
-                <span className="absolute inset-y-0 inset-e-3 flex items-center text-sm text-muted-foreground pointer-events-none">
+                <span className="absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground pointer-events-none">
                   {currency}
                 </span>
               </div>

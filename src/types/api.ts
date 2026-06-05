@@ -249,6 +249,7 @@ export interface OrderDetail {
   estimated_delivery: string | null
   receipt_image: string | null
   delivery_staff_name: string | null
+  payment_method_name?: string | null
   items: OrderItem[]
   bundle_items?: OrderBundleItem[]
   logs: OrderLog[]
