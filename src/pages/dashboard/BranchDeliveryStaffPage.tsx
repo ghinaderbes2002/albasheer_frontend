@@ -68,41 +68,36 @@ export function BranchDeliveryStaffPage() {
           <p>{t('dashboard.staff.empty')}</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-border overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.users.phone')}</th>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('dashboard.staff.name')}</th>
-                <th className="px-4 py-3 text-end font-medium text-muted-foreground"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {data.map((s) => (
-                <tr key={s.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="px-4 py-3 font-medium" dir="ltr">{s.phone}</td>
-                  <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">
-                    {fullName(s)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => setEditStaff(s)}>
-                        <Pencil className="size-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10"
-                        onClick={() => setConfirmDelete(s)}
-                      >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="space-y-3">
+          {data.map((s) => (
+            <div
+              key={s.id}
+              className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card p-4"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+                  {(s.first_name?.trim()[0] || s.last_name?.trim()[0] || s.phone.replace(/\D/g,'')[0] || '?').toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="font-semibold truncate">{fullName(s)}</p>
+                  <p className="text-sm text-muted-foreground tabular-nums" dir="ltr">{s.phone}</p>
+                </div>
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <Button variant="ghost" size="icon" onClick={() => setEditStaff(s)}>
+                  <Pencil className="size-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-destructive hover:bg-destructive/10"
+                  onClick={() => setConfirmDelete(s)}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

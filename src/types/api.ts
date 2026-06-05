@@ -249,7 +249,13 @@ export interface OrderDetail {
   estimated_delivery: string | null
   receipt_image: string | null
   delivery_staff_name: string | null
-  payment_method_name?: string | null
+  payment_method?: {
+    id: number
+    name_ar: string
+    description_ar: string
+    image: string | null
+    link: string
+  } | null
   items: OrderItem[]
   bundle_items?: OrderBundleItem[]
   logs: OrderLog[]

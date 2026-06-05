@@ -330,14 +330,30 @@ export function OrderDetailPage() {
                 value={`${order.deposit_percent}%`}
               />
             )}
-            <Row
-              label={t('orders.paymentMethod')}
-              value={
-                order.payment_method_name
-                  ? order.payment_method_name
-                  : t('checkout.deposit.codTitle')
-              }
-            />
+            {order.payment_method ? (
+              <div className="flex items-center justify-between gap-3">
+                <span className="shrink-0 text-muted-foreground">{t('orders.paymentMethod')}</span>
+                <div className="flex items-center gap-2">
+                  {order.payment_method.image && (
+                    <img
+                      src={resolveMediaUrl(order.payment_method.image) ?? order.payment_method.image}
+                      alt={order.payment_method.name_ar}
+                      loading="lazy"
+                      decoding="async"
+                      width={28}
+                      height={28}
+                      className="size-7 rounded object-contain"
+                    />
+                  )}
+                  <span className="text-end font-medium">{order.payment_method.name_ar}</span>
+                </div>
+              </div>
+            ) : (
+              <Row
+                label={t('orders.paymentMethod')}
+                value={t('checkout.deposit.codTitle')}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
