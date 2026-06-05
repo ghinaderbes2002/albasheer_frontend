@@ -78,7 +78,7 @@ export function CancelOrderButton({ orderId }: CancelOrderButtonProps) {
                 id="cancel-dialog-title"
                 className="mb-2 text-center text-lg font-bold"
               >
-                {t('orders.cancel.dialogTitle', { defaultValue: 'إلغاء الطلب' })}
+                {t('orders.cancel.dialogTitle')}
               </h2>
               <p className="mb-6 text-center text-sm text-muted-foreground">
                 {t('orders.cancel.confirm')}
@@ -92,7 +92,7 @@ export function CancelOrderButton({ orderId }: CancelOrderButtonProps) {
                   onClick={() => setOpen(false)}
                   className="w-full sm:w-auto"
                 >
-                  {t('common.cancel')}
+                  {t('orders.cancel.no')}
                 </Button>
                 <Button
                   ref={yesRef}
