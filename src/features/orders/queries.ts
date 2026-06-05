@@ -23,7 +23,7 @@ export const orderKeys = {
   all: ['orders'] as const,
   myList: () => [...orderKeys.all, 'mine'] as const,
   detail: (id: number | string) =>
-    [...orderKeys.all, 'detail', id] as const,
+    [...orderKeys.all, 'detail', String(id)] as const,
 }
 
 export function useMyOrders() {
