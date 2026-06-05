@@ -272,7 +272,15 @@ export function OrderDetailPage() {
                     />
                   </a>
                 ) : canUpload ? (
-                  <ReceiptUpload orderId={order.id} />
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3 rounded-xl border border-amber-400/40 bg-amber-50 px-4 py-3 text-sm dark:bg-amber-950/20">
+                      <Truck className="mt-0.5 size-4 shrink-0 text-amber-600" />
+                      <p className="text-amber-800 leading-relaxed dark:text-amber-400">
+                        {t('orders.receipt.shippingFeeNote')}
+                      </p>
+                    </div>
+                    <ReceiptUpload orderId={order.id} />
+                  </div>
                 ) : (
                   <p className="text-sm text-muted-foreground">
                     {t('orders.receipt.notUploaded')}

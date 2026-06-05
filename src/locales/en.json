@@ -312,7 +312,8 @@
       "tooLarge": "File is larger than {{mb}} MB",
       "notUploaded": "Receipt cannot be uploaded for this status",
       "uploadRequired": "Action required: upload your payment receipt",
-      "uploadRequiredHint": "Your order won't be processed until you upload proof of deposit payment below"
+      "uploadRequiredHint": "Your order won't be processed until you upload proof of deposit payment below",
+      "shippingFeeNote": "Note: Shipping fees will be determined by the branch after reviewing and confirming your order, and you will be notified before shipment."
     }
   },
   "status": {
