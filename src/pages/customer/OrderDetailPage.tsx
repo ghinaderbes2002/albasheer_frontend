@@ -246,39 +246,41 @@ export function OrderDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Receipt */}
-          <Card id="receipt-section">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Receipt className="size-4" />
-                {t('orders.receipt.title')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {receiptUrl ? (
-                <a
-                  href={receiptUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block overflow-hidden rounded-xl border border-border"
-                >
-                  <img
-                    src={receiptUrl}
-                    alt={t('orders.receipt.title')}
-                    loading="lazy"
-                    decoding="async"
-                    className="max-h-120 w-full object-contain bg-muted"
-                  />
-                </a>
-              ) : canUpload ? (
-                <ReceiptUpload orderId={order.id} />
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {t('orders.receipt.notUploaded')}
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          {/* Receipt — only when deposit is required or receipt already uploaded */}
+          {(hasDeposit || receiptUrl) && (
+            <Card id="receipt-section">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Receipt className="size-4" />
+                  {t('orders.receipt.title')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {receiptUrl ? (
+                  <a
+                    href={receiptUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block overflow-hidden rounded-xl border border-border"
+                  >
+                    <img
+                      src={receiptUrl}
+                      alt={t('orders.receipt.title')}
+                      loading="lazy"
+                      decoding="async"
+                      className="max-h-120 w-full object-contain bg-muted"
+                    />
+                  </a>
+                ) : canUpload ? (
+                  <ReceiptUpload orderId={order.id} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t('orders.receipt.notUploaded')}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Timeline */}
           <Card>
