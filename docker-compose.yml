@@ -6,8 +6,8 @@ services:
       args:
         # Public URLs the browser will use to reach the backend.
         # Override per environment via a `.env` file next to this compose file.
-        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://161.97.156.42:8000}
-        VITE_MEDIA_BASE_URL: ${VITE_MEDIA_BASE_URL:-http://161.97.156.42:8000}
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://152.239.112.38}
+        VITE_MEDIA_BASE_URL: ${VITE_MEDIA_BASE_URL:-http://152.239.112.38}
         VITE_DEFAULT_LANG: ${VITE_DEFAULT_LANG:-ar}
     image: albasheer-frontend:latest
     container_name: albasheer-frontend
