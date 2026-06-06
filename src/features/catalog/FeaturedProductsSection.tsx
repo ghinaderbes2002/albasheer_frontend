@@ -66,7 +66,7 @@ export function FeaturedProductsSection() {
       ) : (
         <>
           {/* ── Mobile: horizontal scroll ────────────────────────── */}
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide px-4 pb-2 md:hidden">
+          <div dir={isRtl ? 'rtl' : 'ltr'} className="flex gap-4 overflow-x-auto scrollbar-hide px-4 pb-2 md:hidden">
             {items.map((product, i) => (
               <MobileCard
                 key={product.id}
