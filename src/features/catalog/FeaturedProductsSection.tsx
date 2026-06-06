@@ -33,9 +33,11 @@ export function FeaturedProductsSection() {
   const Arrow = isRtl ? ArrowLeft : ArrowRight
   const lang = i18n.language
 
-  const items = (products ?? []).slice(0, 3)
+  const allItems = products ?? []
+  const bentoItems = allItems.slice(0, 3)
+  const extraItems = allItems.slice(3)
 
-  if (!isLoading && items.length === 0) return null
+  if (!isLoading && allItems.length === 0) return null
 
   return (
     <section ref={sectionRef} className="w-full py-16">
@@ -65,14 +67,14 @@ export function FeaturedProductsSection() {
         </div>
       ) : (
         <>
-          {/* ── Mobile: horizontal scroll ────────────────────────── */}
+          {/* ── Mobile: horizontal scroll (all items) ───────────── */}
           <div dir={isRtl ? 'rtl' : 'ltr'} className="flex gap-4 overflow-x-auto scrollbar-hide px-4 pb-2 md:hidden">
-            {items.map((product, i) => (
+            {allItems.map((product, i) => (
               <MobileCard
                 key={product.id}
                 product={product}
                 lang={lang}
-                bg={CARD_BG[i]}
+                bg={CARD_BG[i % CARD_BG.length]}
                 isInView={isInView}
                 delay={i * 0.1}
                 Arrow={Arrow}
@@ -82,11 +84,11 @@ export function FeaturedProductsSection() {
             <div className="w-4 shrink-0" />
           </div>
 
-          {/* ── Desktop: bento grid ──────────────────────────────── */}
+          {/* ── Desktop: bento grid (first 3) ───────────────────── */}
           <div className="mx-auto hidden max-w-7xl gap-4 px-4 md:grid md:auto-rows-[230px] md:grid-cols-5">
-            {items[0] && (
+            {bentoItems[0] && (
               <BentoCard
-                product={items[0]}
+                product={bentoItems[0]}
                 big
                 lang={lang}
                 bg={CARD_BG[0]}
@@ -95,9 +97,9 @@ export function FeaturedProductsSection() {
                 Arrow={Arrow}
               />
             )}
-            {items[1] && (
+            {bentoItems[1] && (
               <BentoCard
-                product={items[1]}
+                product={bentoItems[1]}
                 lang={lang}
                 bg={CARD_BG[1]}
                 isInView={isInView}
@@ -105,9 +107,9 @@ export function FeaturedProductsSection() {
                 Arrow={Arrow}
               />
             )}
-            {items[2] && (
+            {bentoItems[2] && (
               <BentoCard
-                product={items[2]}
+                product={bentoItems[2]}
                 lang={lang}
                 bg={CARD_BG[2]}
                 isInView={isInView}
@@ -116,6 +118,24 @@ export function FeaturedProductsSection() {
               />
             )}
           </div>
+
+          {/* ── Desktop: extra products (4th+) in a row ─────────── */}
+          {extraItems.length > 0 && (
+            <div className="mx-auto mt-4 hidden max-w-7xl gap-4 px-4 md:grid md:grid-cols-3">
+              {extraItems.map((product, i) => (
+                <BentoCard
+                  key={product.id}
+                  product={product}
+                  compact
+                  lang={lang}
+                  bg={CARD_BG[(i + 3) % CARD_BG.length]}
+                  isInView={isInView}
+                  delay={0.3 + i * 0.1}
+                  Arrow={Arrow}
+                />
+              ))}
+            </div>
+          )}
         </>
       )}
 
@@ -215,6 +235,7 @@ function MobileCard({
 function BentoCard({
   product,
   big = false,
+  compact = false,
   lang,
   bg,
   isInView,
@@ -223,6 +244,7 @@ function BentoCard({
 }: {
   product: FP
   big?: boolean
+  compact?: boolean
   lang: string
   bg: string
   isInView: boolean
@@ -241,8 +263,8 @@ function BentoCard({
       className={[
         'group overflow-hidden rounded-3xl',
         bg,
-        big ? 'md:col-span-2 md:row-span-2' : 'md:col-span-3',
-      ].join(' ')}
+        !compact && (big ? 'md:col-span-2 md:row-span-2' : 'md:col-span-3'),
+      ].filter(Boolean).join(' ')}
     >
       <Link
         to={`/products/${product.slug}`}
