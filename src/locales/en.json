@@ -62,6 +62,10 @@
       "title": "Featured Products",
       "badge": "Featured",
       "viewAll": "View all products"
+    },
+    "latest": {
+      "title": "Latest Products",
+      "viewAll": "View all products"
     }
   },
   "footer": {

@@ -193,15 +193,15 @@ export function HomePage() {
         )}
       </section>
 
-      {/* Featured ──────────────────────────────────────────────────── */}
+      {/* Latest Products ───────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 pb-20">
         <div className="mb-10 flex items-end justify-between gap-3">
           <h2 className="section-heading text-2xl font-bold md:text-3xl">
-            {t('home.featured.title')}
+            {t('home.latest.title')}
           </h2>
           <Button asChild variant="ghost" size="sm">
             <Link to="/products">
-              {t('home.featured.viewAll')}
+              {t('home.latest.viewAll')}
               <Arrow />
             </Link>
           </Button>
