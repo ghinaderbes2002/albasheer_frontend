@@ -107,10 +107,15 @@ export function resolveMediaUrl(
     try {
       const url = new URL(path)
       const base = new URL(MEDIA_BASE)
+      // A URL is a backend media URL if it points to our host, a local dev host,
+      // OR its path starts with /media/ (Django media root) — regardless of what
+      // hostname the backend stored it under (e.g. a Docker internal hostname).
+      // External CDN URLs (Unsplash, etc.) have paths like /photo-xxx, never /media/.
       const isBackendUrl =
         url.hostname === base.hostname ||
         url.hostname === 'localhost' ||
-        url.hostname === '127.0.0.1'
+        url.hostname === '127.0.0.1' ||
+        url.pathname.startsWith('/media/')
       if (isBackendUrl) {
         url.hostname = base.hostname
         url.port = base.port
