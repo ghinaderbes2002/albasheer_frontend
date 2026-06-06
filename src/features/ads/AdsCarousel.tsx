@@ -171,7 +171,6 @@ export function AdsCarousel() {
                 index={idx}
                 isActive={idx === selectedIndex}
                 badgeLabel={BADGE_LABELS[idx % BADGE_LABELS.length]}
-                isRtl={isRtl}
                 t={t}
                 onExpand={() => setLightboxAd(ad)}
               />
@@ -232,7 +231,6 @@ function AdSlide({
   index,
   isActive,
   badgeLabel,
-  isRtl,
   t,
   onExpand,
 }: {
@@ -240,7 +238,6 @@ function AdSlide({
   index: number
   isActive: boolean
   badgeLabel: string
-  isRtl: boolean
   t: ReturnType<typeof useTranslation>['t']
   onExpand: () => void
 }) {
