@@ -69,7 +69,6 @@ export function AdsCarousel() {
               index={idx}
               isActive={idx === selectedIndex}
               badgeLabel={BADGE_LABELS[idx % BADGE_LABELS.length]}
-              t={t}
               isRtl={isRtl}
             />
           ))}
@@ -124,16 +123,15 @@ function AdSlide({
   index,
   isActive,
   badgeLabel,
-  t,
   isRtl,
 }: {
   ad: Ad
   index: number
   isActive: boolean
   badgeLabel: string
-  t: (key: string, opts?: object) => string
   isRtl: boolean
 }) {
+  const { t } = useTranslation()
   const fileUrl = resolveMediaUrl(ad.file) ?? ''
   const hasLink = ad.link?.length > 0
   const isFirst = index === 0

@@ -69,7 +69,6 @@ export function FeaturedProductsSection() {
               product={items[0]}
               big
               lang={lang}
-              t={t}
               bg={CARD_BG[0]}
               isInView={isInView}
               delay={0}
@@ -80,7 +79,6 @@ export function FeaturedProductsSection() {
             <BentoCard
               product={items[1]}
               lang={lang}
-              t={t}
               bg={CARD_BG[1]}
               isInView={isInView}
               delay={0.12}
@@ -91,7 +89,6 @@ export function FeaturedProductsSection() {
             <BentoCard
               product={items[2]}
               lang={lang}
-              t={t}
               bg={CARD_BG[2]}
               isInView={isInView}
               delay={0.22}
@@ -131,7 +128,6 @@ function BentoCard({
   product,
   big = false,
   lang,
-  t,
   bg,
   isInView,
   delay,
@@ -140,12 +136,12 @@ function BentoCard({
   product: FP
   big?: boolean
   lang: string
-  t: (k: string) => string
   bg: string
   isInView: boolean
   delay: number
   Arrow: React.ComponentType<{ className?: string }>
 }) {
+  const { t } = useTranslation()
   const name = pickLang(product.name, product.name_ar, lang)
   const image = resolveMediaUrl(product.main_image)
 
