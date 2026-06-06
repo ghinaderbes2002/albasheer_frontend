@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ExternalLink, Volume2, VolumeX } from 'lucide-react'
 import useEmblaCarousel from 'embla-carousel-react'
 
 import { Skeleton } from '@/components/ui/skeleton'
@@ -132,9 +132,11 @@ function AdSlide({
   isRtl: boolean
 }) {
   const { t } = useTranslation()
+  const [muted, setMuted] = useState(true)
   const fileUrl = resolveMediaUrl(ad.file) ?? ''
   const hasLink = ad.link?.length > 0
   const isFirst = index === 0
+  const isVideo = ad.media_type === 'video'
 
   const Wrapper = hasLink ? 'a' : 'div'
   const wrapperProps = hasLink
@@ -144,15 +146,18 @@ function AdSlide({
   return (
     <Wrapper
       {...(wrapperProps as any)}
-      className="group relative min-w-full shrink-0 overflow-hidden bg-neutral-900"
-      style={{ height: 'clamp(180px, 28vw, 380px)' }}
+      className="group relative overflow-hidden bg-neutral-900"
+      style={{ flex: '0 0 100%', minWidth: 0, height: 'clamp(180px, 28vw, 380px)' }}
     >
       {/* Background media */}
-      {ad.media_type === 'video' ? (
+      {isVideo ? (
         <video
           src={fileUrl}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          autoPlay muted loop playsInline
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted={muted}
+          loop
+          playsInline
           preload={isFirst ? 'auto' : 'metadata'}
         />
       ) : (
@@ -167,6 +172,18 @@ function AdSlide({
           className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
           style={{ willChange: 'transform' }}
         />
+      )}
+
+      {/* Mute toggle — video only */}
+      {isVideo && (
+        <button
+          type="button"
+          onClick={(e) => { e.preventDefault(); setMuted(v => !v) }}
+          className="absolute bottom-12 start-4 z-30 flex size-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60"
+          aria-label={muted ? 'تشغيل الصوت' : 'كتم الصوت'}
+        >
+          {muted ? <VolumeX className="size-4" /> : <Volume2 className="size-4" />}
+        </button>
       )}
 
       {/* Gradient overlay — from start (right in RTL) to transparent */}
