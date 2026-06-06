@@ -59,8 +59,9 @@
       "empty": "No categories yet"
     },
     "featured": {
-      "title": "Latest products",
-      "viewAll": "View all"
+      "title": "Featured Products",
+      "badge": "Featured",
+      "viewAll": "View all products"
     }
   },
   "footer": {

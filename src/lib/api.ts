@@ -101,14 +101,21 @@ export function resolveMediaUrl(
 ): string | null {
   if (!path) return null
   if (path.startsWith('http://') || path.startsWith('https://')) {
-    // Replace the backend origin with MEDIA_BASE so absolute URLs from the
-    // backend still resolve correctly after a host/port change (e.g. 8000→80).
+    // Only rewrite the origin when the URL belongs to the backend itself
+    // (localhost or same hostname as MEDIA_BASE). External URLs (Unsplash, etc.)
+    // must be returned as-is.
     try {
       const url = new URL(path)
       const base = new URL(MEDIA_BASE)
-      url.hostname = base.hostname
-      url.port = base.port
-      url.protocol = base.protocol
+      const isBackendUrl =
+        url.hostname === base.hostname ||
+        url.hostname === 'localhost' ||
+        url.hostname === '127.0.0.1'
+      if (isBackendUrl) {
+        url.hostname = base.hostname
+        url.port = base.port
+        url.protocol = base.protocol
+      }
       return url.toString()
     } catch {
       return path

@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ProductCard } from '@/features/catalog/ProductCard'
 import { useCategories, useProducts } from '@/features/catalog/queries'
 import { AdsCarousel } from '@/features/ads/AdsCarousel'
+import { FeaturedProductsSection } from '@/features/catalog/FeaturedProductsSection'
 import { resolveMediaUrl } from '@/lib/api'
 import { pickLang } from '@/lib/format'
 
@@ -138,6 +139,9 @@ export function HomePage() {
       <section className="mx-auto w-full max-w-7xl px-4 pt-10">
         <AdsCarousel />
       </section>
+
+      {/* Featured Products ──────────────────────────────────────────── */}
+      <FeaturedProductsSection />
 
       {/* Categories ────────────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 py-14">

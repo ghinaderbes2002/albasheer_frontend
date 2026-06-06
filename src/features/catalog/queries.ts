@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   getCategories,
+  getFeaturedProducts,
   getProduct,
   getProductMeta,
   getProducts,
@@ -16,11 +17,20 @@ export const catalogKeys = {
   categories: () => [...catalogKeys.all, 'categories'] as const,
   brands: () => [...catalogKeys.all, 'brands'] as const,
   favorites: () => [...catalogKeys.all, 'favorites'] as const,
+  featured: () => [...catalogKeys.all, 'featured'] as const,
   allProducts: () => [...catalogKeys.all, 'products'] as const,
   products: (params: ProductListParams) =>
     [...catalogKeys.all, 'products', params] as const,
   product: (slug: string) =>
     [...catalogKeys.all, 'product', slug] as const,
+}
+
+export function useFeaturedProducts() {
+  return useQuery({
+    queryKey: catalogKeys.featured(),
+    queryFn: getFeaturedProducts,
+    staleTime: 5 * 60 * 1000,
+  })
 }
 
 export function useCatalogBrands() {

@@ -78,6 +78,13 @@ export async function getProducts(
   return data
 }
 
+export async function getFeaturedProducts(): Promise<ProductListItem[]> {
+  const { data } = await api.get<ProductListItem[] | PaginatedResponse<ProductListItem>>(
+    '/api/products/featured/',
+  )
+  return Array.isArray(data) ? data : data.results
+}
+
 export async function getProduct(slug: string): Promise<ProductDetail> {
   const { data } = await api.get<ProductDetail>(`/api/products/${encodeURIComponent(slug)}/`)
   return data
