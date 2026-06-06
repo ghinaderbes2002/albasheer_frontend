@@ -151,9 +151,9 @@ export function Header() {
                         onClick={() => setCatOpen(false)}
                         className="flex items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-muted"
                       >
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/8">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/8 overflow-hidden">
                           {icon
-                            ? <img src={icon} alt="" loading="lazy" decoding="async" width={24} height={24} className="size-6 object-contain" />
+                            ? <img src={icon} alt="" loading="lazy" decoding="async" width={40} height={40} className="size-10 object-cover" />
                             : <span className="text-sm font-bold text-primary">{name.charAt(0)}</span>
                           }
                         </div>
