@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 
 const SITE_NAME = 'البشير للأدوات المنزلية'
-const BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL ?? 'http://152.239.112.38'
+const BASE_URL = import.meta.env.VITE_MEDIA_BASE_URL ?? 'https://albasheercomplex.com'
 const DEFAULT_IMAGE = `${BASE_URL}/images/logo_al_basheer-removebg-preview.png`
 
 interface SeoProps {
