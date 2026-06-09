@@ -363,6 +363,28 @@ export async function setAdminOrderShippingFee(
   await api.patch(`/api/admin/orders/${id}/set-shipping-fee/`, { shipping_fee: shippingFee })
 }
 
+export async function confirmAdminOrder(id: number | string): Promise<void> {
+  await api.post(`/api/branch/orders/${id}/confirm/`, {})
+}
+
+export async function rejectAdminOrder(
+  id: number | string,
+  payload: { note: string },
+): Promise<void> {
+  await api.post(`/api/branch/orders/${id}/reject/`, payload)
+}
+
+export async function assignAdminDelivery(
+  id: number | string,
+  payload: { delivery_user_id: number },
+): Promise<void> {
+  await api.post(`/api/branch/orders/${id}/assign-delivery/`, payload)
+}
+
+export async function markAdminOrderReady(id: number | string): Promise<void> {
+  await api.post(`/api/branch/orders/${id}/ready/`, {})
+}
+
 // ─── Ads ──────────────────────────────────────────────────────────────
 export async function getAdminAds(): Promise<AdminAd[]> {
   const { data } = await api.get<AdminAd[] | PaginatedResponse<AdminAd>>('/api/admin/ads/')

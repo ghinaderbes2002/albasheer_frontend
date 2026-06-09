@@ -3,6 +3,10 @@ import {
   getContentStats,
   cancelAdminOrder,
   setAdminOrderShippingFee,
+  confirmAdminOrder,
+  rejectAdminOrder,
+  assignAdminDelivery,
+  markAdminOrderReady,
   getAdminPaymentMethods,
   createAdminPaymentMethod,
   updateAdminPaymentMethod,
@@ -512,6 +516,58 @@ export function useSetAdminOrderShippingFee(id: number | string) {
   return useMutation({
     mutationFn: (shippingFee: number) => setAdminOrderShippingFee(id, shippingFee),
     onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.order(id) }),
+  })
+}
+
+export function useConfirmAdminOrder(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => confirmAdminOrder(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.orders() })
+      qc.invalidateQueries({ queryKey: adminKeys.order(id) })
+    },
+  })
+}
+
+export function useRejectAdminOrder(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { note: string }) => rejectAdminOrder(id, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.orders() })
+      qc.invalidateQueries({ queryKey: adminKeys.order(id) })
+    },
+  })
+}
+
+export function useAssignAdminDelivery(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (payload: { delivery_user_id: number }) => assignAdminDelivery(id, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.orders() })
+      qc.invalidateQueries({ queryKey: adminKeys.order(id) })
+    },
+  })
+}
+
+export function useMarkAdminOrderReady(id: number | string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => markAdminOrderReady(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.orders() })
+      qc.invalidateQueries({ queryKey: adminKeys.order(id) })
+    },
+  })
+}
+
+export function useAdminDeliveryStaff() {
+  return useQuery({
+    queryKey: adminKeys.users({ role: 'delivery' }),
+    queryFn: () => getAdminUsers({ role: 'delivery' }),
+    staleTime: 60 * 1000,
   })
 }
 

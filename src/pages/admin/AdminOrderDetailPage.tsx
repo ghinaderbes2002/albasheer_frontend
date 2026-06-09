@@ -1,20 +1,12 @@
-import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ChevronRight, Loader2, Truck, X } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { ChevronRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Textarea } from '@/components/ui/textarea'
-import {
-  useAdminOrder,
-  useCancelAdminOrder,
-  useSetAdminOrderShippingFee,
-} from '@/features/admin/queries'
-import { extractApiError, resolveMediaUrl } from '@/lib/api'
+import { useAdminOrder } from '@/features/admin/queries'
+import { AdminOrderActions } from '@/features/admin/AdminOrderActions'
+import { resolveMediaUrl } from '@/lib/api'
 import { statusColor } from './AdminOrdersPage'
 
 export function AdminOrderDetailPage() {
@@ -23,39 +15,9 @@ export function AdminOrderDetailPage() {
   const navigate = useNavigate()
 
   const { data: order, isLoading } = useAdminOrder(id)
-  const cancel = useCancelAdminOrder(id ?? '')
-  const setShipping = useSetAdminOrderShippingFee(id ?? '')
-
-  const [showCancel, setShowCancel] = useState(false)
-  const [showShipping, setShowShipping] = useState(false)
-  const [cancelNote, setCancelNote] = useState('')
-  const [shippingFee, setShippingFee] = useState('')
 
   const currency = t('common.currency')
   const fmt = (v: string | number) => Number(v).toLocaleString('en-US')
-
-  const handleCancel = async () => {
-    try {
-      await cancel.mutateAsync(cancelNote || undefined)
-      toast.success(t('admin.orders.cancelled'))
-      setShowCancel(false)
-    } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
-    }
-  }
-
-  const handleSetShipping = async () => {
-    const fee = parseFloat(shippingFee)
-    if (isNaN(fee) || fee < 0) return
-    try {
-      await setShipping.mutateAsync(fee)
-      toast.success(t('admin.orders.shippingFeeUpdated'))
-      setShowShipping(false)
-      setShippingFee('')
-    } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
-    }
-  }
 
   if (isLoading) {
     return (
@@ -71,9 +33,6 @@ export function AdminOrderDetailPage() {
 
   if (!order) return <p className="text-muted-foreground">{t('errors.notFound')}</p>
 
-  const canCancel = order.status === 'pending' || order.status === 'confirmed'
-  const canSetShipping = order.status !== 'cancelled' && order.status !== 'delivered'
-
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Header */}
@@ -81,23 +40,11 @@ export function AdminOrderDetailPage() {
         <Button variant="ghost" size="icon" onClick={() => navigate('/admin/orders')}>
           <ChevronRight className="size-5" />
         </Button>
-        <div>
-          <h1 className="text-2xl font-bold" dir="ltr">#{order.id}</h1>
-        </div>
-        <div className="ms-auto flex gap-2 flex-wrap">
-          {canSetShipping && (
-            <Button variant="outline" onClick={() => setShowShipping(true)}>
-              <Truck className="size-4" />
-              {t('admin.orders.setShippingFee')}
-            </Button>
-          )}
-          {canCancel && (
-            <Button variant="destructive" onClick={() => setShowCancel(true)}>
-              {t('orders.cancel.button')}
-            </Button>
-          )}
-        </div>
+        <h1 className="text-2xl font-bold" dir="ltr">#{order.id}</h1>
       </div>
+
+      {/* Actions */}
+      <AdminOrderActions order={order} />
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -204,72 +151,6 @@ export function AdminOrderDetailPage() {
         </div>
       )}
 
-      {/* Cancel dialog */}
-      {showCancel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">{t('admin.orders.cancelOrder')}</h2>
-              <Button variant="ghost" size="icon" onClick={() => setShowCancel(false)}>
-                <X className="size-4" />
-              </Button>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm text-muted-foreground">{t('admin.orders.cancelNote')}</Label>
-              <Textarea rows={3} value={cancelNote} onChange={(e) => setCancelNote(e.target.value)} />
-            </div>
-            <div className="flex gap-2">
-              <Button variant="destructive" className="flex-1" onClick={handleCancel} disabled={cancel.isPending}>
-                {cancel.isPending && <Loader2 className="animate-spin size-4" />}
-                {t('orders.cancel.yes')}
-              </Button>
-              <Button variant="outline" onClick={() => setShowCancel(false)} disabled={cancel.isPending}>
-                {t('common.cancel')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Set shipping fee dialog */}
-      {showShipping && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-sm rounded-2xl bg-background p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">{t('admin.orders.setShippingFee')}</h2>
-              <Button variant="ghost" size="icon" onClick={() => setShowShipping(false)}>
-                <X className="size-4" />
-              </Button>
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-sm text-muted-foreground">{t('admin.orders.shippingFee')}</Label>
-              <div className="relative">
-                <Input
-                  type="number"
-                  min={0}
-                  value={shippingFee}
-                  onChange={(e) => setShippingFee(e.target.value)}
-                  dir="ltr"
-                  placeholder="0"
-                  className="pr-12"
-                />
-                <span className="absolute inset-y-0 right-3 flex items-center text-sm text-muted-foreground pointer-events-none">
-                  {currency}
-                </span>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button className="flex-1" onClick={handleSetShipping} disabled={setShipping.isPending || !shippingFee}>
-                {setShipping.isPending && <Loader2 className="animate-spin size-4" />}
-                {t('common.save')}
-              </Button>
-              <Button variant="outline" onClick={() => setShowShipping(false)} disabled={setShipping.isPending}>
-                {t('common.cancel')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
