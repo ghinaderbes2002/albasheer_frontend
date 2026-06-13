@@ -178,11 +178,11 @@ export function ProductDetailPage() {
             <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">{name}</h1>
 
             {/* Price */}
-            <div className="flex items-baseline gap-3 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 gold-glow">
+            <div className="flex items-baseline gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 gold-glow" dir="ltr">
+              <span className="text-2xl font-bold text-primary/70">{t('common.currency')}</span>
               <span className="text-4xl font-extrabold tabular-nums text-primary">
                 {displayPrice}
               </span>
-              <span className="text-base font-semibold text-primary/60">{t('common.currency')}</span>
             </div>
 
             {/* Variant selectors */}
