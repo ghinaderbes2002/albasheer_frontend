@@ -35,13 +35,15 @@ export function AdminFeaturedOrderPage() {
   }
 
   const handleSave = async () => {
+    const payload = items.map((item, i) => ({ id: item.id, order: i + 1 }))
+    console.log('[FeaturedOrder] save payload:', payload)
     try {
-      await update.mutateAsync(
-        items.map((item, i) => ({ id: item.id, order: i + 1 })),
-      )
+      await update.mutateAsync(payload)
+      console.log('[FeaturedOrder] save success')
       toast.success(t('admin.featuredOrder.saved'))
       setDirty(false)
     } catch (err) {
+      console.error('[FeaturedOrder] save error:', err)
       toast.error(extractApiError(err, t('errors.generic')))
     }
   }
