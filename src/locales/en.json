@@ -17,7 +17,8 @@
     "language": "Language",
     "arabic": "العربية",
     "english": "English",
-    "currency": "SYP",
+    "currency": "$",
+    "currencySP": "SP",
     "required": "This field is required",
     "reset": "Reset",
     "confirmDelete": "Are you sure you want to delete?"

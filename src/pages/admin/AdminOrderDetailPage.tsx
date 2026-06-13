@@ -17,6 +17,7 @@ export function AdminOrderDetailPage() {
   const { data: order, isLoading } = useAdminOrder(id)
 
   const currency = t('common.currency')
+  const currencySP = t('common.currencySP')
   const fmt = (v: string | number) => Number(v).toLocaleString('en-US')
 
   if (isLoading) {
@@ -58,7 +59,7 @@ export function AdminOrderDetailPage() {
           <span dir="ltr">{fmt(order.total_price)} {currency}</span>
         </InfoCard>
         <InfoCard label={t('admin.orders.shippingFee')}>
-          <span dir="ltr">{fmt(order.shipping_fee || 0)} {currency}</span>
+          <span dir="ltr">{fmt(order.shipping_fee || 0)} {currencySP}</span>
         </InfoCard>
       </div>
 

@@ -323,7 +323,7 @@ export function OrderDetailPage() {
             {shippingFee > 0 && (
               <Row
                 label={t('orders.shippingFee')}
-                value={`${formatPrice(order.shipping_fee, i18n.language)} ${t('common.currency')}`}
+                value={`${formatPrice(order.shipping_fee, i18n.language)} ${t('common.currencySP')}`}
               />
             )}
             {hasDeposit && (

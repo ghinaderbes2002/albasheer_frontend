@@ -17,7 +17,8 @@
     "language": "اللغة",
     "arabic": "العربية",
     "english": "English",
-    "currency": "ل.س",
+    "currency": "$",
+    "currencySP": "ل.س",
     "required": "هذا الحقل مطلوب",
     "reset": "إعادة ضبط",
     "confirmDelete": "هل أنت متأكد من الحذف؟"
