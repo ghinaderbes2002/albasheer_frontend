@@ -11,7 +11,7 @@ import { pickLang } from '@/lib/format'
 import type { FeaturedProductItem } from '@/api/admin'
 
 export function AdminFeaturedOrderPage() {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { data, isLoading } = useStaffFeatured()
   const update = useUpdateFeaturedOrder()
 
