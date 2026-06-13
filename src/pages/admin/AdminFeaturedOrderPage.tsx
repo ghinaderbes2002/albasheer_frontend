@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useStaffFeatured, useUpdateFeaturedOrder } from '@/features/admin/queries'
-import { resolveMediaUrl } from '@/lib/api'
+import { extractApiError, resolveMediaUrl } from '@/lib/api'
 import { pickLang } from '@/lib/format'
 import type { FeaturedProductItem } from '@/api/admin'
 
@@ -41,8 +41,8 @@ export function AdminFeaturedOrderPage() {
       )
       toast.success(t('admin.featuredOrder.saved'))
       setDirty(false)
-    } catch {
-      toast.error(t('errors.generic'))
+    } catch (err) {
+      toast.error(extractApiError(err, t('errors.generic')))
     }
   }
 

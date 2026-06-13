@@ -612,14 +612,8 @@ export interface FeaturedProductItem {
 }
 
 export async function getStaffFeatured(): Promise<FeaturedProductItem[]> {
-  try {
-    const { data } = await api.get<FeaturedProductItem[]>('/api/staff/featured/')
-    return data
-  } catch {
-    // fallback to public endpoint if staff endpoint not available
-    const { data } = await api.get<FeaturedProductItem[]>('/api/products/featured/')
-    return Array.isArray(data) ? data : (data as { results: FeaturedProductItem[] }).results
-  }
+  const { data } = await api.get<FeaturedProductItem[]>('/api/staff/featured/')
+  return data
 }
 
 export async function updateStaffFeaturedOrder(
