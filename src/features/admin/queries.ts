@@ -81,6 +81,8 @@ import {
   createBrand,
   updateAdminBrand,
   deleteAdminBrand,
+  getStaffFeatured,
+  updateStaffFeaturedOrder,
 } from '@/api/admin'
 import type { AdminAd, CreateUserPayload, OrderStatus } from '@/types/api'
 import { catalogKeys } from '@/features/catalog/queries'
@@ -863,5 +865,29 @@ export function useTopBranchesReport(params?: {
     queryKey: adminKeys.topBranches(params),
     queryFn: () => getTopBranchesReport(params),
     staleTime: 5 * 60 * 1000,
+  })
+}
+
+// ─── Featured Products Order ───────────────────────────────────────────
+const featuredKeys = {
+  all: ['staff-featured'] as const,
+}
+
+export function useStaffFeatured() {
+  return useQuery({
+    queryKey: featuredKeys.all,
+    queryFn: getStaffFeatured,
+    staleTime: 30 * 1000,
+  })
+}
+
+export function useUpdateFeaturedOrder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (items: { id: number; order: number }[]) => updateStaffFeaturedOrder(items),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: featuredKeys.all })
+      qc.invalidateQueries({ queryKey: ['catalog', 'featured'] })
+    },
   })
 }

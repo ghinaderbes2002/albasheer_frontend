@@ -598,3 +598,26 @@ export async function removeRelatedProduct(
 ): Promise<void> {
   await api.delete(`/api/admin/products/${productId}/related/${relatedId}/`)
 }
+
+
+// ─── Featured Products Order ───────────────────────────────────────────
+export interface FeaturedProductItem {
+  id: number
+  name: string
+  name_ar: string
+  slug: string
+  price: string
+  main_image: string | null
+  featured_order: number | null
+}
+
+export async function getStaffFeatured(): Promise<FeaturedProductItem[]> {
+  const { data } = await api.get<FeaturedProductItem[]>('/api/staff/featured/')
+  return data
+}
+
+export async function updateStaffFeaturedOrder(
+  items: { id: number; order: number }[],
+): Promise<void> {
+  await api.put('/api/staff/featured/', items)
+}

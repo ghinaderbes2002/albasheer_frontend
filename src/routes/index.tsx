@@ -63,6 +63,7 @@ const AdminVariantTypesPage = lazy(() => import('@/pages/admin/AdminVariantTypes
 const AdminBrandsPage = lazy(() => import('@/pages/admin/AdminBrandsPage').then(m => ({ default: m.AdminBrandsPage })))
 const AdminReportsPage = lazy(() => import('@/pages/admin/AdminReportsPage').then(m => ({ default: m.AdminReportsPage })))
 const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage').then(m => ({ default: m.AdminSettingsPage })))
+const AdminFeaturedOrderPage = lazy(() => import('@/pages/admin/AdminFeaturedOrderPage').then(m => ({ default: m.AdminFeaturedOrderPage })))
 const ContentDashboardPage = lazy(() => import('@/pages/content/ContentDashboardPage').then(m => ({ default: m.ContentDashboardPage })))
 
 import { NotFoundPage } from '@/pages/NotFoundPage'
@@ -164,6 +165,7 @@ export const router = createBrowserRouter([
               { path: 'admin/categories/:id', element: <S><AdminCategoryDetailPage /></S> },
               { path: 'admin/products', element: <S><AdminProductsPage /></S> },
               { path: 'admin/products/:id', element: <S><AdminProductDetailPage /></S> },
+              { path: 'admin/featured-order', element: <S><AdminFeaturedOrderPage /></S> },
               { path: 'admin/bundles', element: <S><AdminBundlesPage /></S> },
               { path: 'admin/bundles/:id', element: <S><AdminBundleDetailPage /></S> },
               { path: 'admin/ads', element: <S><AdminAdsPage /></S> },
