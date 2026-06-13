@@ -77,7 +77,7 @@ export function HomePage() {
               decoding="async"
               width={96}
               height={96}
-              className="h-24 w-24 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.5)]"
+              className="h-24 w-24 object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.5)] animate-spin-3d"
             />
           </div>
 
