@@ -15,7 +15,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useCartStore, type CartBundleItem } from '@/store/cart'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatPrice, pickLang } from '@/lib/format'
+import { pickLang } from '@/lib/format'
+import { Price } from '@/components/shared/Price'
 
 interface CartBundleRowProps {
   item: CartBundleItem
@@ -82,9 +83,7 @@ export function CartBundleRow({ item }: CartBundleRowProps) {
         </div>
 
         <div className="flex items-center gap-3 text-xs text-muted-foreground sm:text-sm">
-          <span>
-            {formatPrice(item.price, i18n.language)} {t('common.currency')}
-          </span>
+          <Price value={item.price} className="text-xs sm:text-sm" />
           <span className="inline-flex items-center gap-1">
             <Package className="size-3" />
             {t('bundles.productsCount', { count: item.products_count })}
@@ -125,14 +124,7 @@ export function CartBundleRow({ item }: CartBundleRowProps) {
             </Button>
           </div>
 
-          <div className="flex items-baseline gap-1.5 text-primary">
-            <span className="text-base font-bold sm:text-lg">
-              {formatPrice(subtotal, i18n.language)}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {t('common.currency')}
-            </span>
-          </div>
+          <Price value={subtotal} className="text-base font-bold sm:text-lg text-primary" />
         </div>
 
         <div className="mt-1 flex justify-end border-t border-primary/20 pt-2">

@@ -4,8 +4,9 @@ import { ArrowLeft, ArrowRight, Boxes, ImageOff, Package } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatPrice, pickLang } from '@/lib/format'
+import { pickLang } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { Price } from '@/components/shared/Price'
 import type { Bundle } from '@/types/api'
 
 interface BundleCardProps {
@@ -83,14 +84,7 @@ export function BundleCard({ bundle, className }: BundleCardProps) {
           </p>
         )}
         <div className="mt-auto flex items-baseline justify-between">
-          <div className="flex items-baseline gap-1.5 text-primary">
-            <span className="text-lg font-bold">
-              {formatPrice(bundle.price, i18n.language)}
-            </span>
-            <span className="text-xs font-medium text-muted-foreground">
-              {t('common.currency')}
-            </span>
-          </div>
+          <Price value={bundle.price} className="text-lg font-bold text-primary" />
           <span className="inline-flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
             {t('catalog.view')}
             <Arrow className="size-3.5" />

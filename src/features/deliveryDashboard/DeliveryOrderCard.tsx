@@ -4,7 +4,7 @@ import { MapPin, Phone } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { StatusBadge } from '@/features/orders/StatusBadge'
-import { formatPrice } from '@/lib/format'
+import { Price } from '@/components/shared/Price'
 import type { BranchOrderDetail } from '@/types/api'
 
 interface DeliveryOrderCardProps {
@@ -12,7 +12,7 @@ interface DeliveryOrderCardProps {
 }
 
 export function DeliveryOrderCard({ order }: DeliveryOrderCardProps) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const remaining = Math.max(
     parseFloat(order.total_price) - parseFloat(order.deposit_amount),
     0,
@@ -56,14 +56,7 @@ export function DeliveryOrderCard({ order }: DeliveryOrderCardProps) {
             <span className="text-xs text-muted-foreground">
               {t('dashboard.delivery.amountToCollect')}
             </span>
-            <div className="flex items-baseline gap-1.5 text-primary">
-              <span className="text-lg font-bold">
-                {formatPrice(remaining, i18n.language)}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {t('common.currency')}
-              </span>
-            </div>
+            <Price value={remaining} className="text-lg font-bold text-primary" />
           </div>
         </CardContent>
       </Card>

@@ -12,7 +12,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { useCartStore, type CartItem } from '@/store/cart'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatPrice, pickLang } from '@/lib/format'
+import { pickLang } from '@/lib/format'
+import { Price } from '@/components/shared/Price'
 
 interface CartItemRowProps {
   item: CartItem
@@ -72,9 +73,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-          <span className="text-xs text-muted-foreground sm:text-sm">
-            {formatPrice(item.price, i18n.language)} {t('common.currency')}
-          </span>
+          <Price value={item.price} className="text-xs text-muted-foreground sm:text-sm" />
           {item.variant_label && (
             <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">
               {item.variant_label}
@@ -116,14 +115,7 @@ export function CartItemRow({ item }: CartItemRowProps) {
             </Button>
           </div>
 
-          <div className="flex items-baseline gap-1.5 text-primary">
-            <span className="text-base font-bold sm:text-lg">
-              {formatPrice(subtotal, i18n.language)}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {t('common.currency')}
-            </span>
-          </div>
+          <Price value={subtotal} className="text-base font-bold sm:text-lg text-primary" />
         </div>
 
         <div className="mt-1 flex justify-end border-t border-border pt-2">

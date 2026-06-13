@@ -8,6 +8,7 @@ import { useAdminOrder } from '@/features/admin/queries'
 import { AdminOrderActions } from '@/features/admin/AdminOrderActions'
 import { resolveMediaUrl } from '@/lib/api'
 import { statusColor } from './AdminOrdersPage'
+import { Price } from '@/components/shared/Price'
 
 export function AdminOrderDetailPage() {
   const { t } = useTranslation()
@@ -56,7 +57,7 @@ export function AdminOrderDetailPage() {
         </InfoCard>
         <InfoCard label={t('admin.orders.branch')}>{order.branch_name}</InfoCard>
         <InfoCard label={t('admin.orders.total')}>
-          <span dir="ltr">{fmt(order.total_price)} {currency}</span>
+          <Price value={order.total_price} />
         </InfoCard>
         <InfoCard label={t('admin.orders.shippingFee')}>
           <span dir="ltr">{fmt(order.shipping_fee || 0)} {currencySP}</span>
@@ -118,8 +119,8 @@ export function AdminOrderDetailPage() {
                 <tr key={item.id}>
                   <td className="px-4 py-2.5">{item.product_name}</td>
                   <td className="px-4 py-2.5">{item.quantity}</td>
-                  <td className="px-4 py-2.5 tabular-nums"><span dir="ltr">{fmt(item.unit_price)} {currency}</span></td>
-                  <td className="px-4 py-2.5 tabular-nums"><span dir="ltr">{fmt(item.subtotal ?? item.unit_price)} {currency}</span></td>
+                  <td className="px-4 py-2.5 tabular-nums"><Price value={item.unit_price} /></td>
+                  <td className="px-4 py-2.5 tabular-nums"><Price value={item.subtotal ?? item.unit_price} /></td>
                 </tr>
               ))}
             </tbody>

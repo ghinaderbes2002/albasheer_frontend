@@ -23,6 +23,7 @@ import {
 } from '@/features/admin/queries'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
 import type { AdminBundle } from '@/types/api'
+import { Price } from '@/components/shared/Price'
 
 export function AdminBundlesPage() {
   const { t } = useTranslation()
@@ -151,7 +152,7 @@ function BundleRow({
         </div>
       </td>
       <td className="px-4 py-3 hidden sm:table-cell">
-        <span dir="ltr">{Number(b.price).toLocaleString('en-US')} {t('common.currency')}</span>
+        <Price value={b.price} />
       </td>
       <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
         {b.product_count ?? 0}

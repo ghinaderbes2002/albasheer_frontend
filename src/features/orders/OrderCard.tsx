@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Calendar, MapPin, Package } from 'lucide-react'
 
 import { StatusBadge } from '@/features/orders/StatusBadge'
-import { formatDate, formatPrice } from '@/lib/format'
+import { formatDate } from '@/lib/format'
+import { Price } from '@/components/shared/Price'
 import type { OrderListItem } from '@/types/api'
 
 interface OrderCardProps {
@@ -52,14 +53,7 @@ export function OrderCard({ order }: OrderCardProps) {
             <span className="text-xs font-medium text-muted-foreground">
               {t('orders.total')}
             </span>
-            <div className="inline-flex items-baseline gap-1 text-primary">
-              <span className="text-xl font-extrabold tabular-nums">
-                {formatPrice(order.total_price, i18n.language)}
-              </span>
-              <span className="text-xs font-semibold text-primary/60">
-                {t('common.currency')}
-              </span>
-            </div>
+            <Price value={order.total_price} className="text-xl font-extrabold tabular-nums text-primary" />
           </div>
 
         </div>

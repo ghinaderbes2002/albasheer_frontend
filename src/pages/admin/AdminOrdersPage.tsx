@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAdminBranches, useAdminOrders } from '@/features/admin/queries'
 import type { OrderStatus } from '@/types/api'
+import { Price } from '@/components/shared/Price'
 
 const STATUSES: Array<OrderStatus | ''> = ['', 'pending', 'confirmed', 'preparing', 'shipping', 'delivered', 'cancelled']
 
@@ -139,7 +140,7 @@ export function AdminOrdersPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell tabular-nums">
-                    <span dir="ltr">{Number(o.total_price).toLocaleString('en-US')} {t('common.currency')}</span>
+                    <Price value={o.total_price} />
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground font-mono text-xs">
                     <span dir="ltr">{o.created_at.slice(0, 10)}</span>

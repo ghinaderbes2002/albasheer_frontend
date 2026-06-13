@@ -4,7 +4,8 @@ import { Calendar, Phone, User as UserIcon } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { StatusBadge } from '@/features/orders/StatusBadge'
-import { formatDate, formatPrice } from '@/lib/format'
+import { formatDate } from '@/lib/format'
+import { Price } from '@/components/shared/Price'
 import type { BranchOrderListItem } from '@/types/api'
 
 interface BranchOrderRowProps {
@@ -55,19 +56,9 @@ export function BranchOrderRow({ order }: BranchOrderRowProps) {
           <div className="flex items-baseline justify-between border-t border-border pt-3">
             <div className="text-xs text-muted-foreground">
               {t('orders.deposit')}:{' '}
-              <span className="font-medium text-foreground">
-                {formatPrice(order.deposit_amount, i18n.language)}{' '}
-                {t('common.currency')}
-              </span>
+              <Price value={order.deposit_amount} className="font-medium text-foreground" />
             </div>
-            <div className="flex items-baseline gap-1.5 text-primary">
-              <span className="text-lg font-bold">
-                {formatPrice(order.total_price, i18n.language)}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {t('common.currency')}
-              </span>
-            </div>
+            <Price value={order.total_price} className="text-lg font-bold text-primary" />
           </div>
         </CardContent>
       </Card>

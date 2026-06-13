@@ -25,6 +25,7 @@ import type { Brand } from '@/types/api'
 import { uploadProductImages } from '@/api/admin'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
 import type { AdminProduct } from '@/types/api'
+import { Price } from '@/components/shared/Price'
 
 export function AdminProductsPage() {
   const { t } = useTranslation()
@@ -129,7 +130,7 @@ export function AdminProductsPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3 hidden sm:table-cell">
-                    <span dir="ltr">{Number(p.price).toLocaleString('en-US')} {t('common.currency')}</span>
+                    <Price value={p.price} />
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
                     {p.category_name ?? p.category}

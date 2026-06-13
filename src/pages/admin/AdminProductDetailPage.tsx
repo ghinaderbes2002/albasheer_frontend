@@ -33,6 +33,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { ProductSpec, ProductVariant } from '@/types/api'
 import { ProductFormDialog } from './AdminProductsPage'
+import { Price } from '@/components/shared/Price'
 
 export function AdminProductDetailPage() {
   const { t } = useTranslation()
@@ -171,10 +172,7 @@ export function AdminProductDetailPage() {
             <p className="text-sm text-muted-foreground" dir="ltr">{product.name}</p>
           </div>
 
-          <p className="text-3xl font-extrabold text-primary" dir="ltr">
-            {Number(product.price).toLocaleString()}{' '}
-            <span className="text-base font-medium text-muted-foreground">{t('common.currency')}</span>
-          </p>
+          <Price value={product.price} className="text-3xl font-extrabold text-primary" />
 
           <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
             {product.category_name && (
@@ -369,7 +367,7 @@ export function AdminProductDetailPage() {
                 </div>
                 <div className="p-2">
                   <p className="text-xs font-medium line-clamp-1">{rp.name_ar}</p>
-                  <p className="text-xs text-muted-foreground" dir="ltr">{Number(rp.price).toLocaleString('en-US')} {t('common.currency')}</p>
+                  <Price value={rp.price} className="text-xs text-muted-foreground" />
                 </div>
                 <button
                   type="button"
@@ -521,9 +519,7 @@ function VariantRow({
           {v.option.value_ar}
           <span className="ms-1 text-muted-foreground text-xs">({v.option.value})</span>
         </p>
-        <p className="text-xs text-muted-foreground" dir="ltr">
-          {Number(v.price).toLocaleString('en-US')} {t('common.currency')}
-        </p>
+        <Price value={v.price} className="text-xs text-muted-foreground" />
         <div className="mt-1 flex items-center gap-2">
           <span className="text-xs text-muted-foreground">{t('admin.variants.stock')}: {v.stock}</span>
           <span className={`rounded-full px-2 py-0.5 text-xs ${v.is_available ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
@@ -765,7 +761,7 @@ function AddRelatedDialog({
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium line-clamp-1">{p.name_ar}</p>
-                  <p className="text-xs text-muted-foreground" dir="ltr">{Number(p.price).toLocaleString('en-US')} {t('common.currency')}</p>
+                  <Price value={p.price} className="text-xs text-muted-foreground" />
                 </div>
                 <Plus className="size-4 text-muted-foreground shrink-0" />
               </button>

@@ -21,8 +21,9 @@ import { StatusBadge } from '@/features/orders/StatusBadge'
 import { OrderActions } from '@/features/branchDashboard/OrderActions'
 import { useBranchOrder } from '@/features/branchDashboard/queries'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatDateTime, formatPrice } from '@/lib/format'
+import { formatDateTime } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
+import { Price } from '@/components/shared/Price'
 
 export function BranchOrderDetailPage() {
   const { t, i18n } = useTranslation()
@@ -132,16 +133,10 @@ export function BranchOrderDetailPage() {
                       {it.product_name}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {formatPrice(it.unit_price, i18n.language)}{' '}
-                      {t('common.currency')} × {it.quantity}
+                      <Price value={it.unit_price} /> × {it.quantity}
                     </span>
                   </div>
-                  <span className="font-semibold">
-                    {formatPrice(it.total_price, i18n.language)}{' '}
-                    <span className="text-xs text-muted-foreground">
-                      {t('common.currency')}
-                    </span>
-                  </span>
+                  <Price value={it.total_price} className="font-semibold" />
                 </div>
               ))}
             </CardContent>
@@ -228,18 +223,10 @@ export function BranchOrderDetailPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <Row label={t('orders.total')}>
-              <span className="font-semibold text-primary">
-                {formatPrice(order.total_price, i18n.language)}{' '}
-                <span className="text-xs text-muted-foreground">
-                  {t('common.currency')}
-                </span>
-              </span>
+              <Price value={order.total_price} className="font-semibold text-primary" />
             </Row>
             <Row label={t('orders.deposit')}>
-              {formatPrice(order.deposit_amount, i18n.language)}{' '}
-              <span className="text-xs text-muted-foreground">
-                {t('common.currency')}
-              </span>
+              <Price value={order.deposit_amount} />
             </Row>
             {order.deposit_percent && (
               <Row label={t('orders.depositPercent')}>
@@ -248,19 +235,13 @@ export function BranchOrderDetailPage() {
             )}
             <div className="border-t border-border pt-3" />
             <Row label={t('dashboard.branch.remaining')}>
-              <span className="font-semibold">
-                {formatPrice(
-                  Math.max(
-                    parseFloat(order.total_price) -
-                      parseFloat(order.deposit_amount),
-                    0,
-                  ),
-                  i18n.language,
-                )}{' '}
-                <span className="text-xs text-muted-foreground">
-                  {t('common.currency')}
-                </span>
-              </span>
+              <Price
+                value={Math.max(
+                  parseFloat(order.total_price) - parseFloat(order.deposit_amount),
+                  0,
+                )}
+                className="font-semibold"
+              />
             </Row>
           </CardContent>
         </Card>

@@ -15,6 +15,7 @@ import {
   useAdminProducts,
 } from '@/features/admin/queries'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
+import { Price } from '@/components/shared/Price'
 
 export function AdminBundleDetailPage() {
   const { t } = useTranslation()
@@ -110,10 +111,7 @@ export function AdminBundleDetailPage() {
             <p className="text-sm text-muted-foreground">{bundle.name}</p>
           </div>
 
-          <p className="text-3xl font-extrabold text-primary" dir="ltr">
-            {Number(bundle.price).toLocaleString()}{' '}
-            <span className="text-base font-medium text-muted-foreground">{t('common.currency')}</span>
-          </p>
+          <Price value={bundle.price} className="text-3xl font-extrabold text-primary" />
 
           {bundle.description_ar && (
             <div className="rounded-xl border border-border bg-muted/30 p-3">
@@ -165,9 +163,7 @@ export function AdminBundleDetailPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium line-clamp-1">{p.name_ar}</p>
-                  <p className="text-xs text-muted-foreground" dir="ltr">
-                    {Number(p.price).toLocaleString('en-US')} {t('common.currency')}
-                  </p>
+                  <Price value={p.price} className="text-xs text-muted-foreground" />
                 </div>
                 <Button
                   variant="ghost" size="icon"

@@ -22,8 +22,9 @@ import { StatusBadge } from '@/features/orders/StatusBadge'
 import { DeliveryActions } from '@/features/deliveryDashboard/DeliveryActions'
 import { useDeliveryOrder } from '@/features/deliveryDashboard/queries'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatDateTime, formatPrice } from '@/lib/format'
+import { formatDateTime } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
+import { Price } from '@/components/shared/Price'
 
 function buildMapUrl(address: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
@@ -161,12 +162,7 @@ export function DeliveryOrderDetailPage() {
                       ×{it.quantity}
                     </span>
                   </div>
-                  <span className="font-semibold">
-                    {formatPrice(it.total_price, i18n.language)}{' '}
-                    <span className="text-xs text-muted-foreground">
-                      {t('common.currency')}
-                    </span>
-                  </span>
+                  <Price value={it.total_price} className="font-semibold" />
                 </div>
               ))}
             </CardContent>
@@ -222,29 +218,18 @@ export function DeliveryOrderDetailPage() {
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <Row label={t('orders.total')}>
-              {formatPrice(order.total_price, i18n.language)}{' '}
-              <span className="text-xs text-muted-foreground">
-                {t('common.currency')}
-              </span>
+              <Price value={order.total_price} />
             </Row>
             <Row label={t('orders.deposit')}>
-              −{formatPrice(order.deposit_amount, i18n.language)}{' '}
-              <span className="text-xs text-muted-foreground">
-                {t('common.currency')}
-              </span>
+              −<Price value={order.deposit_amount} />
             </Row>
 
             <div className="rounded-lg border border-primary/40 bg-primary/10 p-3">
               <div className="text-xs uppercase tracking-wider text-primary">
                 {t('dashboard.delivery.amountToCollect')}
               </div>
-              <div className="mt-1 flex items-baseline gap-1.5">
-                <span className="text-2xl font-extrabold text-primary">
-                  {formatPrice(remaining, i18n.language)}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {t('common.currency')}
-                </span>
+              <div className="mt-1">
+                <Price value={remaining} className="text-2xl font-extrabold text-primary" />
               </div>
             </div>
           </CardContent>

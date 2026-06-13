@@ -6,7 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useCartStore, useCartSubtotal } from '@/store/cart'
-import { formatPrice } from '@/lib/format'
+import { Price } from '@/components/shared/Price'
 
 interface CartSummaryProps {
   /**
@@ -18,7 +18,7 @@ interface CartSummaryProps {
 }
 
 export function CartSummary({ children, depositSuggestion }: CartSummaryProps) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const subtotal = useCartSubtotal()
   const itemCount = useCartStore((s) =>
     s.items.reduce((sum, i) => sum + i.quantity, 0),
@@ -40,9 +40,7 @@ export function CartSummary({ children, depositSuggestion }: CartSummaryProps) {
           <span className="text-muted-foreground">
             {t('cart.summary.subtotal')}
           </span>
-          <span className="font-medium">
-            {formatPrice(subtotal, i18n.language)} {t('common.currency')}
-          </span>
+          <Price value={subtotal} className="font-medium" />
         </div>
 
         {depositSuggestion !== undefined && depositSuggestion > 0 && (
@@ -50,10 +48,7 @@ export function CartSummary({ children, depositSuggestion }: CartSummaryProps) {
             <span className="text-muted-foreground">
               {t('cart.summary.depositSuggestion')}
             </span>
-            <span className="font-medium text-primary">
-              {formatPrice(depositSuggestion, i18n.language)}{' '}
-              {t('common.currency')}
-            </span>
+            <Price value={depositSuggestion} className="font-medium text-primary" />
           </div>
         )}
 
@@ -61,14 +56,7 @@ export function CartSummary({ children, depositSuggestion }: CartSummaryProps) {
 
         <div className="flex items-baseline justify-between">
           <span className="font-semibold">{t('cart.summary.total')}</span>
-          <div className="flex items-baseline gap-1.5 text-primary">
-            <span className="text-xl font-bold">
-              {formatPrice(subtotal, i18n.language)}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {t('common.currency')}
-            </span>
-          </div>
+          <Price value={subtotal} className="text-xl font-bold text-primary" />
         </div>
 
         {children && <div className="pt-3">{children}</div>}

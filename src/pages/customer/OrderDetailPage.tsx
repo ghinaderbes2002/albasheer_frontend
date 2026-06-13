@@ -20,6 +20,7 @@ import { useOrder } from '@/features/orders/queries'
 import { resolveMediaUrl } from '@/lib/api'
 import { formatDate, formatDateTime, formatPrice } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
+import { Price } from '@/components/shared/Price'
 
 export function OrderDetailPage() {
   const { t, i18n } = useTranslation()
@@ -150,16 +151,10 @@ export function OrderDetailPage() {
                         {bi.bundle_name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {formatPrice(bi.unit_price, i18n.language)}{' '}
-                        {t('common.currency')} × {bi.quantity}
+                        <Price value={bi.unit_price} /> × {bi.quantity}
                       </span>
                     </div>
-                    <span className="font-semibold">
-                      {formatPrice(bi.total_price, i18n.language)}{' '}
-                      <span className="text-xs text-muted-foreground">
-                        {t('common.currency')}
-                      </span>
-                    </span>
+                    <Price value={bi.total_price} className="font-semibold" />
                   </div>
                 ))}
               </CardContent>
@@ -185,16 +180,10 @@ export function OrderDetailPage() {
                         {it.product_name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {formatPrice(it.unit_price, i18n.language)}{' '}
-                        {t('common.currency')} × {it.quantity}
+                        <Price value={it.unit_price} /> × {it.quantity}
                       </span>
                     </div>
-                    <span className="font-semibold">
-                      {formatPrice(it.subtotal, i18n.language)}{' '}
-                      <span className="text-xs text-muted-foreground">
-                        {t('common.currency')}
-                      </span>
-                    </span>
+                    <Price value={it.subtotal} className="font-semibold" />
                   </div>
                 ))}
               </CardContent>
@@ -316,10 +305,10 @@ export function OrderDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            <Row
-              label={t('orders.total')}
-              value={`${formatPrice(order.total_price, i18n.language)} ${t('common.currency')}`}
-            />
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="shrink-0 text-muted-foreground">{t('orders.total')}</span>
+              <Price value={order.total_price} className="text-end font-medium" />
+            </div>
             {shippingFee > 0 && (
               <Row
                 label={t('orders.shippingFee')}
@@ -327,10 +316,10 @@ export function OrderDetailPage() {
               />
             )}
             {hasDeposit && (
-              <Row
-                label={t('orders.deposit')}
-                value={`${formatPrice(order.deposit_amount, i18n.language)} ${t('common.currency')}`}
-              />
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="shrink-0 text-muted-foreground">{t('orders.deposit')}</span>
+                <Price value={order.deposit_amount} className="text-end font-medium" />
+              </div>
             )}
             {order.deposit_percent && hasDeposit && (
               <Row

@@ -15,6 +15,7 @@ import { useBundle } from '@/features/bundles/queries'
 import { resolveMediaUrl } from '@/lib/api'
 import { formatPrice, pickLang } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
+import { Price } from '@/components/shared/Price'
 
 export function BundleDetailPage() {
   const { t, i18n } = useTranslation()
@@ -123,14 +124,7 @@ export function BundleDetailPage() {
             {name}
           </h1>
 
-          <div className="flex items-baseline gap-2 text-primary">
-            <span className="text-3xl font-extrabold">
-              {formatPrice(bundle.price, i18n.language)}
-            </span>
-            <span className="text-sm font-medium text-muted-foreground">
-              {t('common.currency')}
-            </span>
-          </div>
+          <Price value={bundle.price} className="text-3xl font-extrabold text-primary" />
 
           {showSavings && (
             <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300">

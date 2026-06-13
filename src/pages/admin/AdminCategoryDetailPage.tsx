@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useAdminCategories, useAdminProducts } from '@/features/admin/queries'
 import { resolveMediaUrl } from '@/lib/api'
 import type { AdminProduct } from '@/types/api'
+import { Price } from '@/components/shared/Price'
 
 export function AdminCategoryDetailPage() {
   const { t, i18n } = useTranslation()
@@ -176,7 +177,7 @@ function ProductsTable({ products }: { products: AdminProduct[] }) {
                 {p.brand?.name_ar || '—'}
               </td>
               <td className="px-4 py-3 tabular-nums">
-                <span dir="ltr">{Number(p.price).toLocaleString('en-US')} {t('common.currency')}</span>
+                <Price value={p.price} />
               </td>
               <td className="px-4 py-3 hidden md:table-cell">
                 <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${p.is_available ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>

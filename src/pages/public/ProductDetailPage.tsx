@@ -15,6 +15,7 @@ import type { CartItem } from '@/store/cart'
 import { formatPrice, pickLang } from '@/lib/format'
 import { resolveMediaUrl } from '@/lib/api'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
+import { Price } from '@/components/shared/Price'
 import type { PublicProductVariant } from '@/types/api'
 
 export function ProductDetailPage() {
@@ -66,8 +67,8 @@ export function ProductDetailPage() {
 
   // When a variant is selected, show its price and availability
   const displayPrice = selectedVariant
-    ? formatPrice(selectedVariant.effective_price, lang)
-    : formatPrice(product.price, lang)
+    ? selectedVariant.effective_price
+    : product.price
 
   const isAvailable = selectedVariant ? selectedVariant.is_available : product.is_available
 
@@ -178,11 +179,8 @@ export function ProductDetailPage() {
             <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">{name}</h1>
 
             {/* Price */}
-            <div className="flex items-baseline gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 gold-glow" dir="ltr">
-              <span className="text-2xl font-bold text-primary/70">{t('common.currency')}</span>
-              <span className="text-4xl font-extrabold tabular-nums text-primary">
-                {displayPrice}
-              </span>
+            <div className="flex items-baseline gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 gold-glow">
+              <Price value={displayPrice} className="text-4xl font-extrabold tabular-nums text-primary" />
             </div>
 
             {/* Variant selectors */}
@@ -302,10 +300,7 @@ export function ProductDetailPage() {
                     </div>
                     <div className="p-3">
                       <p className="text-sm font-medium line-clamp-2 leading-snug">{rpName}</p>
-                      <p className="mt-1 text-sm font-bold text-primary">
-                        {formatPrice(rp.price, lang)}{' '}
-                        <span className="text-xs font-normal text-muted-foreground">{t('common.currency')}</span>
-                      </p>
+                      <Price value={rp.price} className="mt-1 text-sm font-bold text-primary" />
                     </div>
                   </Link>
                 )

@@ -6,8 +6,9 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 import { useFeaturedProducts } from '@/features/catalog/queries'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatPrice, pickLang } from '@/lib/format'
+import { pickLang } from '@/lib/format'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Price } from '@/components/shared/Price'
 
 type FP = {
   id: number
@@ -214,10 +215,7 @@ function MobileCard({
             {name}
           </h3>
           <div className="mt-3 flex items-center justify-between gap-2">
-            <p className="text-sm font-bold text-primary">
-              {formatPrice(product.price, lang)}{' '}
-              <span className="text-xs font-normal text-muted-foreground">{t('common.currency')}</span>
-            </p>
+            <Price value={product.price} className="text-sm font-bold text-primary" />
             <span className="inline-flex items-center gap-1.5 rounded-full border border-foreground/20 px-3 py-1 text-xs font-semibold text-foreground">
               {t('catalog.view')}
               <Arrow className="size-3" />
@@ -285,10 +283,7 @@ function BentoCard({
           >
             {name}
           </h3>
-          <p className="mb-4 text-sm font-bold text-primary md:text-base">
-            {formatPrice(product.price, lang)}{' '}
-            <span className="text-xs font-normal text-muted-foreground">{t('common.currency')}</span>
-          </p>
+          <Price value={product.price} className="mb-4 text-sm font-bold text-primary md:text-base" />
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-foreground/25 px-4 py-1.5 text-xs font-semibold text-foreground transition-all group-hover:border-primary group-hover:text-primary">
             {t('catalog.view')}
             <Arrow className="size-3" />

@@ -4,8 +4,9 @@ import { ArrowLeft, ArrowRight, Heart, ImageOff, ShoppingCart } from 'lucide-rea
 
 import { Badge } from '@/components/ui/badge'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatPrice, pickLang } from '@/lib/format'
+import { pickLang } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import { Price } from '@/components/shared/Price'
 import { useFavorites, useToggleFavorite } from '@/features/catalog/queries'
 import { useAuthStore } from '@/store/auth'
 import type { ProductListItem } from '@/types/api'
@@ -87,14 +88,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </h3>
 
           <div className="mt-auto flex items-center justify-between gap-2">
-            <div className="inline-flex items-baseline gap-0.5">
-              <span className="text-base font-extrabold tabular-nums text-foreground">
-                {formatPrice(product.price, i18n.language)}
-              </span>
-              <span className="text-[11px] font-medium text-muted-foreground">
-                {' '}{t('common.currency')}
-              </span>
-            </div>
+            <Price value={product.price} className="text-base font-extrabold tabular-nums text-foreground" />
             <span className="text-[10px] text-muted-foreground rounded-full bg-muted px-2 py-0.5">
               {t('catalog.inStock', { defaultValue: 'متوفر' })}
             </span>
