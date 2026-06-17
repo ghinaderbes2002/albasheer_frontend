@@ -50,7 +50,7 @@ export function HomePage() {
         }}
       />
       {/* Hero ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden min-h-96 md:min-h-[500px]">
         <img
           src="/images/al_basheer.jpg"
           alt=""
@@ -59,9 +59,10 @@ export function HomePage() {
           decoding="sync"
           width={1200}
           height={600}
-          className="absolute inset-0 h-full w-full scale-105 object-cover blur-sm"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ willChange: 'transform' }}
         />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/60" />
 
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 py-20 text-center md:py-28 relative z-10">
           <div className="relative">
@@ -225,7 +226,7 @@ export function HomePage() {
               <div
                 key={p.id}
                 style={{ animationDelay: `${Math.min(idx * 40, 320)}ms` }}
-                className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both duration-500"
+                className="animate-in fade-in fill-mode-both duration-500"
               >
                 <ProductCard product={p} />
               </div>

@@ -226,32 +226,42 @@
   100% { transform: translateX(250%); }
 }
 
-/* Slow metallic shimmer used on the wordmark logo */
+/* Slow metallic shimmer used on the wordmark logo — uses transform (composited) */
 @keyframes logo-shimmer {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
 }
 
 .logo-shimmer {
+  position: relative;
+  overflow: hidden;
   background-image: linear-gradient(
     110deg,
     var(--color-brand-200) 0%,
-    var(--color-brand-400) 25%,
-    var(--color-brand-300) 50%,
-    var(--color-brand-500) 75%,
+    var(--color-brand-400) 40%,
+    var(--color-brand-500) 60%,
     var(--color-brand-700) 100%
   );
-  background-size: 220% auto;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: logo-shimmer 5s ease-in-out infinite;
   filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.25));
+}
+
+.logo-shimmer::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 40%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  animation: logo-shimmer 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 /* ── 3D logo spin ───────────────────────────────────────────── */
