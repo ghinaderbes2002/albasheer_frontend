@@ -59,7 +59,7 @@ export function HomePage() {
           decoding="sync"
           width={1200}
           height={600}
-          className="absolute inset-0 h-full w-full scale-105 object-cover blur-sm"
+          className="absolute inset-0 h-full w-full object-cover"
           style={{ willChange: 'transform' }}
         />
         <div className="absolute inset-0 bg-black/60" />
