@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, ArrowRight, ImageOff } from 'lucide-react'
@@ -12,30 +12,61 @@ import { Seo } from '@/components/shared/Seo'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/types/api'
 
+/** Delay between two consecutive tiles in a cascade. */
+const STAGGER_MS = 120
+/** Tiles revealed further apart than this start a fresh cascade. */
+const BATCH_GAP_MS = 600
+
+const prefersReducedMotion = () =>
+  typeof window === 'undefined' ||
+  typeof IntersectionObserver === 'undefined' ||
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
 /**
- * Fires once, the first time the element scrolls into view.
+ * Hands out the delay for the next tile to reveal.
+ *
+ * The delay comes from the *order tiles actually become visible*, not their
+ * index — so a screenful that appears at once still cascades one by one,
+ * and a tile scrolled to on its own doesn't sit waiting behind absent
+ * predecessors. A pause resets the queue so later screenfuls start over
+ * instead of accumulating an ever-growing delay.
+ */
+function useCascade() {
+  const queue = useRef({ position: 0, lastAt: 0 })
+
+  return useCallback(() => {
+    const now = performance.now()
+    if (now - queue.current.lastAt > BATCH_GAP_MS) queue.current.position = 0
+    queue.current.lastAt = now
+    return queue.current.position++ * STAGGER_MS
+  }, [])
+}
+
+/**
+ * Fires once, the first time the element scrolls into view, and reports the
+ * cascade delay assigned to it.
  *
  * Starts in the "already revealed" state when motion is unwanted or the
  * observer is unavailable, so the content is never gated behind an
  * animation that will not run.
  */
-function useRevealOnScroll<T extends HTMLElement>() {
+function useRevealOnScroll<T extends HTMLElement>(nextDelay: () => number) {
   const ref = useRef<T>(null)
-  const [shown, setShown] = useState(
-    () =>
-      typeof window === 'undefined' ||
-      typeof IntersectionObserver === 'undefined' ||
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-  )
+  const [reveal, setReveal] = useState(() => ({
+    shown: prefersReducedMotion(),
+    delay: 0,
+  }))
 
   useEffect(() => {
     const el = ref.current
-    if (!el || shown) return
+    if (!el || reveal.shown) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return
-        setShown(true)
+        // Delay and visibility flip in the same render, so the transition
+        // starts already carrying its slot in the cascade.
+        setReveal({ shown: true, delay: nextDelay() })
         observer.disconnect()
       },
       // Trigger a little before the tile reaches the bottom edge.
@@ -43,14 +74,16 @@ function useRevealOnScroll<T extends HTMLElement>() {
     )
     observer.observe(el)
     return () => observer.disconnect()
-  }, [shown])
+  }, [reveal.shown, nextDelay])
 
-  return { ref, shown }
+  return { ref, ...reveal }
 }
 
 export function CategoriesPage() {
   const { t, i18n } = useTranslation()
   const { data: categories, isLoading } = useCategories()
+  // One queue shared by every tile, so they cascade as a single sequence.
+  const nextDelay = useCascade()
 
   return (
     <div>
@@ -79,6 +112,7 @@ export function CategoriesPage() {
                 index={idx}
                 lang={i18n.language}
                 cta={t('home.hero.cta')}
+                nextDelay={nextDelay}
               />
             ))}
           </ul>
@@ -97,13 +131,15 @@ function CategoryTile({
   index,
   lang,
   cta,
+  nextDelay,
 }: {
   category: Category
   index: number
   lang: string
   cta: string
+  nextDelay: () => number
 }) {
-  const { ref, shown } = useRevealOnScroll<HTMLLIElement>()
+  const { ref, shown, delay } = useRevealOnScroll<HTMLLIElement>(nextDelay)
   const Arrow = lang.startsWith('ar') ? ArrowLeft : ArrowRight
 
   const image = resolveMediaUrl(category.image) || resolveMediaUrl(category.icon)
@@ -112,8 +148,7 @@ function CategoryTile({
   return (
     <li
       ref={ref}
-      // Stagger, but cap it so a long list never waits seconds to appear.
-      style={{ transitionDelay: `${Math.min(index, 5) * 80}ms` }}
+      style={{ transitionDelay: `${delay}ms` }}
       className={cn(
         'transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none',
         shown ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
