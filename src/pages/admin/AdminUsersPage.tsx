@@ -18,7 +18,7 @@ import { useAdminBranches } from '@/features/admin/queries'
 import { extractApiError } from '@/lib/api'
 import type { AdminUser, CreateUserPayload, Role } from '@/types/api'
 
-const ROLES: Role[] = ['customer', 'branch_manager', 'delivery', 'admin', 'content_manager']
+const ROLES: Role[] = ['customer', 'branch_manager', 'delivery', 'admin', 'content_manager', 'accountant']
 
 export function AdminUsersPage() {
   const { t } = useTranslation()
@@ -364,6 +364,7 @@ function roleColor(role: Role) {
     delivery: 'bg-amber-100 text-amber-700',
     customer: 'bg-gray-100 text-gray-700',
     content_manager: 'bg-teal-100 text-teal-700',
+    accountant: 'bg-emerald-100 text-emerald-700',
   }
   return map[role]
 }

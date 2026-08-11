@@ -12,10 +12,12 @@ import {
   getBranchDeliveryStaff,
   getBranchOrder,
   getBranchOrders,
+  getMinFreeDelivery,
   listBranchStaff,
   markBranchOrderReady,
   prepareBranchOrder,
   rejectBranchOrder,
+  setMinFreeDelivery,
   setShippingFee,
   updateBranchStaff,
   type BranchOrdersParams,
@@ -105,6 +107,30 @@ export function useBranchDeliveryStaffList() {
     queryKey: [...branchOrderKeys.all, 'delivery-staff'] as const,
     queryFn: getBranchDeliveryStaff,
     staleTime: 2 * 60 * 1000,
+  })
+}
+
+// ─── Free-delivery threshold ──────────────────────────────────────────
+const minFreeDeliveryKey = ['branchMinFreeDelivery'] as const
+
+export function useMinFreeDelivery(enabled = true) {
+  return useQuery({
+    queryKey: minFreeDeliveryKey,
+    queryFn: getMinFreeDelivery,
+    enabled,
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useSetMinFreeDelivery() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (amount: string | null) => setMinFreeDelivery(amount),
+    onSuccess: (data) => {
+      queryClient.setQueryData(minFreeDeliveryKey, data)
+      // The public city list carries the same number to customers.
+      queryClient.invalidateQueries({ queryKey: ['branches'] })
+    },
   })
 }
 

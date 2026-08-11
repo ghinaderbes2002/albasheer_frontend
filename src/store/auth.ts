@@ -70,5 +70,6 @@ export function defaultHomeForRole(role: Role | null): string {
   if (role === 'branch_manager') return '/dashboard/branch'
   if (role === 'delivery') return '/dashboard/delivery'
   if (role === 'content_manager') return '/content'
+  if (role === 'accountant') return '/accountant'
   return '/'
 }

@@ -40,6 +40,7 @@ const BranchOrdersPage = lazy(() => import('@/pages/dashboard/BranchOrdersPage')
 const BranchOrderDetailPage = lazy(() => import('@/pages/dashboard/BranchOrderDetailPage').then(m => ({ default: m.BranchOrderDetailPage })))
 const BranchPaymentMethodsPage = lazy(() => import('@/pages/dashboard/BranchPaymentMethodsPage').then(m => ({ default: m.BranchPaymentMethodsPage })))
 const BranchDeliveryStaffPage = lazy(() => import('@/pages/dashboard/BranchDeliveryStaffPage').then(m => ({ default: m.BranchDeliveryStaffPage })))
+const BranchSettingsPage = lazy(() => import('@/pages/dashboard/BranchSettingsPage').then(m => ({ default: m.BranchSettingsPage })))
 const DeliveryOrdersPage = lazy(() => import('@/pages/dashboard/DeliveryOrdersPage').then(m => ({ default: m.DeliveryOrdersPage })))
 const DeliveryOrderDetailPage = lazy(() => import('@/pages/dashboard/DeliveryOrderDetailPage').then(m => ({ default: m.DeliveryOrderDetailPage })))
 
@@ -66,9 +67,16 @@ const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage').t
 const AdminFeaturedOrderPage = lazy(() => import('@/pages/admin/AdminFeaturedOrderPage').then(m => ({ default: m.AdminFeaturedOrderPage })))
 const ContentDashboardPage = lazy(() => import('@/pages/content/ContentDashboardPage').then(m => ({ default: m.ContentDashboardPage })))
 
+// — Accountant panel (lazy)
+const AccountantProductsPage = lazy(() => import('@/pages/accountant/AccountantProductsPage').then(m => ({ default: m.AccountantProductsPage })))
+const AccountantSalesReportPage = lazy(() => import('@/pages/accountant/AccountantSalesReportPage').then(m => ({ default: m.AccountantSalesReportPage })))
+const AccountantTopProductsPage = lazy(() => import('@/pages/accountant/AccountantTopProductsPage').then(m => ({ default: m.AccountantTopProductsPage })))
+const AccountantLowStockPage = lazy(() => import('@/pages/accountant/AccountantLowStockPage').then(m => ({ default: m.AccountantLowStockPage })))
+
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { ForbiddenPage } from '@/pages/ForbiddenPage'
 import { ContentManagerLayout } from '@/layouts/ContentManagerLayout'
+import { AccountantLayout } from '@/layouts/AccountantLayout'
 
 function PageLoader() {
   return (
@@ -134,6 +142,7 @@ export const router = createBrowserRouter([
               { path: 'dashboard/branch/orders/:id', element: <S><BranchOrderDetailPage /></S> },
               { path: 'dashboard/branch/payment-methods', element: <S><BranchPaymentMethodsPage /></S> },
               { path: 'dashboard/branch/delivery-staff', element: <S><BranchDeliveryStaffPage /></S> },
+              { path: 'dashboard/branch/settings', element: <S><BranchSettingsPage /></S> },
             ],
           },
           {
@@ -201,6 +210,26 @@ export const router = createBrowserRouter([
               { path: 'content/bundles', element: <S><AdminBundlesPage /></S> },
               { path: 'content/ads', element: <S><AdminAdsPage /></S> },
               { path: 'content/ads/:id', element: <S><AdminAdDetailPage /></S> },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <RoleGuard allow={['accountant']} />,
+        children: [
+          {
+            element: <AccountantLayout />,
+            children: [
+              { path: 'accountant', element: <S><AccountantProductsPage /></S> },
+              { path: 'accountant/reports/sales', element: <S><AccountantSalesReportPage /></S> },
+              { path: 'accountant/reports/top-products', element: <S><AccountantTopProductsPage /></S> },
+              { path: 'accountant/reports/low-stock', element: <S><AccountantLowStockPage /></S> },
             ],
           },
         ],

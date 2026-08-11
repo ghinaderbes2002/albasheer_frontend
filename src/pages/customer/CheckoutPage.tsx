@@ -25,6 +25,8 @@ import { useAddresses } from '@/features/addresses/queries'
 import { useCities } from '@/features/branches/queries'
 import { usePaymentMethods } from '@/features/paymentMethods/queries'
 import { useCartStore, type CartItem } from '@/store/cart'
+import { FreeDeliveryNote } from '@/features/cart/FreeDeliveryNote'
+import type { CreateOrderItemPayload } from '@/types/api'
 import { extractApiError } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { formatPrice, pickLang } from '@/lib/format'
@@ -55,8 +57,9 @@ export function CheckoutPage() {
   const { data: addresses } = useAddresses()
   const createOrder = useCreateOrder()
 
-  // ── Single-item checkout via ?product=… or ?bundle=… ─────────────
+  // ── Single-item checkout via ?product=…[&variant=…] or ?bundle=… ──
   const onlyProductId = searchParams.get('product')
+  const onlyVariantId = searchParams.get('variant')
   const onlyBundleId = searchParams.get('bundle')
   const isSingleItem = !!(onlyProductId || onlyBundleId)
 
@@ -65,10 +68,13 @@ export function CheckoutPage() {
     if (onlyBundleId) return []
     if (onlyProductId)
       return allItems.filter(
-        (i) => String(i.product_id) === onlyProductId,
+        (i) =>
+          String(i.product_id) === onlyProductId &&
+          // No `variant` param → the plain (variant-less) line only.
+          String(i.variant_id ?? '') === (onlyVariantId ?? ''),
       )
     return allItems
-  }, [buyNowItem, allItems, onlyProductId, onlyBundleId])
+  }, [buyNowItem, allItems, onlyProductId, onlyVariantId, onlyBundleId])
 
   const bundles = useMemo(() => {
     if (buyNowItem) return []
@@ -189,19 +195,25 @@ export function CheckoutPage() {
         address_id: values.address_id,
         customer_note: values.customer_note || undefined,
         payment_method_id: values.payment_method_id,
+        // Aggregate by (product, variant) — the same key the cart itself uses.
+        // Merging on product_id alone would drop the chosen variant and the
+        // order would be priced off the base product.
         items: items.length
           ? Object.values(
-              items.reduce<Record<number, { product_id: number; quantity: number }>>(
-                (acc, i) => {
-                  if (acc[i.product_id]) {
-                    acc[i.product_id].quantity += i.quantity
-                  } else {
-                    acc[i.product_id] = { product_id: i.product_id, quantity: i.quantity }
+              items.reduce<Record<string, CreateOrderItemPayload>>((acc, i) => {
+                const variantId = i.variant_id ?? null
+                const key = `${i.product_id}:${variantId ?? ''}`
+                if (acc[key]) {
+                  acc[key].quantity += i.quantity
+                } else {
+                  acc[key] = {
+                    product_id: i.product_id,
+                    variant_id: variantId,
+                    quantity: i.quantity,
                   }
-                  return acc
-                },
-                {},
-              ),
+                }
+                return acc
+              }, {}),
             )
           : undefined,
         bundle_items: bundles.length
@@ -213,7 +225,11 @@ export function CheckoutPage() {
       })
 
       if (isSingleItem) {
-        if (onlyProductId) removeItem(parseInt(onlyProductId, 10))
+        if (onlyProductId)
+          removeItem(
+            parseInt(onlyProductId, 10),
+            onlyVariantId ? parseInt(onlyVariantId, 10) : null,
+          )
         if (onlyBundleId) removeBundle(parseInt(onlyBundleId, 10))
       } else {
         clearCart()
@@ -240,7 +256,9 @@ export function CheckoutPage() {
       }
       navigate(`/orders/${order.id}`, { replace: true })
     } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
+      // Order creation now rejects up front when a requested quantity exceeds
+      // stock — the backend `detail` names the short products in Arabic.
+      toast.error(extractApiError(err, t('errors.generic')), { duration: 8000 })
     }
   })
 
@@ -479,11 +497,16 @@ export function CheckoutPage() {
               ))}
               {items.map((i) => (
                 <div
-                  key={`p-${i.product_id}`}
+                  key={`p-${i.product_id}-${i.variant_id ?? ''}`}
                   className="flex items-baseline justify-between gap-2"
                 >
                   <span className="line-clamp-1 flex-1 text-muted-foreground">
                     {pickLang(i.name, i.name_ar, i18n.language)}
+                    {i.variant_label && (
+                      <span className="mx-1 rounded bg-muted px-1 text-[10px]">
+                        {i.variant_label}
+                      </span>
+                    )}
                     <span className="mx-1 text-xs">×{i.quantity}</span>
                   </span>
                   <span className="font-medium">
@@ -511,6 +534,8 @@ export function CheckoutPage() {
                 </span>
               </div>
             </div>
+
+            <FreeDeliveryNote city={selectedCity} subtotal={subtotal} />
 
             <Button
               type="submit"

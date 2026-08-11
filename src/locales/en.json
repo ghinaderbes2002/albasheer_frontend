@@ -23,6 +23,26 @@
     "reset": "Reset",
     "confirmDelete": "Are you sure you want to delete?"
   },
+  "accountant": {
+    "nav": {
+      "products": "Products & prices",
+      "sales": "Sales report",
+      "topProducts": "Top products",
+      "lowStock": "Low stock"
+    },
+    "products": {
+      "title": "Products & prices",
+      "subtitle": "You can edit price and stock quantity only",
+      "edit": "Edit price and stock",
+      "saved": "Changes saved"
+    },
+    "reports": {
+      "limit": "Results",
+      "threshold": "Threshold",
+      "lowStockSubtitle": "Products at or below the threshold",
+      "lowStockEmpty": "No products below the threshold"
+    }
+  },
   "nav": {
     "home": "Home",
     "products": "Products",
@@ -199,6 +219,10 @@
       "subtotal": "Subtotal",
       "depositSuggestion": "Suggested deposit (10%)",
       "total": "Total"
+    },
+    "freeDelivery": {
+      "reached": "Your order qualifies for free delivery",
+      "remaining": "Add {{amount}} more for free delivery (over {{threshold}})"
     },
     "sections": {
       "bundles": "Bundles ({{count}})",
@@ -429,7 +453,8 @@
         "branch_manager": "Branch Manager",
         "delivery": "Delivery Staff",
         "admin": "Admin",
-        "content_manager": "Content Manager"
+        "content_manager": "Content Manager",
+        "accountant": "Accountant"
       }
     },
     "branches": {
@@ -524,6 +549,9 @@
       "price": "Price (USD)",
       "category": "Category",
       "available": "Available",
+      "inStock": "Stock",
+      "outOfStock": "Out of stock",
+      "stockQuantity": "Stock quantity",
       "featured": "Featured",
       "images": "Images",
       "specs": "Specifications",
@@ -729,6 +757,17 @@
         "label": "Shipping fee (SYP)",
         "hint": "Enter 0 for free delivery. A WhatsApp notification will be sent to the customer.",
         "confirm": "Confirm fee"
+      },
+      "settings": {
+        "title": "Branch settings",
+        "short": "Settings",
+        "subtitle": "Settings that apply to your branch only"
+      },
+      "freeDelivery": {
+        "label": "Free-delivery threshold (USD)",
+        "placeholder": "Leave empty to disable",
+        "hint": "The order total above which delivery is free. Shown to customers at checkout; it does not change the shipping fee automatically — you still set that per order.",
+        "saved": "Free-delivery threshold saved"
       },
       "reject": {
         "reasonLabel": "Rejection reason",

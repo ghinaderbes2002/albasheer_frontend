@@ -26,6 +26,7 @@ import { uploadProductImages } from '@/api/admin'
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
 import type { AdminProduct } from '@/types/api'
 import { Price } from '@/components/shared/Price'
+import { stockBadgeClass, stockLevel } from '@/lib/stock'
 
 export function AdminProductsPage() {
   const { t } = useTranslation()
@@ -106,6 +107,7 @@ export function AdminProductsPage() {
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.nameAr')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.products.price')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.category')}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.inStock', { defaultValue: 'المخزن' })}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.available')}</th>
                 <th className="px-4 py-3 text-end"></th>
               </tr>
@@ -134,6 +136,11 @@ export function AdminProductsPage() {
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
                     {p.category_name ?? p.category}
+                  </td>
+                  <td className="px-4 py-3 hidden md:table-cell">
+                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium tabular-nums ${stockBadgeClass[stockLevel(p.stock_quantity)]}`}>
+                      {p.stock_quantity > 0 ? p.stock_quantity : t('catalog.outOfStock')}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${p.is_available ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
@@ -244,7 +251,7 @@ export function ProductFormDialog({
       price: initialProduct?.price ?? '',
       category: initialProduct?.category ?? 0,
       is_available: initialProduct?.is_available ?? true,
-      in_stock: initialProduct?.in_stock ?? true,
+      stock_quantity: initialProduct?.stock_quantity ?? 0,
       is_featured: initialProduct?.is_featured ?? false,
       seo_title: initialProduct?.seo_title ?? '',
       meta_description: initialProduct?.meta_description ?? '',
@@ -280,7 +287,7 @@ export function ProductFormDialog({
 
   const onSubmit = async (values: {
     name: string; name_ar: string; description: string; description_ar: string
-    price: string; category: number; is_available: boolean; in_stock: boolean; is_featured: boolean
+    price: string; category: number; is_available: boolean; stock_quantity: number; is_featured: boolean
     seo_title: string; meta_description: string
   }) => {
     try {
@@ -293,7 +300,7 @@ export function ProductFormDialog({
           price: values.price,
           category: values.category,
           is_available: values.is_available,
-          in_stock: values.in_stock,
+          stock_quantity: values.stock_quantity,
           is_featured: values.is_featured,
           brand: brand?.id ?? null,
           seo_title: values.seo_title,
@@ -378,6 +385,16 @@ export function ProductFormDialog({
             <Textarea {...register('meta_description')} rows={2} dir="auto" />
           </Field>
 
+          <Field label={t('admin.products.stockQuantity', { defaultValue: 'الكمية في المخزن' })}>
+            <Input
+              {...register('stock_quantity', { valueAsNumber: true })}
+              type="number"
+              min={0}
+              step={1}
+              dir="ltr"
+            />
+          </Field>
+
           <div className="flex flex-wrap gap-4">
             {isEdit && (
               <label className="flex items-center gap-2 text-sm">
@@ -385,10 +402,6 @@ export function ProductFormDialog({
                 {t('admin.products.available')}
               </label>
             )}
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" {...register('in_stock')} className="size-4" />
-              {t('admin.products.inStock', { defaultValue: 'متوفر في المخزن' })}
-            </label>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" {...register('is_featured')} className="size-4" />
               {t('admin.products.featured')}

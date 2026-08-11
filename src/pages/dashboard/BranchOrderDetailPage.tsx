@@ -24,6 +24,7 @@ import { resolveMediaUrl } from '@/lib/api'
 import { formatDateTime } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
 import { Price } from '@/components/shared/Price'
+import { VariantBadge } from '@/features/orders/VariantBadge'
 
 export function BranchOrderDetailPage() {
   const { t, i18n } = useTranslation()
@@ -129,8 +130,9 @@ export function BranchOrderDetailPage() {
                   className="flex items-baseline justify-between gap-3 border-b border-border pb-3 last:border-0 last:pb-0"
                 >
                   <div className="flex flex-1 flex-col gap-0.5">
-                    <span className="line-clamp-1 text-sm font-medium">
-                      {it.product_name}
+                    <span className="flex flex-wrap items-center gap-1.5 text-sm font-medium">
+                      <span className="line-clamp-1">{it.product_name}</span>
+                      <VariantBadge name={it.variant_name} />
                     </span>
                     <span className="text-xs text-muted-foreground">
                       <Price value={it.unit_price} /> × {it.quantity}

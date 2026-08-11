@@ -122,7 +122,10 @@ export function CartItemRow({ item }: CartItemRowProps) {
           <button
             type="button"
             onClick={() =>
-              navigate(`/checkout?product=${item.product_id}`)
+              navigate(
+                `/checkout?product=${item.product_id}` +
+                  (item.variant_id != null ? `&variant=${item.variant_id}` : ''),
+              )
             }
             className="inline-flex items-center gap-1 text-xs font-semibold text-primary transition-colors hover:underline"
           >

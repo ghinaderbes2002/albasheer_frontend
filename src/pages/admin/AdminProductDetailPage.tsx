@@ -34,6 +34,7 @@ import { Label } from '@/components/ui/label'
 import type { ProductSpec, ProductVariant } from '@/types/api'
 import { ProductFormDialog } from './AdminProductsPage'
 import { Price } from '@/components/shared/Price'
+import { stockBadgeClass, stockLevel } from '@/lib/stock'
 
 export function AdminProductDetailPage() {
   const { t } = useTranslation()
@@ -189,9 +190,11 @@ export function AdminProductDetailPage() {
             )}
           </div>
           <div className="flex flex-wrap gap-2">
-            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${product.in_stock ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
-              {product.in_stock
-                ? t('admin.products.inStock', { defaultValue: 'متوفر في المخزن' })
+            <span
+              className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${stockBadgeClass[stockLevel(product.stock_quantity)]}`}
+            >
+              {product.stock_quantity > 0
+                ? `${t('admin.products.stockQuantity', { defaultValue: 'الكمية في المخزن' })}: ${product.stock_quantity}`
                 : t('admin.products.outOfStock', { defaultValue: 'غير متوفر في المخزن' })}
             </span>
           </div>

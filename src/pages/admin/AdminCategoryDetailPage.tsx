@@ -8,6 +8,7 @@ import { useAdminCategories, useAdminProducts } from '@/features/admin/queries'
 import { resolveMediaUrl } from '@/lib/api'
 import type { AdminProduct } from '@/types/api'
 import { Price } from '@/components/shared/Price'
+import { stockBadgeClass, stockLevel } from '@/lib/stock'
 
 export function AdminCategoryDetailPage() {
   const { t, i18n } = useTranslation()
@@ -185,8 +186,8 @@ function ProductsTable({ products }: { products: AdminProduct[] }) {
                 </span>
               </td>
               <td className="px-4 py-3 hidden md:table-cell">
-                <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${p.in_stock ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
-                  {p.in_stock ? t('admin.products.inStock', { defaultValue: 'متوفر' }) : t('catalog.outOfStock')}
+                <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium tabular-nums ${stockBadgeClass[stockLevel(p.stock_quantity)]}`}>
+                  {p.stock_quantity > 0 ? p.stock_quantity : t('catalog.outOfStock')}
                 </span>
               </td>
             </tr>

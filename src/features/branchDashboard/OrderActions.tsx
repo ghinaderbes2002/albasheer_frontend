@@ -59,7 +59,10 @@ export function OrderActions({ order }: OrderActionsProps) {
       toast.success(successMsg)
       onDone?.()
     } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
+      // Confirming can now 400 when stock ran out between placement and
+      // confirmation. The backend's `detail` is a full Arabic sentence
+      // naming the short products — show it as-is, and long enough to read.
+      toast.error(extractApiError(err, t('errors.generic')), { duration: 8000 })
     }
   }
 

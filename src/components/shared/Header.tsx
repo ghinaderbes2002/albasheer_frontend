@@ -33,7 +33,12 @@ export function Header() {
   const logout = useAuthStore((s) => s.logout)
   const cartCount = useCartCount()
   const isAuthed = !!accessToken
-  const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin' || role === 'content_manager'
+  const isStaff =
+    role === 'branch_manager' ||
+    role === 'delivery' ||
+    role === 'admin' ||
+    role === 'content_manager' ||
+    role === 'accountant'
   const [mobileOpen, setMobileOpen] = useState(false)
   const [catOpen, setCatOpen] = useState(false)
   const catRef = useRef<HTMLDivElement>(null)
@@ -73,7 +78,9 @@ export function Header() {
           ? { to: '/dashboard/delivery', label: t('dashboard.delivery.short') }
           : role === 'content_manager'
             ? { to: '/content', label: t('admin.nav.dashboard') }
-            : null
+            : role === 'accountant'
+              ? { to: '/accountant', label: t('accountant.nav.products') }
+              : null
 
   const links = [
     { to: '/', label: t('nav.home'), end: true },
@@ -91,6 +98,7 @@ export function Header() {
       ? [
           { to: '/dashboard/branch/payment-methods', label: t('paymentMethods.title'), end: false },
           { to: '/dashboard/branch/delivery-staff', label: t('dashboard.staff.title'), end: false },
+          { to: '/dashboard/branch/settings', label: t('dashboard.branch.settings.short'), end: false },
         ]
       : []),
   ]

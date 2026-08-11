@@ -3,7 +3,13 @@
  * Source of truth: FRONTEND_API_GUIDE.md
  */
 
-export type Role = 'customer' | 'branch_manager' | 'delivery' | 'admin' | 'content_manager'
+export type Role =
+  | 'customer'
+  | 'branch_manager'
+  | 'delivery'
+  | 'admin'
+  | 'content_manager'
+  | 'accountant'
 
 export type OrderStatus =
   | 'pending'
@@ -175,6 +181,16 @@ export interface City {
   id: number
   name: string
   requires_deposit: boolean
+  /**
+   * The branch's free-delivery threshold in USD, or `null` when the branch
+   * hasn't opted in. Informational only — the backend does not recalculate
+   * `shipping_fee` from it.
+   */
+  min_free_delivery_amount?: string | null
+}
+
+export interface MinFreeDeliveryPayload {
+  min_free_delivery_amount: string | null
 }
 
 // ─── Addresses ────────────────────────────────────────────────────────
@@ -211,6 +227,8 @@ export interface OrderItem {
   id: number
   product_id: number
   product_name: string
+  variant_id?: number | null
+  variant_name?: string | null
   unit_price: string
   quantity: number
   subtotal: string
@@ -278,6 +296,12 @@ export interface OrderTracking {
 
 export interface CreateOrderItemPayload {
   product_id: number
+  /**
+   * Optional `ProductVariant` id. When set, the backend snapshots the
+   * variant's `effective_price` and checks/decrements stock against the
+   * variant rather than the parent product.
+   */
+  variant_id?: number | null
   quantity: number
 }
 
@@ -320,6 +344,8 @@ export interface BranchOrderListItem {
 export interface BranchOrderItem {
   id: number
   product_name: string
+  variant_id?: number | null
+  variant_name?: string | null
   quantity: number
   unit_price: string
   /** Note: the staff serializer names this `total_price`, not `subtotal`. */
@@ -447,7 +473,8 @@ export interface AdminProduct {
   brand: Brand | null
   brand_name?: string | null
   is_available: boolean
-  in_stock: boolean
+  /** Real on-hand count. Replaced the old `in_stock` boolean (backend 2026-08-10). */
+  stock_quantity: number
   is_featured: boolean
   main_image: string | null
   images: ProductImage[]
@@ -522,6 +549,19 @@ export interface TopProductEntry {
   name_ar: string
   total_sold: number
   total_revenue: string | number
+}
+
+/**
+ * A row of the low-stock report. The backend reuses the product serializer
+ * shape, so the id/name/stock fields are the ones that matter here.
+ */
+export interface LowStockEntry {
+  id: number
+  name?: string
+  name_ar: string
+  stock_quantity: number
+  price?: string
+  category_name?: string
 }
 
 export interface TopBranchEntry {

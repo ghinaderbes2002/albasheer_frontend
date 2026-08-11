@@ -9,6 +9,7 @@ import { AdminOrderActions } from '@/features/admin/AdminOrderActions'
 import { resolveMediaUrl } from '@/lib/api'
 import { statusColor } from './AdminOrdersPage'
 import { Price } from '@/components/shared/Price'
+import { VariantBadge } from '@/features/orders/VariantBadge'
 
 export function AdminOrderDetailPage() {
   const { t } = useTranslation()
@@ -117,7 +118,12 @@ export function AdminOrderDetailPage() {
             <tbody className="divide-y divide-border">
               {order.items.map((item) => (
                 <tr key={item.id}>
-                  <td className="px-4 py-2.5">{item.product_name}</td>
+                  <td className="px-4 py-2.5">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span>{item.product_name}</span>
+                      <VariantBadge name={item.variant_name} />
+                    </div>
+                  </td>
                   <td className="px-4 py-2.5">{item.quantity}</td>
                   <td className="px-4 py-2.5 tabular-nums"><Price value={item.unit_price} /></td>
                   <td className="px-4 py-2.5 tabular-nums"><Price value={item.subtotal ?? item.unit_price} /></td>

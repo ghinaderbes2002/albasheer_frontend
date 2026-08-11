@@ -6,6 +6,7 @@ import type {
   BranchOrderListItem,
   CreateBranchStaffPayload,
   DeliveryStaff,
+  MinFreeDeliveryPayload,
   OrderStatus,
   PaginatedResponse,
   RejectOrderPayload,
@@ -116,6 +117,24 @@ export async function updateBranchStaff(id: number, payload: Partial<CreateBranc
 
 export async function deleteBranchStaff(id: number): Promise<void> {
   await api.delete(`/api/admin/users/${id}/`)
+}
+
+// ─── Free-delivery threshold ──────────────────────────────────────────
+export async function getMinFreeDelivery(): Promise<MinFreeDeliveryPayload> {
+  const { data } = await api.get<MinFreeDeliveryPayload>(
+    '/api/branch/min-free-delivery/',
+  )
+  return data
+}
+
+export async function setMinFreeDelivery(
+  amount: string | null,
+): Promise<MinFreeDeliveryPayload> {
+  const { data } = await api.patch<MinFreeDeliveryPayload>(
+    '/api/branch/min-free-delivery/',
+    { min_free_delivery_amount: amount },
+  )
+  return data
 }
 
 export async function setShippingFee(

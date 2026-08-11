@@ -47,7 +47,9 @@ export function AdminOrderActions({ order }: AdminOrderActionsProps) {
       toast.success(successMsg)
       onDone?.()
     } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
+      // Confirming can 400 on a stock shortage; the backend `detail` is a
+      // full Arabic sentence listing the short products.
+      toast.error(extractApiError(err, t('errors.generic')), { duration: 8000 })
     }
   }
 
