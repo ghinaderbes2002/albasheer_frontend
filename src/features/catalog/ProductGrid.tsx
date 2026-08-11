@@ -3,6 +3,9 @@ import { PackageX } from 'lucide-react'
 
 import { ProductCard } from '@/features/catalog/ProductCard'
 import { Skeleton } from '@/components/ui/skeleton'
+import { CascadeItem } from '@/components/shared/CascadeItem'
+import { useCascade } from '@/hooks/useCascade'
+import { PRODUCT_CASCADE } from '@/features/catalog/cascade'
 import type { ProductListItem } from '@/types/api'
 
 interface ProductGridProps {
@@ -20,6 +23,7 @@ export function ProductGrid({
   skeletonCount = 8,
 }: ProductGridProps) {
   const { t } = useTranslation()
+  const nextDelay = useCascade(PRODUCT_CASCADE.queue)
 
   if (isLoading) {
     return (
@@ -61,7 +65,14 @@ export function ProductGrid({
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
       {products.map((p) => (
-        <ProductCard key={p.id} product={p} />
+        <CascadeItem
+          key={p.id}
+          nextDelay={nextDelay}
+          duration={PRODUCT_CASCADE.duration}
+          distance={PRODUCT_CASCADE.distance}
+        >
+          <ProductCard product={p} />
+        </CascadeItem>
       ))}
     </div>
   )
