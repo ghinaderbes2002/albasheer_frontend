@@ -64,7 +64,7 @@ export function StaffLoginForm({ onSuccess }: StaffLoginFormProps) {
           inputMode="tel"
           dir="ltr"
           autoComplete="username"
-          placeholder="09x xxx xxxx"
+          placeholder="963XXXXXXXXX"
           aria-invalid={!!phoneError || undefined}
           {...register("phone")}
         />
