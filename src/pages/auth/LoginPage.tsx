@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card'
 import { PhoneForm } from '@/features/auth/PhoneForm'
 import { defaultHomeForRole, useAuthStore } from '@/store/auth'
+import { carryFrom, fromPath, fromState } from '@/lib/redirect'
 
 export function LoginPage() {
   const { t } = useTranslation()
@@ -18,12 +19,14 @@ export function LoginPage() {
   const accessToken = useAuthStore((s) => s.accessToken)
   const role = useAuthStore((s) => s.role)
 
-  const fromExplicit = (
-    location.state as { from?: { pathname?: string } } | null
-  )?.from?.pathname
-
   if (accessToken) {
-    return <Navigate to={fromExplicit ?? defaultHomeForRole(role)} replace />
+    return (
+      <Navigate
+        to={fromPath(location.state) ?? defaultHomeForRole(role)}
+        replace
+        state={fromState(location.state)}
+      />
+    )
   }
 
   return (
@@ -38,7 +41,7 @@ export function LoginPage() {
               <PhoneForm
                 onSuccess={(phone) =>
                   navigate(`/verify?phone=${encodeURIComponent(phone)}`, {
-                    state: { from: location.state?.from },
+                    state: carryFrom(location.state),
                   })
                 }
               />

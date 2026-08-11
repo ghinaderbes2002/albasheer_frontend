@@ -10,13 +10,14 @@ import {
 } from '@/components/ui/card'
 import { ProfileForm } from '@/features/auth/ProfileForm'
 import { useMe } from '@/features/auth/queries'
+import { fromPath, fromState } from '@/lib/redirect'
 
 export function CompleteProfilePage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const { data: user, isLoading } = useMe()
-  const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname
+  const resumePath = fromPath(location.state)
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-12">
@@ -34,7 +35,12 @@ export function CompleteProfilePage() {
             initial={user}
             loading={isLoading}
             submitLabel={t('auth.completeProfile.submit')}
-            onSuccess={() => navigate(from ?? '/', { replace: true })}
+            onSuccess={() =>
+              navigate(resumePath ?? '/', {
+                replace: true,
+                state: fromState(location.state),
+              })
+            }
           />
         </CardContent>
       </Card>
