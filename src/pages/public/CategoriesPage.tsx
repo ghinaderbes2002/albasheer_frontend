@@ -9,24 +9,14 @@ import { pickLang } from '@/lib/format'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
 import { CascadeItem } from '@/components/shared/CascadeItem'
-import { useCascade } from '@/hooks/useCascade'
+import { FEATURE_CASCADE, useCascade } from '@/hooks/useCascade'
 import type { Category } from '@/types/api'
-
-/**
- * Slower and taller than the product grids — these are large feature tiles,
- * a handful of them, and the page has room for a deliberate reveal.
- */
-const CATEGORY_CASCADE = {
-  queue: { stagger: 190, batchGap: 900 },
-  duration: 1000,
-  distance: 48,
-}
 
 export function CategoriesPage() {
   const { t, i18n } = useTranslation()
   const { data: categories, isLoading } = useCategories()
   // One queue shared by every tile, so they cascade as a single sequence.
-  const nextDelay = useCascade(CATEGORY_CASCADE.queue)
+  const nextDelay = useCascade(FEATURE_CASCADE.queue)
 
   return (
     <div>
@@ -91,8 +81,8 @@ function CategoryTile({
     <CascadeItem
       as="li"
       nextDelay={nextDelay}
-      duration={CATEGORY_CASCADE.duration}
-      distance={CATEGORY_CASCADE.distance}
+      duration={FEATURE_CASCADE.duration}
+      distance={FEATURE_CASCADE.distance}
     >
       <Link
         to={`/products?category=${category.slug}`}

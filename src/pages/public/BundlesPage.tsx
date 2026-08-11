@@ -6,10 +6,13 @@ import { BundleCard } from '@/features/bundles/BundleCard'
 import { useBundles } from '@/features/bundles/queries'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
+import { CascadeItem } from '@/components/shared/CascadeItem'
+import { GRID_CASCADE, useCascade } from '@/hooks/useCascade'
 
 export function BundlesPage() {
   const { t } = useTranslation()
   const { data, isLoading, isError } = useBundles()
+  const nextDelay = useCascade(GRID_CASCADE.queue)
 
   return (
     <div>
@@ -44,7 +47,14 @@ export function BundlesPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {data.map((b) => (
-            <BundleCard key={b.id} bundle={b} />
+            <CascadeItem
+              key={b.id}
+              nextDelay={nextDelay}
+              duration={GRID_CASCADE.duration}
+              distance={GRID_CASCADE.distance}
+            >
+              <BundleCard bundle={b} />
+            </CascadeItem>
           ))}
         </div>
       )}

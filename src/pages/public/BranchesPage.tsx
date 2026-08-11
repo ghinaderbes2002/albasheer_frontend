@@ -6,10 +6,13 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { BranchCard } from '@/features/branches/BranchCard'
 import { useBranches } from '@/features/branches/queries'
 import { PageHero } from '@/components/shared/PageHero'
+import { CascadeItem } from '@/components/shared/CascadeItem'
+import { GRID_CASCADE, useCascade } from '@/hooks/useCascade'
 
 export function BranchesPage() {
   const { t } = useTranslation()
   const { data, isLoading, isError } = useBranches()
+  const nextDelay = useCascade(GRID_CASCADE.queue)
 
   return (
     <div>
@@ -40,7 +43,14 @@ export function BranchesPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {data.map((b) => (
-            <BranchCard key={b.id} branch={b} />
+            <CascadeItem
+              key={b.id}
+              nextDelay={nextDelay}
+              duration={GRID_CASCADE.duration}
+              distance={GRID_CASCADE.distance}
+            >
+              <BranchCard branch={b} />
+            </CascadeItem>
           ))}
         </div>
       )}

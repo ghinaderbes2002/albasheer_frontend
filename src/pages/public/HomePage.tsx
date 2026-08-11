@@ -15,8 +15,7 @@ import { Seo } from '@/components/shared/Seo'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ProductCard } from '@/features/catalog/ProductCard'
 import { CascadeItem } from '@/components/shared/CascadeItem'
-import { useCascade } from '@/hooks/useCascade'
-import { PRODUCT_CASCADE } from '@/features/catalog/cascade'
+import { GRID_CASCADE, useCascade } from '@/hooks/useCascade'
 import { useCategories, useProducts } from '@/features/catalog/queries'
 import { AdsCarousel } from '@/features/ads/AdsCarousel'
 import { FeaturedProductsSection } from '@/features/catalog/FeaturedProductsSection'
@@ -28,7 +27,7 @@ export function HomePage() {
   const navigate = useNavigate()
   const Arrow = i18n.language.startsWith('ar') ? ArrowLeft : ArrowRight
   const [query, setQuery] = useState('')
-  const nextDelay = useCascade(PRODUCT_CASCADE.queue)
+  const nextDelay = useCascade(GRID_CASCADE.queue)
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -230,8 +229,8 @@ export function HomePage() {
               <CascadeItem
                 key={p.id}
                 nextDelay={nextDelay}
-                duration={PRODUCT_CASCADE.duration}
-                distance={PRODUCT_CASCADE.distance}
+                duration={GRID_CASCADE.duration}
+                distance={GRID_CASCADE.distance}
               >
                 <ProductCard product={p} />
               </CascadeItem>

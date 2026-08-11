@@ -14,6 +14,32 @@ export interface CascadeOptions {
   batchGap?: number
 }
 
+export interface CascadePreset {
+  queue: CascadeOptions
+  duration: number
+  distance: number
+}
+
+/**
+ * Pace for ordinary card grids — products, bundles, branches. Brisk,
+ * because these are 2–4 columns of small cards and a slow reveal drags.
+ */
+export const GRID_CASCADE: CascadePreset = {
+  queue: { stagger: 65, batchGap: 450 },
+  duration: 520,
+  distance: 24,
+}
+
+/**
+ * Pace for large feature tiles, of which there are only a handful. Slower
+ * and taller, since each one is worth looking at on its own.
+ */
+export const FEATURE_CASCADE: CascadePreset = {
+  queue: { stagger: 190, batchGap: 900 },
+  duration: 1000,
+  distance: 48,
+}
+
 export function prefersReducedMotion() {
   return (
     typeof window === 'undefined' ||
