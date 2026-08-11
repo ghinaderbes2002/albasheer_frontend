@@ -776,6 +776,11 @@
         "previewLabel": "What the customer sees",
         "current": "Currently saved: {{amount}}",
         "clear": "Turn off",
+        "orderEligible": "This order qualifies for free delivery",
+        "orderEligibleDetail": "The order total {{total}} is above your branch threshold of {{threshold}}",
+        "feeReminder": "Enter 0 as the shipping fee so the customer isn't charged.",
+        "confirmClearTitle": "Turn off free delivery?",
+        "confirmClearBody": "Your branch's customers will stop seeing the \"free delivery over {{amount}}\" message at checkout. You can turn it back on at any time.",
         "saved": "Free-delivery threshold saved",
         "cleared": "Free-delivery offer turned off"
       },

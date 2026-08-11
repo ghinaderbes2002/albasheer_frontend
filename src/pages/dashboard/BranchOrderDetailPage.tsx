@@ -19,6 +19,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/features/orders/StatusBadge'
 import { OrderActions } from '@/features/branchDashboard/OrderActions'
+import { FreeDeliveryAlert } from '@/features/branchDashboard/FreeDeliveryAlert'
 import { useBranchOrder } from '@/features/branchDashboard/queries'
 import { resolveMediaUrl } from '@/lib/api'
 import { formatDateTime } from '@/lib/format'
@@ -55,6 +56,10 @@ export function BranchOrderDetailPage() {
   }
 
   const receiptUrl = resolveMediaUrl(order.receipt_image)
+
+  // Cash-on-delivery orders (no deposit) never involve a receipt, so the
+  // card is only noise there. Still show it if one was somehow uploaded.
+  const showReceipt = parseFloat(order.deposit_amount) > 0 || !!receiptUrl
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -144,37 +149,39 @@ export function BranchOrderDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Receipt */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Receipt className="size-4" />
-                {t('orders.receipt.title')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {receiptUrl ? (
-                <a
-                  href={receiptUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block overflow-hidden rounded-xl border border-border"
-                >
-                  <img
-                    src={receiptUrl}
-                    alt={t('orders.receipt.title')}
-                    loading="lazy"
-                    decoding="async"
-                    className="max-h-120 w-full bg-muted object-contain"
-                  />
-                </a>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {t('dashboard.branch.noReceipt')}
-                </p>
-              )}
-            </CardContent>
-          </Card>
+          {/* Receipt — deposit orders only */}
+          {showReceipt && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Receipt className="size-4" />
+                  {t('orders.receipt.title')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {receiptUrl ? (
+                  <a
+                    href={receiptUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block overflow-hidden rounded-xl border border-border"
+                  >
+                    <img
+                      src={receiptUrl}
+                      alt={t('orders.receipt.title')}
+                      loading="lazy"
+                      decoding="async"
+                      className="max-h-120 w-full bg-muted object-contain"
+                    />
+                  </a>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t('dashboard.branch.noReceipt')}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Rating */}
           {order.rating && (
@@ -210,7 +217,8 @@ export function BranchOrderDetailPage() {
                 {t('dashboard.branch.actionsTitle')}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              <FreeDeliveryAlert total={order.total_price} />
               <OrderActions order={order} />
             </CardContent>
           </Card>

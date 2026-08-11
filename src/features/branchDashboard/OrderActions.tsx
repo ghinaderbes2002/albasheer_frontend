@@ -23,6 +23,7 @@ import {
   useRejectBranchOrder,
   useSetShippingFee,
 } from '@/features/branchDashboard/queries'
+import { FreeDeliveryAlert } from '@/features/branchDashboard/FreeDeliveryAlert'
 import { extractApiError } from '@/lib/api'
 import type { BranchOrderDetail } from '@/types/api'
 
@@ -102,6 +103,7 @@ export function OrderActions({ order }: OrderActionsProps) {
     return (
       <ShippingFeeForm
         loading={shippingFee.isPending}
+        orderTotal={order.total_price}
         onCancel={() => setMode('idle')}
         onSubmit={(fee) =>
           run(
@@ -268,11 +270,13 @@ function RejectForm({ loading, onCancel, onSubmit }: RejectFormProps) {
 
 interface ShippingFeeFormProps {
   loading: boolean
+  /** Compared against the branch threshold to flag a free-delivery order. */
+  orderTotal: string
   onCancel: () => void
   onSubmit: (fee: number) => void
 }
 
-function ShippingFeeForm({ loading, onCancel, onSubmit }: ShippingFeeFormProps) {
+function ShippingFeeForm({ loading, orderTotal, onCancel, onSubmit }: ShippingFeeFormProps) {
   const { t } = useTranslation()
   const [fee, setFee] = useState('')
   const parsed = parseFloat(fee)
@@ -284,6 +288,10 @@ function ShippingFeeForm({ loading, onCancel, onSubmit }: ShippingFeeFormProps) 
         <TruckIcon className="size-3.5 text-primary" />
         {t('dashboard.branch.shippingFee.label')}
       </Label>
+
+      {/* Shown right where the number is typed — the moment it matters. */}
+      <FreeDeliveryAlert total={orderTotal} variant="compact" />
+
       <Input
         id="shipping_fee"
         type="number"
