@@ -1,6 +1,7 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ArrowLeft, ArrowRight, CheckSquare, ImageOff } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ImageOff } from 'lucide-react'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCategories } from '@/features/catalog/queries'
@@ -8,99 +9,168 @@ import { resolveMediaUrl } from '@/lib/api'
 import { pickLang } from '@/lib/format'
 import { PageHero } from '@/components/shared/PageHero'
 import { Seo } from '@/components/shared/Seo'
+import { cn } from '@/lib/utils'
+import type { Category } from '@/types/api'
+
+/**
+ * Fires once, the first time the element scrolls into view.
+ *
+ * Starts in the "already revealed" state when motion is unwanted or the
+ * observer is unavailable, so the content is never gated behind an
+ * animation that will not run.
+ */
+function useRevealOnScroll<T extends HTMLElement>() {
+  const ref = useRef<T>(null)
+  const [shown, setShown] = useState(
+    () =>
+      typeof window === 'undefined' ||
+      typeof IntersectionObserver === 'undefined' ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el || shown) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        setShown(true)
+        observer.disconnect()
+      },
+      // Trigger a little before the tile reaches the bottom edge.
+      { rootMargin: '0px 0px -12% 0px' },
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [shown])
+
+  return { ref, shown }
+}
 
 export function CategoriesPage() {
   const { t, i18n } = useTranslation()
-  const Arrow = i18n.language.startsWith('ar') ? ArrowLeft : ArrowRight
   const { data: categories, isLoading } = useCategories()
 
   return (
     <div>
-      <Seo
-        title={t('home.categories.title')}
-        url="/categories"
-      />
+      <Seo title={t('home.categories.title')} url="/categories" />
       <PageHero
         title={t('home.categories.title')}
         subtitle={t('catalog.heroSubtitle')}
         image="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1920&q=80&auto=format&fit=crop"
       />
 
-      <div className="mx-auto w-full max-w-6xl px-4 py-16 space-y-10">
+      <div className="mx-auto w-full max-w-6xl px-4 py-14 lg:py-20">
         {isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <Skeleton className="h-72 rounded-3xl" />
-              <Skeleton className="h-72 rounded-3xl" />
-            </div>
-          ))
+          <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <li key={i}>
+                <Skeleton className="aspect-[4/5] w-full rounded-3xl" />
+              </li>
+            ))}
+          </ul>
         ) : categories && categories.length > 0 ? (
-          categories.map((c, idx) => {
-            const isEven = idx % 2 === 0
-            const displayImage = resolveMediaUrl(c.image) || resolveMediaUrl(c.icon)
-            const name = pickLang(c.name, c.name_ar, i18n.language)
-
-            return (
-              <div
+          <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((c, idx) => (
+              <CategoryTile
                 key={c.id}
-                className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-stretch"
-              >
-                {/* Image card */}
-                <div className={!isEven ? 'md:order-2' : ''}>
-                  <div className="relative h-72 overflow-hidden rounded-3xl bg-muted md:h-full min-h-64">
-                    {displayImage ? (
-                      <img
-                        src={displayImage}
-                        alt={name}
-                        loading="lazy"
-                        decoding="async"
-                        width={600}
-                        height={288}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-muted-foreground/30">
-                        <ImageOff className="size-16" />
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Text card */}
-                <div className={!isEven ? 'md:order-1' : ''}>
-                  <div className="relative flex h-full flex-col justify-center rounded-3xl border border-border bg-card p-8 shadow-warm">
-                    {/* Checkmark badge */}
-                    <div className="mb-5 flex justify-end">
-                      <span className="flex size-11 items-center justify-center rounded-xl bg-primary/15">
-                        <CheckSquare className="size-5 text-primary" />
-                      </span>
-                    </div>
-
-                    <h2 className="mb-3 text-2xl font-extrabold leading-snug text-foreground md:text-3xl">
-                      {name}
-                    </h2>
-
-                    {/* Description placeholder — fill when backend adds description field */}
-                    <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
-                      {/* TODO: replace with c.description when available */}
-                    </p>
-
-                    <Link
-                      to={`/products?category=${c.slug}`}
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-primary transition-gap duration-200 hover:gap-3"
-                    >
-                      {t('home.hero.cta')}
-                      <Arrow className="size-4" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )
-          })
+                category={c}
+                index={idx}
+                lang={i18n.language}
+                cta={t('home.hero.cta')}
+              />
+            ))}
+          </ul>
         ) : (
-          <p className="text-center text-muted-foreground">{t('home.categories.empty')}</p>
+          <p className="text-center text-muted-foreground">
+            {t('home.categories.empty')}
+          </p>
         )}
       </div>
     </div>
+  )
+}
+
+function CategoryTile({
+  category,
+  index,
+  lang,
+  cta,
+}: {
+  category: Category
+  index: number
+  lang: string
+  cta: string
+}) {
+  const { ref, shown } = useRevealOnScroll<HTMLLIElement>()
+  const Arrow = lang.startsWith('ar') ? ArrowLeft : ArrowRight
+
+  const image = resolveMediaUrl(category.image) || resolveMediaUrl(category.icon)
+  const name = pickLang(category.name, category.name_ar, lang)
+
+  return (
+    <li
+      ref={ref}
+      // Stagger, but cap it so a long list never waits seconds to appear.
+      style={{ transitionDelay: `${Math.min(index, 5) * 80}ms` }}
+      className={cn(
+        'transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none',
+        shown ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
+      )}
+    >
+      <Link
+        to={`/products?category=${category.slug}`}
+        className="group relative block aspect-[4/5] overflow-hidden rounded-3xl bg-muted shadow-warm outline-none transition-shadow duration-500 hover:shadow-warm-lg focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+      >
+        {image ? (
+          <img
+            src={image}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            width={480}
+            height={600}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transform-none"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-muted text-muted-foreground/25">
+            <ImageOff className="size-14" />
+          </div>
+        )}
+
+        {/* Scrim — keeps the title readable over any photo, and deepens on hover */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5 transition-opacity duration-500 group-hover:from-black/90" />
+
+        {/* Index watermark */}
+        <span
+          aria-hidden
+          className="absolute top-4 inset-e-5 text-4xl font-black tabular-nums text-white/20 transition-colors duration-500 group-hover:text-white/30"
+          dir="ltr"
+        >
+          {String(index + 1).padStart(2, '0')}
+        </span>
+
+        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+          <h2 className="text-xl font-extrabold leading-snug text-white drop-shadow-sm sm:text-2xl">
+            {name}
+          </h2>
+
+          {/* Gold rule that extends on hover */}
+          <span
+            aria-hidden
+            className="mt-3 block h-0.5 w-10 rounded-full bg-primary transition-[width] duration-500 ease-out group-hover:w-20 motion-reduce:transition-none"
+          />
+
+          {/* Hidden until hover on pointer devices; always visible on touch */}
+          {/* Gap grows instead of translating the icon — reads the same in
+              both directions, so no rtl/ltr special-casing is needed. */}
+          <span className="mt-3 flex translate-y-0 items-center gap-2 text-sm font-semibold text-white opacity-90 transition-[opacity,transform,gap] duration-500 ease-out group-hover:gap-3 md:translate-y-2 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100 motion-reduce:transition-none">
+            {cta}
+            <Arrow className="size-4 shrink-0" />
+          </span>
+        </div>
+      </Link>
+    </li>
   )
 }
