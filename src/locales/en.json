@@ -764,10 +764,18 @@
         "subtitle": "Settings that apply to your branch only"
       },
       "freeDelivery": {
-        "label": "Free-delivery threshold (USD)",
+        "cardTitle": "Free delivery",
+        "cardSubtitle": "Set the order total above which delivery is free for your branch's customers",
+        "active": "Active",
+        "inactive": "Off",
+        "label": "Minimum order total",
         "placeholder": "Leave empty to disable",
-        "hint": "The order total above which delivery is free. Shown to customers at checkout; it does not change the shipping fee automatically — you still set that per order.",
-        "saved": "Free-delivery threshold saved"
+        "hint": "Shown to customers at checkout to encourage larger orders. It does not change the shipping fee automatically — you still set that per order.",
+        "previewLabel": "What the customer sees",
+        "current": "Currently saved: {{amount}}",
+        "clear": "Turn off",
+        "saved": "Free-delivery threshold saved",
+        "cleared": "Free-delivery offer turned off"
       },
       "reject": {
         "reasonLabel": "Rejection reason",
