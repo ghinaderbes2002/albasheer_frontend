@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { Loader2, Pencil, Plus, Trash2, X } from 'lucide-react'
@@ -30,7 +30,7 @@ export function AdminBrandsPage() {
     if (!confirmDelete) return
     try {
       await deleteBrand.mutateAsync(confirmDelete.id)
-      toast.success(t('admin.brands.deleted', { defaultValue: 'تم حذف الشركة' }))
+      toast.success(t('admin.brands.deleted'))
       setConfirmDelete(null)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
@@ -40,10 +40,10 @@ export function AdminBrandsPage() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{t('admin.brands.title', { defaultValue: 'الشركات المصنعة' })}</h1>
+        <h1 className="text-2xl font-bold">{t('admin.brands.title')}</h1>
         <Button onClick={() => { setEditBrand(null); setShowForm(true) }}>
           <Plus className="size-4" />
-          {t('admin.brands.add', { defaultValue: 'إضافة شركة' })}
+          {t('admin.brands.add')}
         </Button>
       </div>
 
@@ -53,15 +53,15 @@ export function AdminBrandsPage() {
         </div>
       ) : !brands?.length ? (
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border bg-card py-16 text-center text-muted-foreground">
-          <p>{t('admin.brands.empty', { defaultValue: 'لا توجد شركات بعد' })}</p>
+          <p>{t('admin.brands.empty')}</p>
         </div>
       ) : (
         <div className="rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.brands.nameAr', { defaultValue: 'الاسم' })}</th>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.brands.nameEn', { defaultValue: 'Name' })}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.brands.nameAr')}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.brands.nameEn')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">Slug</th>
                 <th className="px-4 py-3 text-end" />
               </tr>
@@ -117,7 +117,7 @@ export function AdminBrandsPage() {
                 <Trash2 className="size-5 text-destructive" />
               </div>
               <div>
-                <h2 className="text-base font-semibold">{t('admin.brands.confirmDelete', { defaultValue: 'حذف الشركة؟' })}</h2>
+                <h2 className="text-base font-semibold">{t('admin.brands.confirmDelete')}</h2>
                 <p className="text-sm text-muted-foreground">{confirmDelete.name_ar}</p>
               </div>
             </div>
@@ -150,10 +150,10 @@ function BrandFormDialog({ brand, onClose }: { brand: Brand | null; onClose: () 
     try {
       if (isEdit) {
         await update.mutateAsync({ id: brand.id, payload: values })
-        toast.success(t('admin.brands.updated', { defaultValue: 'تم تحديث الشركة' }))
+        toast.success(t('admin.brands.updated'))
       } else {
         await create.mutateAsync(values)
-        toast.success(t('admin.brands.created', { defaultValue: 'تمت إضافة الشركة' }))
+        toast.success(t('admin.brands.created'))
       }
       onClose()
     } catch (err) {
@@ -167,18 +167,18 @@ function BrandFormDialog({ brand, onClose }: { brand: Brand | null; onClose: () 
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">
             {isEdit
-              ? t('admin.brands.editTitle', { defaultValue: 'تعديل الشركة' })
-              : t('admin.brands.addTitle', { defaultValue: 'إضافة شركة' })}
+              ? t('admin.brands.editTitle')
+              : t('admin.brands.addTitle')}
           </h2>
           <Button variant="ghost" size="icon" onClick={onClose}><X className="size-4" /></Button>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">{t('admin.brands.nameAr', { defaultValue: 'الاسم بالعربي' })}</Label>
+            <Label className="text-sm text-muted-foreground">{t('admin.brands.nameAr')}</Label>
             <Input {...register('name_ar')} required />
           </div>
           <div className="space-y-1">
-            <Label className="text-sm text-muted-foreground">{t('admin.brands.nameEn', { defaultValue: 'الاسم بالإنجليزي' })}</Label>
+            <Label className="text-sm text-muted-foreground">{t('admin.brands.nameEn')}</Label>
             <Input {...register('name')} required dir="ltr" />
           </div>
           <div className="flex gap-2 pt-1">

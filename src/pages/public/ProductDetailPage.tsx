@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Zap } from 'lucide-react'
@@ -189,7 +189,7 @@ export function ProductDetailPage() {
                       onClick={() => setSelectedVariant(null)}
                       className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors"
                     >
-                      {t('catalog.clearSelection', { defaultValue: 'إلغاء الاختيار' })}
+                      {t('catalog.clearSelection')}
                     </button>
                   )}
                 </div>

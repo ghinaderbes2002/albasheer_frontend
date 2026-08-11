@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { ImagePlus, Inbox, Loader2, Pencil, Plus, Search, Star, Trash2, X } from 'lucide-react'
@@ -107,7 +107,7 @@ export function AdminProductsPage() {
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.nameAr')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.products.price')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.category')}</th>
-                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.inStock', { defaultValue: 'المخزن' })}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.inStock')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.available')}</th>
                 <th className="px-4 py-3 text-end"></th>
               </tr>
@@ -374,18 +374,18 @@ export function ProductFormDialog({
               </select>
             </Field>
           </div>
-          <Field label={t('admin.products.brand', { defaultValue: 'الشركة المصنعة' })}>
+          <Field label={t('admin.products.brand')}>
             <BrandCombobox value={brand} onChange={setBrand} />
           </Field>
 
-          <Field label={t('admin.products.seoTitle', { defaultValue: 'عنوان SEO' })}>
+          <Field label={t('admin.products.seoTitle')}>
             <Input {...register('seo_title')} dir="auto" />
           </Field>
-          <Field label={t('admin.products.metaDescription', { defaultValue: 'وصف meta' })}>
+          <Field label={t('admin.products.metaDescription')}>
             <Textarea {...register('meta_description')} rows={2} dir="auto" />
           </Field>
 
-          <Field label={t('admin.products.stockQuantity', { defaultValue: 'الكمية في المخزن' })}>
+          <Field label={t('admin.products.stockQuantity')}>
             <Input
               {...register('stock_quantity', { valueAsNumber: true })}
               type="number"
@@ -555,7 +555,7 @@ function BrandCombobox({
           value={input}
           onChange={(e) => { setInput(e.target.value); setOpen(true); if (!e.target.value) onChange(null) }}
           onFocus={() => setOpen(true)}
-          placeholder={t('admin.products.brandPlaceholder', { defaultValue: 'ابحث عن الشركة...' })}
+          placeholder={t('admin.products.brandPlaceholder')}
           autoComplete="off"
           className="flex-1"
         />

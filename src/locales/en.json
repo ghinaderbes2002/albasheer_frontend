@@ -202,7 +202,8 @@
     "prev": "Previous slide",
     "next": "Next slide",
     "goToSlide": "Go to slide {{index}}",
-    "slideOf": "Slide {{current}} of {{total}}"
+    "slideOf": "Slide {{current}} of {{total}}",
+    "shopNow": "Shop now"
   },
   "cart": {
     "clear": "Clear cart",
@@ -413,6 +414,7 @@
       "orders": "Orders",
       "paymentMethods": "Payment Methods",
       "variantTypes": "Variant Types",
+      "brands": "Brands",
       "reports": "Reports",
       "settings": "Settings"
     },
@@ -465,6 +467,7 @@
       "empty": "No branches found",
       "nameEn": "Name (English)",
       "nameAr": "Name (Arabic)",
+      "city": "City",
       "address": "Address",
       "phone": "Phone",
       "mapsUrl": "Google Maps URL",
@@ -553,6 +556,12 @@
       "inStock": "Stock",
       "outOfStock": "Out of stock",
       "stockQuantity": "Stock quantity",
+      "brand": "Brand",
+      "brandPlaceholder": "Search for a brand...",
+      "seoTitle": "SEO title",
+      "metaDescription": "Meta description",
+      "createdAt": "Created at",
+      "featuredOrder": "Featured order",
       "featured": "Featured",
       "images": "Images",
       "specs": "Specifications",
@@ -597,7 +606,27 @@
       "deleted": "Bundle deleted",
       "created": "Bundle created",
       "updated": "Bundle updated",
-      "confirmDelete": "Delete this bundle?"
+      "confirmDelete": "Delete this bundle?",
+      "addProduct": "Add product",
+      "addProductTitle": "Add product to bundle",
+      "manageProducts": "Manage products",
+      "currentProducts": "Current products",
+      "noProducts": "This bundle has no products yet",
+      "productAdded": "Product added",
+      "productRemoved": "Product removed from bundle"
+    },
+    "brands": {
+      "title": "Brands",
+      "add": "Add brand",
+      "addTitle": "Add brand",
+      "editTitle": "Edit brand",
+      "empty": "No brands yet",
+      "nameAr": "Name (Arabic)",
+      "nameEn": "Name (English)",
+      "created": "Brand created",
+      "updated": "Brand updated",
+      "deleted": "Brand deleted",
+      "confirmDelete": "Delete this brand?"
     },
     "orders": {
       "title": "All orders",

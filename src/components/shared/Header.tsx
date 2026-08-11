@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -222,7 +222,7 @@ export function Header() {
           <LangSwitcher />
 
           {isAuthed && !isStaff && (
-            <Button asChild variant="ghost" size="icon" aria-label={t('catalog.favorites', { defaultValue: 'المفضلة' })}>
+            <Button asChild variant="ghost" size="icon" aria-label={t('catalog.favorites')}>
               <Link to="/favorites">
                 <Heart className="size-5" />
               </Link>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+﻿import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -345,7 +345,7 @@ function AdSlide({
                   onClick={(e) => e.stopPropagation()}
                   className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-lg transition-opacity hover:opacity-90"
                 >
-                  {t('ads.shopNow', { defaultValue: 'تسوق الآن' })}
+                  {t('ads.shopNow')}
                   <ExternalLink className="size-3" />
                 </motion.a>
               </AnimatePresence>

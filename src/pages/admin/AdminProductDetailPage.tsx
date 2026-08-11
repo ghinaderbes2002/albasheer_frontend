@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+﻿import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ChevronRight, ImagePlus, Loader2, Link2, Pencil, Plus, Power, Star, Trash2, X } from 'lucide-react'
@@ -184,7 +184,7 @@ export function AdminProductDetailPage() {
             )}
             {product.brand_name && (
               <span>
-                {t('admin.products.brand', { defaultValue: 'الشركة' })}:{' '}
+                {t('admin.products.brand')}:{' '}
                 <span className="font-medium text-foreground">{product.brand_name}</span>
               </span>
             )}
@@ -194,8 +194,8 @@ export function AdminProductDetailPage() {
               className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${stockBadgeClass[stockLevel(product.stock_quantity)]}`}
             >
               {product.stock_quantity > 0
-                ? `${t('admin.products.stockQuantity', { defaultValue: 'الكمية في المخزن' })}: ${product.stock_quantity}`
-                : t('admin.products.outOfStock', { defaultValue: 'غير متوفر في المخزن' })}
+                ? `${t('admin.products.stockQuantity')}: ${product.stock_quantity}`
+                : t('admin.products.outOfStock')}
             </span>
           </div>
 

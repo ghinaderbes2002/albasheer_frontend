@@ -205,7 +205,8 @@
     "prev": "الإعلان السابق",
     "next": "الإعلان التالي",
     "goToSlide": "اذهب للإعلان رقم {{index}}",
-    "slideOf": "الإعلان {{current}} من {{total}}"
+    "slideOf": "الإعلان {{current}} من {{total}}",
+    "shopNow": "تسوق الآن"
   },
   "cart": {
     "clear": "إفراغ السلة",
@@ -558,6 +559,11 @@
       "inStock": "المخزن",
       "outOfStock": "نفدت الكمية",
       "stockQuantity": "الكمية في المخزن",
+      "brand": "الشركة المصنعة",
+      "brandPlaceholder": "ابحث عن الشركة...",
+      "seoTitle": "عنوان SEO",
+      "metaDescription": "وصف meta",
+      "createdAt": "تاريخ الإنشاء",
       "featured": "مميز",
       "featuredOrder": "ترتيب المميزة",
       "images": "الصور",
@@ -603,7 +609,27 @@
       "deleted": "تم حذف الباقة",
       "created": "تم إنشاء الباقة",
       "updated": "تم تحديث الباقة",
-      "confirmDelete": "حذف هذه الباقة؟"
+      "confirmDelete": "حذف هذه الباقة؟",
+      "addProduct": "إضافة منتج",
+      "addProductTitle": "إضافة منتج للباقة",
+      "manageProducts": "إدارة المنتجات",
+      "currentProducts": "المنتجات الحالية",
+      "noProducts": "لا توجد منتجات في هذه الباقة",
+      "productAdded": "تمت إضافة المنتج",
+      "productRemoved": "تم حذف المنتج من الباقة"
+    },
+    "brands": {
+      "title": "الشركات المصنعة",
+      "add": "إضافة شركة",
+      "addTitle": "إضافة شركة",
+      "editTitle": "تعديل الشركة",
+      "empty": "لا توجد شركات بعد",
+      "nameAr": "الاسم (عربي)",
+      "nameEn": "الاسم (إنجليزي)",
+      "created": "تمت إضافة الشركة",
+      "updated": "تم تحديث الشركة",
+      "deleted": "تم حذف الشركة",
+      "confirmDelete": "حذف الشركة؟"
     },
     "orders": {
       "title": "جميع الطلبات",

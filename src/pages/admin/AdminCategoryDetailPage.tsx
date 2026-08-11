@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+﻿import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, ArrowRight, ImageOff, Package } from 'lucide-react'
 
@@ -142,10 +142,10 @@ function ProductsTable({ products }: { products: AdminProduct[] }) {
         <thead className="bg-muted/50">
           <tr>
             <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.nameAr')}</th>
-            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.products.brand', { defaultValue: 'الشركة' })}</th>
+            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.products.brand')}</th>
             <th className="px-4 py-3 text-start font-medium text-muted-foreground">{t('admin.products.price')}</th>
             <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.available')}</th>
-            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.inStock', { defaultValue: 'المخزن' })}</th>
+            <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.products.inStock')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">

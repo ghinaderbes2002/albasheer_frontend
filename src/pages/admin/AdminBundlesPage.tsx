@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -215,7 +215,7 @@ function ManageProductsDialog({
   const handleAdd = async (productId: number) => {
     try {
       await addProduct.mutateAsync(productId)
-      toast.success(t('admin.bundles.productAdded', { defaultValue: 'تمت إضافة المنتج' }))
+      toast.success(t('admin.bundles.productAdded'))
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -224,7 +224,7 @@ function ManageProductsDialog({
   const handleRemove = async (productId: number) => {
     try {
       await removeProduct.mutateAsync(productId)
-      toast.success(t('admin.bundles.productRemoved', { defaultValue: 'تم حذف المنتج من الباقة' }))
+      toast.success(t('admin.bundles.productRemoved'))
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -237,7 +237,7 @@ function ManageProductsDialog({
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div>
             <h2 className="text-base font-semibold">{bundle.name_ar}</h2>
-            <p className="text-xs text-muted-foreground">{t('admin.bundles.manageProducts', { defaultValue: 'إدارة المنتجات' })}</p>
+            <p className="text-xs text-muted-foreground">{t('admin.bundles.manageProducts')}</p>
           </div>
           <Button variant="ghost" size="icon" onClick={onClose}><X className="size-4" /></Button>
         </div>
@@ -249,14 +249,14 @@ function ManageProductsDialog({
             onClick={() => setTab('current')}
             className={`flex-1 py-2.5 text-sm font-medium transition-colors ${tab === 'current' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            {t('admin.bundles.currentProducts', { defaultValue: 'المنتجات الحالية' })} ({currentProducts.length})
+            {t('admin.bundles.currentProducts')} ({currentProducts.length})
           </button>
           <button
             type="button"
             onClick={() => setTab('add')}
             className={`flex-1 py-2.5 text-sm font-medium transition-colors ${tab === 'add' ? 'border-b-2 border-primary text-primary' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            {t('admin.bundles.addProduct', { defaultValue: 'إضافة منتج' })}
+            {t('admin.bundles.addProduct')}
           </button>
         </div>
 
@@ -265,7 +265,7 @@ function ManageProductsDialog({
             detailLoading ? (
               <p className="py-8 text-center text-sm text-muted-foreground">{t('common.loading')}</p>
             ) : !currentProducts.length ? (
-              <p className="py-8 text-center text-sm text-muted-foreground">{t('admin.bundles.noProducts', { defaultValue: 'لا توجد منتجات في هذه الباقة' })}</p>
+              <p className="py-8 text-center text-sm text-muted-foreground">{t('admin.bundles.noProducts')}</p>
             ) : (
               currentProducts.map((p) => (
                 <div key={p.id} className="flex items-center gap-3 rounded-xl border border-border p-3">

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, ArrowRight, Heart, ImageOff, ShoppingCart } from 'lucide-react'
 
@@ -90,7 +90,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <div className="mt-auto flex items-center justify-between gap-2">
             <Price value={product.price} className="text-base font-extrabold tabular-nums text-foreground" />
             <span className="text-[10px] text-muted-foreground rounded-full bg-muted px-2 py-0.5">
-              {t('catalog.inStock', { defaultValue: 'متوفر' })}
+              {t('catalog.inStock')}
             </span>
           </div>
         </div>
@@ -109,8 +109,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
               : 'bg-background/80 text-muted-foreground hover:bg-background hover:text-red-500',
           )}
           aria-label={isFav
-            ? t('catalog.removeFromFavorites', { defaultValue: 'إزالة من المفضلة' })
-            : t('catalog.addToFavorites', { defaultValue: 'إضافة للمفضلة' })}
+            ? t('catalog.removeFromFavorites')
+            : t('catalog.addToFavorites')}
         >
           <Heart className={cn('size-4', isFav && 'fill-current')} />
         </button>

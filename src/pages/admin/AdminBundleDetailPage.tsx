@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ChevronRight, ImageOff, Loader2, Plus, Power, Trash2, X } from 'lucide-react'
@@ -42,7 +42,7 @@ export function AdminBundleDetailPage() {
   const handleRemove = async (productId: number) => {
     try {
       await removeProduct.mutateAsync(productId)
-      toast.success(t('admin.bundles.productRemoved', { defaultValue: 'تم حذف المنتج من الباقة' }))
+      toast.success(t('admin.bundles.productRemoved'))
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -125,7 +125,7 @@ export function AdminBundleDetailPage() {
           )}
 
           <div className="text-xs text-muted-foreground">
-            {t('admin.products.createdAt', { defaultValue: 'تاريخ الإنشاء' })}:{' '}
+            {t('admin.products.createdAt')}:{' '}
             {new Date(bundle.created_at).toLocaleDateString('ar-SY')}
           </div>
         </div>
@@ -140,13 +140,13 @@ export function AdminBundleDetailPage() {
           </h2>
           <Button size="sm" variant="outline" onClick={() => setShowAddProduct(true)}>
             <Plus className="size-3.5" />
-            {t('admin.bundles.addProduct', { defaultValue: 'إضافة منتج' })}
+            {t('admin.bundles.addProduct')}
           </Button>
         </div>
 
         {bundle.products.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-muted-foreground">
-            {t('admin.bundles.noProducts', { defaultValue: 'لا توجد منتجات في هذه الباقة' })}
+            {t('admin.bundles.noProducts')}
           </p>
         ) : (
           <div className="divide-y divide-border">
@@ -209,7 +209,7 @@ function AddProductDialog({
   const handleAdd = async (productId: number) => {
     try {
       await addProduct.mutateAsync(productId)
-      toast.success(t('admin.bundles.productAdded', { defaultValue: 'تمت إضافة المنتج' }))
+      toast.success(t('admin.bundles.productAdded'))
       onClose()
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
@@ -220,7 +220,7 @@ function AddProductDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-md rounded-2xl bg-background shadow-xl flex flex-col max-h-[80vh] animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="font-semibold">{t('admin.bundles.addProduct', { defaultValue: 'إضافة منتج للباقة' })}</h2>
+          <h2 className="font-semibold">{t('admin.bundles.addProductTitle')}</h2>
           <Button variant="ghost" size="icon" onClick={onClose}><X className="size-4" /></Button>
         </div>
         <div className="p-4 border-b border-border">
