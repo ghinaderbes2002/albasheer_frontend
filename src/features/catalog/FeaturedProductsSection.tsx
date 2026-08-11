@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, useInView } from 'framer-motion'
@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useFeaturedProducts } from '@/features/catalog/queries'
 import { resolveMediaUrl } from '@/lib/api'
 import { pickLang } from '@/lib/format'
+import { prefersReducedMotion } from '@/hooks/useCascade'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Price } from '@/components/shared/Price'
 
@@ -25,10 +26,108 @@ const CARD_BG = [
   'bg-muted dark:bg-ink-900 shadow-warm',
 ]
 
+/** How long each card rests before the strip advances. */
+const AUTOPLAY_MS = 3200
+/** Quiet period after a swipe before autoplay takes over again. */
+const RESUME_AFTER_MS = 7000
+
+/**
+ * Advances the mobile card strip on its own.
+ *
+ * The next card is picked from where the strip *currently* sits rather than
+ * from a counter, so a manual swipe never leaves autoplay out of sync. It
+ * only runs while the strip is on screen, backs off after the reader
+ * touches it, and stays off entirely when motion is unwanted.
+ */
+function useAutoScroll(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  itemCount: number,
+) {
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el || itemCount < 2 || prefersReducedMotion()) return
+
+    let tick: number | undefined
+    let resume: number | undefined
+    let onScreen = false
+
+    const stop = () => {
+      if (tick !== undefined) window.clearInterval(tick)
+      tick = undefined
+    }
+
+    const advance = () => {
+      const cards = Array.from(
+        el.querySelectorAll<HTMLElement>('[data-carousel-item]'),
+      )
+      if (cards.length < 2) return
+
+      // Whichever card sits nearest the strip's centre is "current".
+      const strip = el.getBoundingClientRect()
+      const centre = strip.left + strip.width / 2
+      let current = 0
+      let closest = Infinity
+      cards.forEach((card, i) => {
+        const box = card.getBoundingClientRect()
+        const distance = Math.abs(box.left + box.width / 2 - centre)
+        if (distance < closest) {
+          closest = distance
+          current = i
+        }
+      })
+
+      // `inline` is direction-aware, so this works in RTL and LTR alike;
+      // `block: 'nearest'` keeps the page from scrolling vertically.
+      cards[(current + 1) % cards.length].scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      })
+    }
+
+    const start = () => {
+      stop()
+      tick = window.setInterval(advance, AUTOPLAY_MS)
+    }
+
+    const pause = () => {
+      stop()
+      if (resume !== undefined) window.clearTimeout(resume)
+      resume = window.setTimeout(() => {
+        if (onScreen) start()
+      }, RESUME_AFTER_MS)
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting
+        if (onScreen) start()
+        else stop()
+      },
+      { threshold: 0.35 },
+    )
+    observer.observe(el)
+
+    el.addEventListener('pointerdown', pause)
+    el.addEventListener('touchstart', pause, { passive: true })
+    el.addEventListener('wheel', pause, { passive: true })
+
+    return () => {
+      observer.disconnect()
+      stop()
+      if (resume !== undefined) window.clearTimeout(resume)
+      el.removeEventListener('pointerdown', pause)
+      el.removeEventListener('touchstart', pause)
+      el.removeEventListener('wheel', pause)
+    }
+  }, [containerRef, itemCount])
+}
+
 export function FeaturedProductsSection() {
   const { t, i18n } = useTranslation()
   const { data: products, isLoading } = useFeaturedProducts()
   const sectionRef = useRef<HTMLElement>(null)
+  const stripRef = useRef<HTMLDivElement>(null)
   const isInView = useInView(sectionRef, { once: true, margin: '-80px' })
   const isRtl = i18n.language.startsWith('ar')
   const Arrow = isRtl ? ArrowLeft : ArrowRight
@@ -37,6 +136,8 @@ export function FeaturedProductsSection() {
   const allItems = products ?? []
   const bentoItems = allItems.slice(0, 3)
   const extraItems = allItems.slice(3)
+
+  useAutoScroll(stripRef, allItems.length)
 
   if (!isLoading && allItems.length === 0) return null
 
@@ -69,7 +170,11 @@ export function FeaturedProductsSection() {
       ) : (
         <>
           {/* ── Mobile: horizontal scroll (all items) ───────────── */}
-          <div dir={isRtl ? 'rtl' : 'ltr'} className="flex gap-4 overflow-x-auto scrollbar-hide px-4 pb-2 md:hidden">
+          <div
+            ref={stripRef}
+            dir={isRtl ? 'rtl' : 'ltr'}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-4 pb-2 md:hidden"
+          >
             {allItems.map((product, i) => (
               <MobileCard
                 key={product.id}
@@ -185,11 +290,12 @@ function MobileCard({
 
   return (
     <motion.div
+      data-carousel-item
       initial={{ opacity: 0, x: 30 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
       // 75vw wide — reveals ~25% of the next card as scroll hint
-      className={`group w-[75vw] shrink-0 overflow-hidden rounded-3xl ${bg}`}
+      className={`group w-[75vw] shrink-0 snap-center overflow-hidden rounded-3xl ${bg}`}
     >
       <Link to={`/products/${product.slug}`} className="flex h-full flex-col">
         {/* Image — 55% of card height */}
