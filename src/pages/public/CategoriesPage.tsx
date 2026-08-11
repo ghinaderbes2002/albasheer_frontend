@@ -177,11 +177,11 @@ function CategoryTile({
         {/* Scrim — keeps the title readable over any photo, and deepens on hover */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5 transition-opacity duration-500 group-hover:from-black/90" />
 
-        {/* Index watermark */}
+        {/* Index badge — thin ring with the number centred inside */}
         <span
           aria-hidden
-          className="absolute top-4 inset-e-5 text-4xl font-black tabular-nums text-white/20 transition-colors duration-500 group-hover:text-white/30"
           dir="ltr"
+          className="absolute top-4 inset-e-4 flex size-13 items-center justify-center rounded-full border border-white/40 text-base font-semibold tabular-nums text-white/90 backdrop-blur-[2px] transition-[background-color,border-color] duration-500 group-hover:border-white/75 group-hover:bg-white/10 sm:size-15 sm:text-lg"
         >
           {String(index + 1).padStart(2, '0')}
         </span>
