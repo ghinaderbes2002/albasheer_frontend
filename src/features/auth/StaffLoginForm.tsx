@@ -56,7 +56,7 @@ export function StaffLoginForm({ onSuccess }: StaffLoginFormProps) {
       <div className="flex flex-col gap-2">
         <Label htmlFor="staff-phone">
           <Phone className="size-4 text-muted-foreground" />
-          {t('auth.login.phoneLabel')}
+          {t("auth.login.phoneLabel")}
         </Label>
         <Input
           id="staff-phone"
@@ -64,50 +64,54 @@ export function StaffLoginForm({ onSuccess }: StaffLoginFormProps) {
           inputMode="tel"
           dir="ltr"
           autoComplete="username"
-          placeholder="0912345678"
+          placeholder="09x xxx xxxx"
           aria-invalid={!!phoneError || undefined}
-          {...register('phone')}
+          {...register("phone")}
         />
-        {phoneHint && (
-          <p className="text-xs text-destructive">{phoneHint}</p>
-        )}
+        {phoneHint && <p className="text-xs text-destructive">{phoneHint}</p>}
       </div>
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="staff-password">
           <Lock className="size-4 text-muted-foreground" />
-          {t('auth.staffLogin.passwordLabel')}
+          {t("auth.staffLogin.passwordLabel")}
         </Label>
         <div className="relative">
           <Input
             id="staff-password"
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             autoComplete="current-password"
             aria-invalid={!!errors.password || undefined}
             className="pe-10"
-            {...register('password')}
+            {...register("password")}
           />
           <button
             type="button"
             className="absolute inset-y-0 end-0 flex items-center px-3 text-muted-foreground hover:text-foreground"
             onClick={() => setShowPassword((v) => !v)}
             tabIndex={-1}
-            aria-label={showPassword ? t('auth.staffLogin.hidePassword') : t('auth.staffLogin.showPassword')}
+            aria-label={
+              showPassword
+                ? t("auth.staffLogin.hidePassword")
+                : t("auth.staffLogin.showPassword")
+            }
           >
-            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            {showPassword ? (
+              <EyeOff className="size-4" />
+            ) : (
+              <Eye className="size-4" />
+            )}
           </button>
         </div>
         {errors.password && (
-          <p className="text-xs text-destructive">
-            {t('common.required')}
-          </p>
+          <p className="text-xs text-destructive">{t("common.required")}</p>
         )}
       </div>
 
       <Button type="submit" disabled={busy} size="lg" className="mt-2">
         {busy && <Loader2 className="animate-spin" />}
-        {t('auth.staffLogin.submit')}
+        {t("auth.staffLogin.submit")}
       </Button>
     </form>
-  )
+  );
 }

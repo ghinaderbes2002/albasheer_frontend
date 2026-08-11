@@ -63,7 +63,7 @@ export function PhoneForm({ onSuccess }: PhoneFormProps) {
           inputMode="tel"
           dir="ltr"
           autoComplete="tel"
-          placeholder="0912345678"
+          placeholder="09x xxx xxxx"
           aria-invalid={!!phoneError || undefined}
           {...register('phone')}
         />
