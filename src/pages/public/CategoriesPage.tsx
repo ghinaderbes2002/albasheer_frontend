@@ -13,9 +13,9 @@ import { cn } from '@/lib/utils'
 import type { Category } from '@/types/api'
 
 /** Delay between two consecutive tiles in a cascade. */
-const STAGGER_MS = 120
+const STAGGER_MS = 190
 /** Tiles revealed further apart than this start a fresh cascade. */
-const BATCH_GAP_MS = 600
+const BATCH_GAP_MS = 900
 
 const prefersReducedMotion = () =>
   typeof window === 'undefined' ||
@@ -150,8 +150,8 @@ function CategoryTile({
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
       className={cn(
-        'transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none',
-        shown ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0',
+        'transition-[opacity,transform] duration-1000 ease-out motion-reduce:transition-none',
+        shown ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0',
       )}
     >
       <Link
