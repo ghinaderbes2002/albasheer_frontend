@@ -26,68 +26,72 @@ const CARD_BG = [
   'bg-muted dark:bg-ink-900 shadow-warm',
 ]
 
-/** How long each card rests before the strip advances. */
-const AUTOPLAY_MS = 3200
-/** Quiet period after a swipe before autoplay takes over again. */
-const RESUME_AFTER_MS = 7000
+/** Drift speed of the mobile strip, in pixels per second. */
+const SCROLL_SPEED = 58
+/** Quiet period after a swipe before the drift takes over again. */
+const RESUME_AFTER_MS = 2500
 
 /**
- * Advances the mobile card strip on its own.
+ * Drifts the mobile card strip continuously, so it reads as *moving* rather
+ * than stepping between cards.
  *
- * The next card is picked from where the strip *currently* sits rather than
- * from a counter, so a manual swipe never leaves autoplay out of sync. It
- * only runs while the strip is on screen, backs off after the reader
- * touches it, and stays off entirely when motion is unwanted.
+ * The strip renders its cards twice; once the drift has travelled the width
+ * of one full set it jumps back by exactly that distance. The content under
+ * the viewport is identical at both ends, so the reset is invisible and the
+ * loop never rewinds.
+ *
+ * Runs only while the strip is on screen, backs off after a swipe, and stays
+ * off entirely when motion is unwanted.
  */
 function useAutoScroll(
   containerRef: React.RefObject<HTMLDivElement | null>,
   itemCount: number,
+  isRtl: boolean,
 ) {
   useEffect(() => {
     const el = containerRef.current
     if (!el || itemCount < 2 || prefersReducedMotion()) return
 
-    let tick: number | undefined
+    // RTL scroll offsets run from 0 down to -max, LTR from 0 up to +max.
+    const direction = isRtl ? -1 : 1
+
+    let frame: number | undefined
     let resume: number | undefined
     let onScreen = false
+    let lastFrameAt = 0
+    let position = Math.abs(el.scrollLeft)
 
-    const stop = () => {
-      if (tick !== undefined) window.clearInterval(tick)
-      tick = undefined
+    /** Distance covered by one full set of cards. */
+    const loopWidth = () => {
+      const cards = el.querySelectorAll<HTMLElement>('[data-carousel-item]')
+      if (cards.length <= itemCount) return 0
+      return Math.abs(cards[itemCount].offsetLeft - cards[0].offsetLeft)
     }
 
-    const advance = () => {
-      const cards = Array.from(
-        el.querySelectorAll<HTMLElement>('[data-carousel-item]'),
-      )
-      if (cards.length < 2) return
+    const step = (now: number) => {
+      const span = loopWidth()
+      if (span > 0) {
+        const elapsed = lastFrameAt ? (now - lastFrameAt) / 1000 : 0
+        lastFrameAt = now
+        // Clamp the delta so a backgrounded tab doesn't resume with a jump.
+        position += SCROLL_SPEED * Math.min(elapsed, 0.05)
+        if (position >= span) position -= span
+        el.scrollLeft = direction * position
+      }
+      frame = requestAnimationFrame(step)
+    }
 
-      // Whichever card sits nearest the strip's centre is "current".
-      const strip = el.getBoundingClientRect()
-      const centre = strip.left + strip.width / 2
-      let current = 0
-      let closest = Infinity
-      cards.forEach((card, i) => {
-        const box = card.getBoundingClientRect()
-        const distance = Math.abs(box.left + box.width / 2 - centre)
-        if (distance < closest) {
-          closest = distance
-          current = i
-        }
-      })
-
-      // `inline` is direction-aware, so this works in RTL and LTR alike;
-      // `block: 'nearest'` keeps the page from scrolling vertically.
-      cards[(current + 1) % cards.length].scrollIntoView({
-        behavior: 'smooth',
-        block: 'nearest',
-        inline: 'center',
-      })
+    const stop = () => {
+      if (frame !== undefined) cancelAnimationFrame(frame)
+      frame = undefined
+      lastFrameAt = 0
     }
 
     const start = () => {
       stop()
-      tick = window.setInterval(advance, AUTOPLAY_MS)
+      // Pick up from wherever the reader left the strip.
+      position = Math.abs(el.scrollLeft)
+      frame = requestAnimationFrame(step)
     }
 
     const pause = () => {
@@ -104,7 +108,7 @@ function useAutoScroll(
         if (onScreen) start()
         else stop()
       },
-      { threshold: 0.35 },
+      { threshold: 0.2 },
     )
     observer.observe(el)
 
@@ -120,7 +124,7 @@ function useAutoScroll(
       el.removeEventListener('touchstart', pause)
       el.removeEventListener('wheel', pause)
     }
-  }, [containerRef, itemCount])
+  }, [containerRef, itemCount, isRtl])
 }
 
 export function FeaturedProductsSection() {
@@ -137,7 +141,7 @@ export function FeaturedProductsSection() {
   const bentoItems = allItems.slice(0, 3)
   const extraItems = allItems.slice(3)
 
-  useAutoScroll(stripRef, allItems.length)
+  useAutoScroll(stripRef, allItems.length, isRtl)
 
   if (!isLoading && allItems.length === 0) return null
 
@@ -173,7 +177,8 @@ export function FeaturedProductsSection() {
           <div
             ref={stripRef}
             dir={isRtl ? 'rtl' : 'ltr'}
-            className="flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth scrollbar-hide px-4 pb-2 md:hidden"
+            // No scroll-snap: it would fight the continuous drift.
+            className="flex gap-4 overflow-x-auto scrollbar-hide px-4 pb-2 md:hidden"
           >
             {allItems.map((product, i) => (
               <MobileCard
@@ -186,8 +191,21 @@ export function FeaturedProductsSection() {
                 Arrow={Arrow}
               />
             ))}
-            {/* Spacer so last card doesn't sit flush on edge */}
-            <div className="w-4 shrink-0" />
+            {/* Second pass of the same cards — gives the drift somewhere to
+                wrap to without a visible rewind. Hidden from assistive tech
+                and from the tab order so the list still reads once. */}
+            {allItems.map((product, i) => (
+              <MobileCard
+                key={`${product.id}-loop`}
+                product={product}
+                lang={lang}
+                bg={CARD_BG[i % CARD_BG.length]}
+                isInView={isInView}
+                delay={0}
+                Arrow={Arrow}
+                duplicate
+              />
+            ))}
           </div>
 
           {/* ── Desktop: bento grid (first 3) ───────────────────── */}
@@ -276,6 +294,7 @@ function MobileCard({
   isInView,
   delay,
   Arrow,
+  duplicate = false,
 }: {
   product: FP
   lang: string
@@ -283,6 +302,8 @@ function MobileCard({
   isInView: boolean
   delay: number
   Arrow: React.ComponentType<{ className?: string }>
+  /** Part of the second pass that exists only so the drift can wrap. */
+  duplicate?: boolean
 }) {
   const { t } = useTranslation()
   const name = pickLang(product.name, product.name_ar, lang)
@@ -291,13 +312,18 @@ function MobileCard({
   return (
     <motion.div
       data-carousel-item
+      aria-hidden={duplicate || undefined}
       initial={{ opacity: 0, x: 30 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
       // 75vw wide — reveals ~25% of the next card as scroll hint
-      className={`group w-[75vw] shrink-0 snap-center overflow-hidden rounded-3xl ${bg}`}
+      className={`group w-[75vw] shrink-0 overflow-hidden rounded-3xl ${bg}`}
     >
-      <Link to={`/products/${product.slug}`} className="flex h-full flex-col">
+      <Link
+        to={`/products/${product.slug}`}
+        tabIndex={duplicate ? -1 : undefined}
+        className="flex h-full flex-col"
+      >
         {/* Image — 55% of card height */}
         <div className="relative aspect-[4/3] w-full overflow-hidden">
           {image ? (
