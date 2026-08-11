@@ -178,11 +178,6 @@ export function ProductDetailPage() {
             {/* Title */}
             <h1 className="text-3xl font-extrabold leading-tight md:text-4xl">{name}</h1>
 
-            {/* Price */}
-            <div className="flex items-baseline gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 gold-glow">
-              <Price value={displayPrice} className="text-4xl font-extrabold tabular-nums text-primary" />
-            </div>
-
             {/* Variant selectors */}
             {Object.entries(variantGroups).map(([typeName, options]) => (
               <div key={typeName} className="space-y-2">
@@ -237,6 +232,11 @@ export function ProductDetailPage() {
                 </p>
               </div>
             )}
+
+            {/* Price */}
+            <div className="flex items-baseline gap-2 rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 gold-glow">
+              <Price value={displayPrice} className="text-4xl font-extrabold tabular-nums text-primary" />
+            </div>
 
             {/* Add to cart + Buy now */}
             <div className="mt-1 flex flex-wrap gap-3">

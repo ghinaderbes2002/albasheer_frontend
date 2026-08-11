@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Star } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -125,6 +125,37 @@ export function AdminOrderDetailPage() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {/* Customer rating */}
+      {order.rating && (
+        <div className="rounded-2xl border border-border bg-card p-5 space-y-3">
+          <h2 className="font-semibold text-base flex items-center gap-2">
+            <Star className="size-4" />
+            {t('orders.rate.customerRating')}
+          </h2>
+          <div className="flex items-center gap-1">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`size-6 ${i < order.rating!.rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/30'}`}
+              />
+            ))}
+            <span className="ms-2 text-sm text-muted-foreground tabular-nums" dir="ltr">
+              {order.rating.rating}/5
+            </span>
+          </div>
+          {order.rating.comment && (
+            <p className="text-sm text-muted-foreground rounded-xl border border-border bg-muted/30 px-3 py-2 whitespace-pre-line">
+              {order.rating.comment}
+            </p>
+          )}
+          {order.rating.created_at && (
+            <p className="text-xs text-muted-foreground font-mono" dir="ltr">
+              {order.rating.created_at.slice(0, 16).replace('T', ' ')}
+            </p>
+          )}
         </div>
       )}
 

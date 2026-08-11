@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import {
@@ -36,14 +36,33 @@ export function Header() {
   const isStaff = role === 'branch_manager' || role === 'delivery' || role === 'admin' || role === 'content_manager'
   const [mobileOpen, setMobileOpen] = useState(false)
   const [catOpen, setCatOpen] = useState(false)
+  const catRef = useRef<HTMLDivElement>(null)
   const { data: hasPendingReceipt } = useHasPendingReceipt(isAuthed && !isStaff)
   const { data: categories } = useCategories()
   const { i18n } = useTranslation()
 
-  // Close drawer on route change.
+  // Close drawer + categories menu on route change.
   useEffect(() => {
     setMobileOpen(false)
+    setCatOpen(false)
   }, [location.pathname])
+
+  // Categories menu is click-toggled: close it on outside click or Escape.
+  useEffect(() => {
+    if (!catOpen) return
+    function onPointerDown(e: PointerEvent) {
+      if (catRef.current && !catRef.current.contains(e.target as Node)) setCatOpen(false)
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setCatOpen(false)
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [catOpen])
 
   const dashboardLink =
     role === 'admin'
@@ -113,13 +132,12 @@ export function Header() {
           ))}
 
           {/* Categories dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setCatOpen(true)}
-            onMouseLeave={() => setCatOpen(false)}
-          >
+          <div className="relative" ref={catRef}>
             <button
               type="button"
+              onClick={() => setCatOpen((o) => !o)}
+              aria-expanded={catOpen}
+              aria-haspopup="menu"
               className={cn(
                 'flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-200',
                 catOpen ? 'bg-foreground text-background' : 'text-muted-foreground hover:text-foreground',
