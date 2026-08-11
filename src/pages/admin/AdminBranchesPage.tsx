@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { ExternalLink, Inbox, Loader2, MapPin, Pencil, Phone, Plus, Search, Trash2, X } from 'lucide-react'
+import { ExternalLink, Inbox, Loader2, MapPin, Pencil, Phone, Plus, Search, Trash2, Truck, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import {
   useUpdateAdminBranch,
 } from '@/features/admin/queries'
 import { extractApiError } from '@/lib/api'
+import { Price } from '@/components/shared/Price'
 import type { AdminBranch } from '@/types/api'
 
 type BranchForm = Omit<AdminBranch, 'id'>
@@ -92,6 +93,7 @@ export function AdminBranchesPage() {
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.branches.nameEn')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden sm:table-cell">{t('admin.branches.phone')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden lg:table-cell">{t('admin.branches.address')}</th>
+                <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden lg:table-cell">{t('dashboard.branch.freeDelivery.columnShort')}</th>
                 <th className="px-4 py-3 text-start font-medium text-muted-foreground hidden md:table-cell">{t('admin.branches.status')}</th>
                 <th className="px-4 py-3 text-end font-medium text-muted-foreground w-20"></th>
               </tr>
@@ -108,6 +110,15 @@ export function AdminBranchesPage() {
                   <td className="px-4 py-3 hidden sm:table-cell text-muted-foreground">{b.name || '—'}</td>
                   <td className="px-4 py-3 hidden sm:table-cell"><span dir="ltr">{b.phone || '—'}</span></td>
                   <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground truncate max-w-[200px]">{b.address || '—'}</td>
+                  <td className="px-4 py-3 hidden lg:table-cell">
+                    {b.min_free_delivery_amount ? (
+                      <Price value={b.min_free_delivery_amount} className="text-sm font-medium" />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        {t('dashboard.branch.freeDelivery.inactive')}
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 hidden md:table-cell">
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${b.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
                       {b.is_active ? t('admin.branches.active') : t('branches.inactive')}
@@ -242,6 +253,19 @@ function BranchDetailModal({
             </DetailRow>
           )}
 
+          <DetailRow
+            label={t('dashboard.branch.freeDelivery.label')}
+            icon={<Truck className="size-3.5" />}
+          >
+            {branch.min_free_delivery_amount ? (
+              <Price value={branch.min_free_delivery_amount} className="text-sm font-medium" />
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                {t('dashboard.branch.freeDelivery.inactive')}
+              </span>
+            )}
+          </DetailRow>
+
           {branch.maps_url && (
             <DetailRow label={t('admin.branches.mapsUrl')} icon={<ExternalLink className="size-3.5" />}>
               <a
@@ -311,16 +335,24 @@ function BranchFormDialog({
       maps_url: branch?.maps_url ?? '',
       is_active: branch?.is_active ?? true,
       is_primary: branch?.is_primary ?? false,
+      min_free_delivery_amount: branch?.min_free_delivery_amount ?? '',
     },
   })
 
   const onSubmit = async (values: BranchForm) => {
     try {
+      // An empty threshold means "no free-delivery offer" — the backend
+      // field is nullable, and '' would be rejected as a bad decimal.
+      const threshold = String(values.min_free_delivery_amount ?? '').trim()
+      const payload: BranchForm = {
+        ...values,
+        min_free_delivery_amount: threshold === '' ? null : threshold,
+      }
       if (isEdit) {
-        await update.mutateAsync(values)
+        await update.mutateAsync(payload)
         toast.success(t('admin.branches.updated'))
       } else {
-        await create.mutateAsync(values)
+        await create.mutateAsync(payload)
         toast.success(t('admin.branches.created'))
       }
       onClose()
@@ -352,6 +384,28 @@ function BranchFormDialog({
           </Field>
           <Field label={t('admin.branches.mapsUrl')}>
             <Input {...register('maps_url')} dir="ltr" placeholder="https://maps.google.com/..." />
+          </Field>
+          <Field label={t('dashboard.branch.freeDelivery.label')}>
+            <div
+              dir="ltr"
+              className="flex h-10 overflow-hidden rounded-md border border-input bg-background shadow-sm focus-within:ring-2 focus-within:ring-ring"
+            >
+              <span className="flex select-none items-center border-r border-input bg-muted px-3 text-sm font-medium text-muted-foreground">
+                {t('common.currency')}
+              </span>
+              <input
+                {...register('min_free_delivery_amount')}
+                type="number"
+                min={0}
+                step="0.01"
+                dir="ltr"
+                placeholder={t('dashboard.branch.freeDelivery.placeholder')}
+                className="flex-1 bg-transparent px-3 text-sm tabular-nums outline-none"
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t('dashboard.branch.freeDelivery.hint')}
+            </p>
           </Field>
           <div className="flex gap-4">
             <label className="flex items-center gap-2 text-sm">

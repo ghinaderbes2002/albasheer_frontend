@@ -438,6 +438,12 @@ export interface AdminBranch {
   maps_url: string
   is_active: boolean
   is_primary: boolean
+  /**
+   * Free-delivery threshold in USD, or `null` when this branch hasn't opted
+   * in. Branch managers set it via `/api/branch/min-free-delivery/`; admins
+   * set it here, per branch.
+   */
+  min_free_delivery_amount?: string | null
 }
 
 export interface AdminCity {

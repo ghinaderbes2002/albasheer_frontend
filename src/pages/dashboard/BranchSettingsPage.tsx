@@ -26,6 +26,7 @@ export function BranchSettingsPage() {
   // `null` means "untouched" — show whatever the server has. Editing takes
   // over; saving hands control back so the response becomes the new baseline.
   const [draft, setDraft] = useState<string | null>(null)
+  const [confirmClear, setConfirmClear] = useState(false)
   const saved = data?.min_free_delivery_amount ?? ''
   const amount = draft ?? saved
 
@@ -41,6 +42,7 @@ export function BranchSettingsPage() {
     try {
       await save.mutateAsync(value)
       setDraft(null)
+      setConfirmClear(false)
       toast.success(message)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
@@ -178,9 +180,7 @@ export function BranchSettingsPage() {
                     type="button"
                     variant="outline"
                     disabled={save.isPending}
-                    onClick={() =>
-                      persist(null, t('dashboard.branch.freeDelivery.cleared'))
-                    }
+                    onClick={() => setConfirmClear(true)}
                     className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                   >
                     <X className="size-4" />
@@ -200,6 +200,53 @@ export function BranchSettingsPage() {
           </form>
         )}
       </div>
+
+      {confirmClear && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-sm space-y-4 rounded-2xl bg-background p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+                <Truck className="size-5 text-destructive" />
+              </div>
+              <div className="min-w-0 space-y-1">
+                <h2 className="text-base font-semibold">
+                  {t('dashboard.branch.freeDelivery.confirmClearTitle')}
+                </h2>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {t('dashboard.branch.freeDelivery.confirmClearBody', {
+                    amount: formatPrice(savedAmount, i18n.language),
+                  })}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                variant="destructive"
+                className="flex-1"
+                disabled={save.isPending}
+                onClick={() =>
+                  persist(null, t('dashboard.branch.freeDelivery.cleared'))
+                }
+              >
+                {save.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <X className="size-4" />
+                )}
+                {t('dashboard.branch.freeDelivery.clear')}
+              </Button>
+              <Button
+                variant="outline"
+                disabled={save.isPending}
+                onClick={() => setConfirmClear(false)}
+              >
+                {t('common.cancel')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
