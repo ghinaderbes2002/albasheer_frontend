@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Inbox, Loader2, Pencil, Search, X } from 'lucide-react'
+import { Check, Inbox, Loader2, Minus, Pencil, Plus, Search, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -95,54 +95,11 @@ export function AccountantProductsPage() {
                     onDone={() => setEditingId(null)}
                   />
                 ) : (
-                  <tr key={p.id} className="transition-colors hover:bg-muted/30">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        {p.main_image ? (
-                          <img
-                            src={resolveMediaUrl(p.main_image) ?? p.main_image}
-                            alt=""
-                            loading="lazy"
-                            decoding="async"
-                            width={32}
-                            height={32}
-                            className="size-8 shrink-0 rounded object-cover"
-                          />
-                        ) : (
-                          <div className="size-8 shrink-0 rounded bg-muted" />
-                        )}
-                        <div className="min-w-0">
-                          <p className="font-medium">{p.name_ar}</p>
-                          <p className="text-xs text-muted-foreground">{p.name}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
-                      {p.category_name ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 tabular-nums">
-                      <Price value={p.price} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium tabular-nums ${stockBadgeClass[stockLevel(p.stock_quantity)]}`}
-                      >
-                        {p.stock_quantity > 0
-                          ? p.stock_quantity
-                          : t('admin.products.outOfStock')}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-end">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setEditingId(p.id)}
-                        aria-label={t('accountant.products.edit')}
-                      >
-                        <Pencil className="size-4" />
-                      </Button>
-                    </td>
-                  </tr>
+                  <ProductRow
+                    key={p.id}
+                    product={p}
+                    onEdit={() => setEditingId(p.id)}
+                  />
                 ),
               )}
             </tbody>
@@ -150,6 +107,163 @@ export function AccountantProductsPage() {
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * A read-only row, except for stock: −/+ adjust a pending count that is only
+ * sent once the reader presses save. Price still needs the full edit form.
+ */
+function ProductRow({
+  product,
+  onEdit,
+}: {
+  product: AdminProduct
+  onEdit: () => void
+}) {
+  const { t } = useTranslation()
+  const update = useUpdateAccountantProduct()
+
+  // `null` means untouched — show whatever the server has.
+  const [draft, setDraft] = useState<number | null>(null)
+  const stock = draft ?? product.stock_quantity
+  // Resolves itself once the refetch lands, so there is no reset to time.
+  const dirty = draft !== null && draft !== product.stock_quantity
+
+  const save = async () => {
+    try {
+      await update.mutateAsync({
+        id: product.id,
+        payload: { stock_quantity: stock },
+      })
+      toast.success(t('accountant.products.saved'))
+    } catch (err) {
+      toast.error(extractApiError(err, t('errors.generic')))
+    }
+  }
+
+  return (
+    <tr className="transition-colors hover:bg-muted/30">
+      <td className="px-4 py-3">
+        <div className="flex items-center gap-3">
+          {product.main_image ? (
+            <img
+              src={resolveMediaUrl(product.main_image) ?? product.main_image}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              width={32}
+              height={32}
+              className="size-8 shrink-0 rounded object-cover"
+            />
+          ) : (
+            <div className="size-8 shrink-0 rounded bg-muted" />
+          )}
+          <div className="min-w-0">
+            <p className="font-medium">{product.name_ar}</p>
+            <p className="text-xs text-muted-foreground">{product.name}</p>
+          </div>
+        </div>
+      </td>
+
+      <td className="px-4 py-3 hidden md:table-cell text-muted-foreground">
+        {product.category_name ?? '—'}
+      </td>
+
+      <td className="px-4 py-3 tabular-nums">
+        <Price value={product.price} />
+      </td>
+
+      {/* Stock — nudge with −/+, then save */}
+      <td className="px-4 py-3">
+        <div dir="ltr" className="inline-flex items-center gap-1">
+          <StockButton
+            icon={Minus}
+            label="-"
+            onClick={() => setDraft(Math.max(0, stock - 1))}
+            disabled={stock <= 0 || update.isPending}
+          />
+          <span
+            className={`inline-flex min-w-11 justify-center rounded-full px-2 py-0.5 text-xs font-medium tabular-nums ${
+              dirty
+                ? 'bg-primary/15 text-primary ring-1 ring-primary/40'
+                : stockBadgeClass[stockLevel(stock)]
+            }`}
+          >
+            {stock > 0 ? stock : t('admin.products.outOfStock')}
+          </span>
+          <StockButton
+            icon={Plus}
+            label="+"
+            onClick={() => setDraft(stock + 1)}
+            disabled={update.isPending}
+          />
+        </div>
+      </td>
+
+      <td className="px-4 py-3 text-end">
+        <div className="flex items-center justify-end gap-1">
+          {dirty && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={save}
+                disabled={update.isPending}
+                aria-label={t('common.save')}
+              >
+                {update.isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Check className="size-4 text-emerald-600" />
+                )}
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setDraft(null)}
+                disabled={update.isPending}
+                aria-label={t('common.cancel')}
+              >
+                <X className="size-4" />
+              </Button>
+            </>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onEdit}
+            aria-label={t('accountant.products.edit')}
+          >
+            <Pencil className="size-4" />
+          </Button>
+        </div>
+      </td>
+    </tr>
+  )
+}
+
+function StockButton({
+  icon: Icon,
+  label,
+  onClick,
+  disabled,
+}: {
+  icon: React.ElementType
+  label: string
+  onClick: () => void
+  disabled?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className="flex size-6 shrink-0 items-center justify-center rounded-md border border-border bg-background text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-40"
+    >
+      <Icon className="size-3" />
+    </button>
   )
 }
 
