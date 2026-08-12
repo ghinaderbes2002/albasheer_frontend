@@ -312,10 +312,12 @@ function ReadyForm({
 }: ReadyFormProps) {
   const { t } = useTranslation()
   const [when, setWhen] = useState('')
-  const now = new Date()
+  // Captured once, on open: reading the clock while rendering isn't pure.
+  // "YYYY-MM-DDTHH:mm" sorts chronologically, so a plain string compare
+  // is enough to reject a time already gone.
+  const [earliest] = useState(() => toLocalInputValue(new Date()))
 
-  const picked = when ? new Date(when) : null
-  const isPast = !!picked && picked.getTime() <= Date.now()
+  const isPast = !!when && when <= earliest
   const canSubmit = hasDeliveryStaff && !isPast && !loading
 
   return (
@@ -330,7 +332,7 @@ function ReadyForm({
         type="datetime-local"
         dir="ltr"
         autoFocus
-        min={toLocalInputValue(now)}
+        min={earliest}
         value={when}
         onChange={(e) => setWhen(e.target.value)}
         disabled={loading || !hasDeliveryStaff}
@@ -356,7 +358,7 @@ function ReadyForm({
         <Button
           type="button"
           disabled={!canSubmit}
-          onClick={() => onSubmit(picked ? picked.toISOString() : '')}
+          onClick={() => onSubmit(when ? new Date(when).toISOString() : '')}
         >
           {loading ? <Loader2 className="animate-spin" /> : <Truck />}
           {t('dashboard.branch.ready.confirm')}

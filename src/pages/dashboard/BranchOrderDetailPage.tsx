@@ -120,6 +120,16 @@ export function BranchOrderDetailPage() {
                   {order.delivery_address}
                 </span>
               </Row>
+              {order.delivery_staff_name && (
+                <Row label={t('orders.deliveryStaff')}>
+                  {order.delivery_staff_name}
+                </Row>
+              )}
+              {order.estimated_delivery && (
+                <Row label={t('orders.estimatedDelivery')}>
+                  {formatDateTime(order.estimated_delivery, i18n.language)}
+                </Row>
+              )}
             </CardContent>
           </Card>
 
