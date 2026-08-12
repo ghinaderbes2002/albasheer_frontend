@@ -292,6 +292,11 @@ export interface TrackingStage {
 export interface OrderTracking {
   current_status: OrderStatus
   stages: TrackingStage[]
+  /**
+   * Only set once the branch fills it in while readying the order for
+   * shipping — `null` for most of an order's life.
+   */
+  estimated_delivery: string | null
 }
 
 export interface CreateOrderItemPayload {
@@ -363,6 +368,8 @@ export interface BranchOrderDetail {
   delivery_address: string
   receipt_image: string | null
   items: BranchOrderItem[]
+  /** Who moved the order between statuses, and why (rejection notes land here). */
+  logs: OrderLog[]
   rating?: { id: number; rating: number; comment: string; created_at: string } | null
   created_at: string
 }

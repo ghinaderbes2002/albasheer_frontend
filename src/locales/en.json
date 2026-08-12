@@ -84,6 +84,10 @@
       "badge": "Featured",
       "viewAll": "View all products"
     },
+    "offers": {
+      "title": "Offers",
+      "viewAll": "View all offers"
+    },
     "latest": {
       "title": "Latest Products",
       "viewAll": "View all products"

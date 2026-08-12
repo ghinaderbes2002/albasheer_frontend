@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { cn } from '@/lib/utils'
 
 interface PageHeroProps {
@@ -21,11 +23,17 @@ export function PageHero({
   height = 'md',
   className,
 }: PageHeroProps) {
+  const [imageLoaded, setImageLoaded] = useState(false)
+
   return (
     <div
       className={cn(
         'relative flex w-full items-center justify-center overflow-hidden',
         heights[height],
+        // Dark ground under the photo. Without it the black/50 overlay sits
+        // on the light page background, so the white heading renders on pale
+        // grey until the (remote) image arrives — a visible flash.
+        image && 'bg-ink-900',
         className,
       )}
     >
@@ -39,7 +47,12 @@ export function PageHero({
           height={400}
           fetchPriority="high"
           decoding="async"
-          className="absolute inset-0 h-full w-full scale-105 object-cover blur-sm"
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageLoaded(true)}
+          className={cn(
+            'absolute inset-0 h-full w-full scale-105 object-cover blur-sm transition-opacity duration-500 motion-reduce:transition-none',
+            imageLoaded ? 'opacity-100' : 'opacity-0',
+          )}
         />
       )}
 

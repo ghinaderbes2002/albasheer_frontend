@@ -1,6 +1,13 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, ChevronRight, CheckCircle2, Circle, Clock } from 'lucide-react'
+import {
+  CalendarClock,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  Circle,
+  Clock,
+} from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -58,6 +65,22 @@ export function OrderTrackingPage() {
         </h1>
         <StatusBadge status={tracking.current_status} className="text-sm" />
       </div>
+
+      {/*
+       * The branch only fills the estimated delivery in when it readies the
+       * order for shipping, so this stays hidden for most of the order's life.
+       */}
+      {tracking.estimated_delivery && (
+        <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm">
+          <CalendarClock className="size-4 shrink-0 text-primary" />
+          <span className="text-muted-foreground">
+            {t('orders.estimatedDelivery')}
+          </span>
+          <span className="ms-auto font-medium">
+            {formatDateTime(tracking.estimated_delivery, i18n.language)}
+          </span>
+        </div>
+      )}
 
       <Card>
         <CardHeader>

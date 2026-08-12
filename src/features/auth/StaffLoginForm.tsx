@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
-import { Eye, EyeOff, Loader2, Lock, Phone } from 'lucide-react'
+import axios from 'axios'
+import { Eye, EyeOff, Loader2, Lock, Phone, ShieldAlert } from 'lucide-react'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -20,6 +21,7 @@ export function StaffLoginForm({ onSuccess }: StaffLoginFormProps) {
   const { t } = useTranslation()
   const staffLogin = useStaffLogin()
   const [showPassword, setShowPassword] = useState(false)
+  const [lockedMessage, setLockedMessage] = useState<string | null>(null)
 
   const {
     register,
@@ -31,11 +33,22 @@ export function StaffLoginForm({ onSuccess }: StaffLoginFormProps) {
   })
 
   const onSubmit = handleSubmit(async (values) => {
+    setLockedMessage(null)
     try {
       await staffLogin.mutateAsync(values)
       onSuccess()
     } catch (err) {
-      toast.error(extractApiError(err, t('errors.generic')))
+      const message = extractApiError(err, t('errors.generic'))
+      /*
+       * The backend locks an account for 15 minutes after 5 failed attempts
+       * and answers 429. That deserves a message that stays on screen —
+       * a toast that fades looks like an ordinary wrong password.
+       */
+      if (axios.isAxiosError(err) && err.response?.status === 429) {
+        setLockedMessage(message)
+        return
+      }
+      toast.error(message)
     }
   })
 
@@ -53,6 +66,16 @@ export function StaffLoginForm({ onSuccess }: StaffLoginFormProps) {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+      {lockedMessage && (
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+        >
+          <ShieldAlert className="mt-0.5 size-4 shrink-0" />
+          <span>{lockedMessage}</span>
+        </div>
+      )}
+
       <div className="flex flex-col gap-2">
         <Label htmlFor="staff-phone">
           <Phone className="size-4 text-muted-foreground" />

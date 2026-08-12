@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ChevronLeft,
   ChevronRight,
+  History,
   MapPin,
   Phone,
   Receipt,
@@ -18,6 +19,7 @@ import {
 } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/features/orders/StatusBadge'
+import { StatusTimeline } from '@/features/orders/StatusTimeline'
 import { OrderActions } from '@/features/branchDashboard/OrderActions'
 import { FreeDeliveryAlert } from '@/features/branchDashboard/FreeDeliveryAlert'
 import { useBranchOrder } from '@/features/branchDashboard/queries'
@@ -206,6 +208,21 @@ export function BranchOrderDetailPage() {
                     {order.rating.comment}
                   </p>
                 )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Status log — shows who cancelled/rejected the order and why */}
+          {order.logs?.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <History className="size-4" />
+                  {t('orders.timelineTitle')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <StatusTimeline logs={order.logs} />
               </CardContent>
             </Card>
           )}

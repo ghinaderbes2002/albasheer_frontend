@@ -19,6 +19,7 @@ import { GRID_CASCADE, useCascade } from '@/hooks/useCascade'
 import { useCategories, useProducts } from '@/features/catalog/queries'
 import { AdsCarousel } from '@/features/ads/AdsCarousel'
 import { FeaturedProductsSection } from '@/features/catalog/FeaturedProductsSection'
+import { BundlesSection } from '@/features/bundles/BundlesSection'
 import { resolveMediaUrl } from '@/lib/api'
 import { pickLang } from '@/lib/format'
 
@@ -146,6 +147,9 @@ export function HomePage() {
 
       {/* Featured Products ──────────────────────────────────────────── */}
       <FeaturedProductsSection />
+
+      {/* Offers (bundles) ───────────────────────────────────────────── */}
+      <BundlesSection />
 
       {/* Categories ────────────────────────────────────────────────── */}
       <section className="mx-auto w-full max-w-7xl px-4 py-14">

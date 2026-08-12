@@ -108,7 +108,7 @@ export function Header() {
       <div className="mx-auto flex h-18 max-w-7xl items-center px-4">
         {/* Logo — start */}
         <div className="flex flex-1 items-center">
-          <Link to="/" className="shrink-0">
+          <Link to="/" className="shrink-0 select-none">
             <Logo />
           </Link>
         </div>
