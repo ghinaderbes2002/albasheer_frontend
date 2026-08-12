@@ -18,7 +18,7 @@ import { CancelOrderButton } from '@/features/orders/CancelOrderButton'
 import { RateOrderCard } from '@/features/orders/RateOrderCard'
 import { useOrder } from '@/features/orders/queries'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatDate, formatDateTime, formatPrice } from '@/lib/format'
+import { formatDateTime, formatPrice } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
 import { Price } from '@/components/shared/Price'
 import { VariantBadge } from '@/features/orders/VariantBadge'
@@ -224,7 +224,7 @@ export function OrderDetailPage() {
               {order.estimated_delivery && (
                 <Row
                   label={t('orders.estimatedDelivery')}
-                  value={formatDate(order.estimated_delivery, i18n.language)}
+                  value={formatDateTime(order.estimated_delivery, i18n.language)}
                 />
               )}
               {order.rejection_reason && (
