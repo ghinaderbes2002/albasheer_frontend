@@ -24,7 +24,7 @@ import { OrderActions } from '@/features/branchDashboard/OrderActions'
 import { FreeDeliveryAlert } from '@/features/branchDashboard/FreeDeliveryAlert'
 import { useBranchOrder } from '@/features/branchDashboard/queries'
 import { resolveMediaUrl } from '@/lib/api'
-import { formatDateTime } from '@/lib/format'
+import { formatDateTime, formatDateTimeShort } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
 import { Price } from '@/components/shared/Price'
 import { VariantBadge } from '@/features/orders/VariantBadge'
@@ -127,7 +127,9 @@ export function BranchOrderDetailPage() {
               )}
               {order.estimated_delivery && (
                 <Row label={t('orders.estimatedDelivery')}>
-                  {formatDateTime(order.estimated_delivery, i18n.language)}
+                  <span dir="ltr">
+                    {formatDateTimeShort(order.estimated_delivery)}
+                  </span>
                 </Row>
               )}
             </CardContent>

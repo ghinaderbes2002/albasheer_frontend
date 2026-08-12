@@ -34,6 +34,23 @@ export function formatDate(iso: string, lang: string): string {
   }
 }
 
+/**
+ * Compact numeric date + 12-hour time, e.g. "9/9/2026 5:55pm".
+ *
+ * Day/month/year, the order used locally. Render it inside `dir="ltr"` —
+ * in an RTL paragraph the bidi algorithm would otherwise put the clock
+ * before the date.
+ */
+export function formatDateTimeShort(iso: string): string {
+  const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return iso
+  const hours = d.getHours()
+  const hour12 = hours % 12 === 0 ? 12 : hours % 12
+  const minutes = String(d.getMinutes()).padStart(2, '0')
+  const suffix = hours < 12 ? 'am' : 'pm'
+  return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()} ${hour12}:${minutes}${suffix}`
+}
+
 /** Format a date+time — digits always English. */
 export function formatDateTime(iso: string, lang: string): string {
   try {

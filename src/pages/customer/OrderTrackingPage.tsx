@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { StatusBadge } from '@/features/orders/StatusBadge'
 import { useOrderTracking } from '@/features/orders/queries'
-import { formatDateTime } from '@/lib/format'
+import { formatDateTime, formatDateTimeShort } from '@/lib/format'
 import { PagePlaceholder } from '@/components/shared/PagePlaceholder'
 import { cn } from '@/lib/utils'
 
@@ -76,8 +76,8 @@ export function OrderTrackingPage() {
           <span className="text-muted-foreground">
             {t('orders.estimatedDelivery')}
           </span>
-          <span className="ms-auto font-medium">
-            {formatDateTime(tracking.estimated_delivery, i18n.language)}
+          <span dir="ltr" className="ms-auto font-medium">
+            {formatDateTimeShort(tracking.estimated_delivery)}
           </span>
         </div>
       )}
