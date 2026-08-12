@@ -367,6 +367,8 @@ export interface BranchOrderDetail {
   deposit_percent: string
   delivery_address: string
   receipt_image: string | null
+  delivery_staff_name: string | null
+  estimated_delivery: string | null
   items: BranchOrderItem[]
   /** Who moved the order between statuses, and why (rejection notes land here). */
   logs: OrderLog[]

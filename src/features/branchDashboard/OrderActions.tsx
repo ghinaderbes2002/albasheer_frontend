@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useBranchDeliveryStaffList } from '@/features/branchDashboard/queries'
 import {
+  CalendarClock,
   Check,
   Loader2,
   Package,
@@ -22,6 +23,7 @@ import {
   useMarkBranchOrderReady,
   useRejectBranchOrder,
   useSetShippingFee,
+  useShipBranchOrderWithEta,
 } from '@/features/branchDashboard/queries'
 import { FreeDeliveryAlert } from '@/features/branchDashboard/FreeDeliveryAlert'
 import { extractApiError } from '@/lib/api'
@@ -31,7 +33,13 @@ interface OrderActionsProps {
   order: BranchOrderDetail
 }
 
-type Mode = 'idle' | 'reject' | 'assign' | 'shipping-fee'
+type Mode = 'idle' | 'reject' | 'assign' | 'shipping-fee' | 'ready'
+
+/** `datetime-local` wants "YYYY-MM-DDTHH:mm" in the viewer's own timezone. */
+function toLocalInputValue(d: Date) {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
 
 export function OrderActions({ order }: OrderActionsProps) {
   const { t } = useTranslation()
@@ -41,6 +49,7 @@ export function OrderActions({ order }: OrderActionsProps) {
   const reject = useRejectBranchOrder(order.id)
   const assign = useAssignBranchDelivery(order.id)
   const ready = useMarkBranchOrderReady(order.id)
+  const shipWithEta = useShipBranchOrderWithEta(order.id)
   const shippingFee = useSetShippingFee(order.id)
 
   const anyPending =
@@ -48,6 +57,7 @@ export function OrderActions({ order }: OrderActionsProps) {
     reject.isPending ||
     assign.isPending ||
     ready.isPending ||
+    shipWithEta.isPending ||
     shippingFee.isPending
 
   const run = async (
@@ -92,6 +102,28 @@ export function OrderActions({ order }: OrderActionsProps) {
           run(
             () => assign.mutateAsync({ delivery_user_id: staffId }),
             t('dashboard.branch.actions.assigned'),
+            () => setMode('idle'),
+          )
+        }
+      />
+    )
+  }
+
+  if (mode === 'ready') {
+    return (
+      <ReadyForm
+        loading={ready.isPending || shipWithEta.isPending}
+        hasDeliveryStaff={!!order.delivery_staff_name}
+        onCancel={() => setMode('idle')}
+        onSubmit={(eta) =>
+          run(
+            // No time given → the plain `ready/` endpoint, which keeps the
+            // backend's own "delivery employee assigned?" check.
+            () =>
+              eta
+                ? shipWithEta.mutateAsync(eta)
+                : ready.mutateAsync(undefined as never),
+            t('dashboard.branch.actions.readied'),
             () => setMode('idle'),
           )
         }
@@ -178,12 +210,7 @@ export function OrderActions({ order }: OrderActionsProps) {
         type="button"
         size="lg"
         disabled={anyPending}
-        onClick={() =>
-          run(
-            () => ready.mutateAsync(undefined as never),
-            t('dashboard.branch.actions.readied'),
-          )
-        }
+        onClick={() => setMode('ready')}
       >
         {ready.isPending ? <Loader2 className="animate-spin" /> : <Truck />}
         {t('dashboard.branch.actions.ready')}
@@ -254,6 +281,85 @@ function RejectForm({ loading, onCancel, onSubmit }: RejectFormProps) {
         >
           {loading ? <Loader2 className="animate-spin" /> : <X />}
           {t('dashboard.branch.actions.confirmReject')}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={loading}
+          onClick={onCancel}
+        >
+          {t('common.cancel')}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+interface ReadyFormProps {
+  loading: boolean
+  /** `ready/` rejects orders with nobody to deliver them; so does this form. */
+  hasDeliveryStaff: boolean
+  onCancel: () => void
+  /** ISO string, or `''` when the manager skipped the time. */
+  onSubmit: (estimatedDelivery: string) => void
+}
+
+function ReadyForm({
+  loading,
+  hasDeliveryStaff,
+  onCancel,
+  onSubmit,
+}: ReadyFormProps) {
+  const { t } = useTranslation()
+  const [when, setWhen] = useState('')
+  const now = new Date()
+
+  const picked = when ? new Date(when) : null
+  const isPast = !!picked && picked.getTime() <= Date.now()
+  const canSubmit = hasDeliveryStaff && !isPast && !loading
+
+  return (
+    <div className="space-y-3 rounded-xl border border-primary/30 bg-primary/5 p-4 animate-in fade-in slide-in-from-top-1 duration-200">
+      <Label htmlFor="estimated_delivery">
+        <CalendarClock className="size-3.5 text-primary" />
+        {t('dashboard.branch.ready.etaLabel')}
+      </Label>
+
+      <Input
+        id="estimated_delivery"
+        type="datetime-local"
+        dir="ltr"
+        autoFocus
+        min={toLocalInputValue(now)}
+        value={when}
+        onChange={(e) => setWhen(e.target.value)}
+        disabled={loading || !hasDeliveryStaff}
+      />
+
+      {isPast ? (
+        <p className="text-xs text-destructive">
+          {t('dashboard.branch.ready.pastTime')}
+        </p>
+      ) : (
+        <p className="text-xs text-muted-foreground">
+          {t('dashboard.branch.ready.etaHint')}
+        </p>
+      )}
+
+      {!hasDeliveryStaff && (
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          {t('dashboard.branch.ready.needStaff')}
+        </p>
+      )}
+
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          disabled={!canSubmit}
+          onClick={() => onSubmit(picked ? picked.toISOString() : '')}
+        >
+          {loading ? <Loader2 className="animate-spin" /> : <Truck />}
+          {t('dashboard.branch.ready.confirm')}
         </Button>
         <Button
           type="button"

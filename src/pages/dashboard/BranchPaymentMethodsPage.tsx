@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import {
   useBranchPaymentMethods,
   useCreateBranchPaymentMethod,
@@ -22,14 +23,16 @@ export function BranchPaymentMethodsPage() {
   const { t } = useTranslation()
   const [editMethod, setEditMethod] = useState<PaymentMethod | null>(null)
   const [showCreate, setShowCreate] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState<PaymentMethod | null>(null)
   const { data, isLoading } = useBranchPaymentMethods()
   const deleteMethod = useDeleteBranchPaymentMethod()
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('paymentMethods.confirmDelete'))) return
+  const handleDelete = async () => {
+    if (!deleteTarget) return
     try {
-      await deleteMethod.mutateAsync(id)
+      await deleteMethod.mutateAsync(deleteTarget.id)
       toast.success(t('paymentMethods.deleted'))
+      setDeleteTarget(null)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -90,7 +93,7 @@ export function BranchPaymentMethodsPage() {
                   variant="ghost"
                   size="icon"
                   className="text-destructive hover:bg-destructive/10"
-                  onClick={() => handleDelete(m.id)}
+                  onClick={() => setDeleteTarget(m)}
                   disabled={deleteMethod.isPending}
                 >
                   <Trash2 className="size-4" />
@@ -105,6 +108,16 @@ export function BranchPaymentMethodsPage() {
         <PaymentMethodDialog
           method={editMethod}
           onClose={() => { setShowCreate(false); setEditMethod(null) }}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title={t('paymentMethods.confirmDelete')}
+          description={deleteTarget.name_ar}
+          pending={deleteMethod.isPending}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
         />
       )}
     </div>

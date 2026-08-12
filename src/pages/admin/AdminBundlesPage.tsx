@@ -24,6 +24,7 @@ import {
 import { extractApiError, resolveMediaUrl } from '@/lib/api'
 import type { AdminBundle } from '@/types/api'
 import { Price } from '@/components/shared/Price'
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 
 export function AdminBundlesPage() {
   const { t } = useTranslation()
@@ -33,14 +34,16 @@ export function AdminBundlesPage() {
   const [editBundle, setEditBundle] = useState<AdminBundle | null>(null)
   const [showCreate, setShowCreate] = useState(false)
   const [manageBundle, setManageBundle] = useState<AdminBundle | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<AdminBundle | null>(null)
   const { data, isLoading } = useAdminBundles()
   const deleteBundle = useDeleteAdminBundle()
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('admin.bundles.confirmDelete'))) return
+  const handleDelete = async () => {
+    if (!deleteTarget) return
     try {
-      await deleteBundle.mutateAsync(id)
+      await deleteBundle.mutateAsync(deleteTarget.id)
       toast.success(t('admin.bundles.deleted'))
+      setDeleteTarget(null)
     } catch (err) {
       toast.error(extractApiError(err, t('errors.generic')))
     }
@@ -84,7 +87,7 @@ export function AdminBundlesPage() {
                   onClick={() => navigate(`${basePath}/bundles/${b.id}`)}
                   onEdit={() => setEditBundle(b)}
                   onManage={() => setManageBundle(b)}
-                  onDelete={() => handleDelete(b.id)}
+                  onDelete={() => setDeleteTarget(b)}
                   deleteDisabled={deleteBundle.isPending}
                 />
               ))}
@@ -104,6 +107,16 @@ export function AdminBundlesPage() {
         <ManageProductsDialog
           bundle={manageBundle}
           onClose={() => setManageBundle(null)}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title={t('admin.bundles.confirmDelete')}
+          description={deleteTarget.name_ar}
+          pending={deleteBundle.isPending}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
         />
       )}
     </div>

@@ -22,6 +22,7 @@ import {
   updateBranchStaff,
   type BranchOrdersParams,
 } from '@/api/branchOrders'
+import { updateOrderStatus } from '@/api/orders'
 import type {
   AssignDeliveryPayload,
   CreateBranchStaffPayload,
@@ -94,6 +95,31 @@ export function useAssignBranchDelivery(orderId: number | string) {
 
 export function useMarkBranchOrderReady(orderId: number | string) {
   return useOrderMutation(orderId, () => markBranchOrderReady(orderId))
+}
+
+/**
+ * Same transition as `useMarkBranchOrderReady` (confirmed → shipping) but
+ * carrying an estimated delivery time.
+ *
+ * Stopgap: `/api/branch/orders/<id>/ready/` ignores its request body, so the
+ * generic status endpoint is the only one that stores `estimated_delivery`.
+ * It skips the "a delivery employee must be assigned" check that `ready/`
+ * enforces, so `OrderActions` blocks the button until one is assigned.
+ * Drop this once the backend accepts the field on `ready/`.
+ */
+export function useShipBranchOrderWithEta(orderId: number | string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (estimatedDelivery: string) =>
+      updateOrderStatus(orderId, {
+        status: 'shipping',
+        estimated_delivery: estimatedDelivery,
+      }),
+    // Responds with the customer-shaped `OrderDetail`, not `BranchOrderDetail`
+    // — refetch instead of seeding the branch cache with the wrong shape.
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: branchOrderKeys.all }),
+  })
 }
 
 export function useSetShippingFee(orderId: number | string) {
