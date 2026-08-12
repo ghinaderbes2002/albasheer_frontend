@@ -794,6 +794,13 @@
         "hint": "Enter 0 for free delivery. A WhatsApp notification will be sent to the customer.",
         "confirm": "Confirm fee"
       },
+      "ready": {
+        "etaLabel": "Estimated delivery (optional)",
+        "etaHint": "Shown to the customer on their order page. Leave empty if not decided yet.",
+        "pastTime": "The time must be in the future",
+        "needStaff": "Assign a delivery agent before sending this order to shipping",
+        "confirm": "Send to shipping"
+      },
       "settings": {
         "title": "Branch settings",
         "short": "Settings",
