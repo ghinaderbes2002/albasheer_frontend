@@ -207,12 +207,15 @@ export function HomePage() {
           <h2 className="section-heading text-2xl font-bold md:text-3xl">
             {t('home.latest.title')}
           </h2>
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/products">
-              {t('home.latest.viewAll')}
-              <Arrow />
-            </Link>
-          </Button>
+          {/* Same pill as the offers section's "view all" — one shape for
+              every "see the rest of this" link on the home page. */}
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/40 px-6 py-2.5 text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground"
+          >
+            {t('home.latest.viewAll')}
+            <Arrow className="size-4" />
+          </Link>
         </div>
 
         {prodLoading ? (

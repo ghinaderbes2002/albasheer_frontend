@@ -86,6 +86,8 @@
     },
     "offers": {
       "title": "Offers",
+      "badge": "Save more",
+      "save": "Save {{amount}} {{currency}}",
       "viewAll": "View all offers"
     },
     "latest": {
