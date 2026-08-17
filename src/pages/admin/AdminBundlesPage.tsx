@@ -2,7 +2,7 @@
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { ImageOff, Inbox, Loader2, Pencil, Plus, Power, Trash2, X } from 'lucide-react'
+import { ImageOff, Inbox, Loader2, Pencil, Plus, Power, Search, Trash2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -35,8 +35,19 @@ export function AdminBundlesPage() {
   const [showCreate, setShowCreate] = useState(false)
   const [manageBundle, setManageBundle] = useState<AdminBundle | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<AdminBundle | null>(null)
-  const { data, isLoading } = useAdminBundles()
+  const [search, setSearch] = useState('')
+  const { data: allBundles, isLoading } = useAdminBundles()
   const deleteBundle = useDeleteAdminBundle()
+
+  // The endpoint returns every bundle at once, so filtering here beats a round trip.
+  const query = search.trim().toLowerCase()
+  const data = query
+    ? allBundles?.filter((b) =>
+        [b.name_ar, b.name].some((field) =>
+          field?.toLowerCase().includes(query),
+        ),
+      )
+    : allBundles
 
   const handleDelete = async () => {
     if (!deleteTarget) return
@@ -59,6 +70,16 @@ export function AdminBundlesPage() {
         </Button>
       </header>
 
+      <div className="relative w-full sm:w-72">
+        <Search className="absolute inset-y-0 inset-e-3 my-auto size-4 text-muted-foreground pointer-events-none" />
+        <Input
+          className="pe-9"
+          placeholder={t('common.search')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -66,7 +87,7 @@ export function AdminBundlesPage() {
           ))}
         </div>
       ) : !data?.length ? (
-        <EmptyState message={t('admin.bundles.empty')} />
+        <EmptyState message={query ? t('common.noResults') : t('admin.bundles.empty')} />
       ) : (
         <div className="rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">

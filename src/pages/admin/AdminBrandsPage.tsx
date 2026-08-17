@@ -1,7 +1,7 @@
 ﻿import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
-import { Loader2, Pencil, Plus, Trash2, X } from 'lucide-react'
+import { Loader2, Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 import { Button } from '@/components/ui/button'
@@ -22,9 +22,20 @@ export function AdminBrandsPage() {
   const [showForm, setShowForm] = useState(false)
   const [editBrand, setEditBrand] = useState<Brand | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<Brand | null>(null)
+  const [search, setSearch] = useState('')
 
-  const { data: brands, isLoading } = useAdminBrands()
+  const { data, isLoading } = useAdminBrands()
   const deleteBrand = useDeleteAdminBrand()
+
+  // The endpoint returns every brand at once, so filtering here beats a round trip.
+  const query = search.trim().toLowerCase()
+  const brands = query
+    ? data?.filter((b) =>
+        [b.name_ar, b.name, b.slug].some((field) =>
+          field?.toLowerCase().includes(query),
+        ),
+      )
+    : data
 
   const handleDelete = async () => {
     if (!confirmDelete) return
@@ -47,13 +58,23 @@ export function AdminBrandsPage() {
         </Button>
       </div>
 
+      <div className="relative w-full sm:w-72">
+        <Search className="absolute inset-y-0 inset-e-3 my-auto size-4 text-muted-foreground pointer-events-none" />
+        <Input
+          className="pe-9"
+          placeholder={t('common.search')}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       {isLoading ? (
         <div className="space-y-2">
           {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-xl" />)}
         </div>
       ) : !brands?.length ? (
         <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed border-border bg-card py-16 text-center text-muted-foreground">
-          <p>{t('admin.brands.empty')}</p>
+          <p>{query ? t('common.noResults') : t('admin.brands.empty')}</p>
         </div>
       ) : (
         <div className="rounded-xl border border-border overflow-hidden">

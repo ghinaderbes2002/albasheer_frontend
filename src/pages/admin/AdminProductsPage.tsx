@@ -212,6 +212,40 @@ export function AdminProductsPage() {
 
 // exported so AdminProductDetailPage can reuse it for editing
 export function ProductFormDialog({
+  product,
+  onClose,
+}: {
+  product: AdminProduct | null
+  onClose: () => void
+}) {
+  const { t } = useTranslation()
+  // The products *list* endpoint leaves out description, stock and featured,
+  // so a row straight from the table would open the form with those fields
+  // blank — and saving would write the blanks back over real data. Hold the
+  // form until the detail endpoint has answered.
+  const { data: fullProduct } = useAdminProduct(product?.id)
+
+  if (product && !fullProduct) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div className="flex w-full max-w-lg items-center justify-center gap-3 rounded-2xl bg-background p-10 shadow-xl text-sm text-muted-foreground">
+          <Loader2 className="size-4 animate-spin" />
+          {t('common.loading')}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <ProductForm
+      key={fullProduct?.id ?? 'new'}
+      product={fullProduct ?? null}
+      onClose={onClose}
+    />
+  )
+}
+
+function ProductForm({
   product: initialProduct,
   onClose,
 }: {
@@ -232,8 +266,8 @@ export function ProductFormDialog({
 
   const isEdit = !!initialProduct
 
-  // In edit mode fetch the full product to get current images
-  const { data: fullProduct } = useAdminProduct(isEdit ? initialProduct!.id : undefined)
+  // Kept live so newly uploaded images show up without closing the dialog.
+  const { data: fullProduct } = useAdminProduct(initialProduct?.id)
   const currentImages = fullProduct?.images ?? initialProduct?.images ?? []
 
   const uploadImages = useUploadProductImages(initialProduct?.id ?? 0)

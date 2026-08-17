@@ -87,30 +87,38 @@ import {
 import type { AdminAd, CreateUserPayload, OrderStatus } from '@/types/api'
 import { catalogKeys } from '@/features/catalog/queries'
 
+/**
+ * Ids always go into the key as strings. A route param arrives as `"11"` while
+ * a record's `id` is `11`, and React Query compares key parts strictly — mixing
+ * the two silently splits one resource into two cache entries, so an edit made
+ * on the detail page wouldn't invalidate the query feeding it.
+ */
+const key = (id: number | string) => String(id)
+
 export const adminKeys = {
   all: ['admin'] as const,
   stats: () => [...adminKeys.all, 'stats'] as const,
   ads: () => [...adminKeys.all, 'ads'] as const,
-  ad: (id: number | string) => [...adminKeys.all, 'ad', id] as const,
+  ad: (id: number | string) => [...adminKeys.all, 'ad', key(id)] as const,
   settings: () => [...adminKeys.all, 'settings'] as const,
   users: (params?: object) => [...adminKeys.all, 'users', params ?? {}] as const,
-  user: (id: number | string) => [...adminKeys.all, 'user', id] as const,
+  user: (id: number | string) => [...adminKeys.all, 'user', key(id)] as const,
   branches: () => [...adminKeys.all, 'branches'] as const,
   cities: () => [...adminKeys.all, 'cities'] as const,
   categories: () => [...adminKeys.all, 'categories'] as const,
   products: (params?: object) => [...adminKeys.all, 'products', params ?? {}] as const,
-  product: (id: number | string) => [...adminKeys.all, 'product', id] as const,
+  product: (id: number | string) => [...adminKeys.all, 'product', key(id)] as const,
   bundles: () => [...adminKeys.all, 'bundles'] as const,
   paymentMethods: () => [...adminKeys.all, 'paymentMethods'] as const,
   orders: (params?: object) => [...adminKeys.all, 'orders', params ?? {}] as const,
-  order: (id: number | string) => [...adminKeys.all, 'order', id] as const,
+  order: (id: number | string) => [...adminKeys.all, 'order', key(id)] as const,
   salesReport: (params?: object) => [...adminKeys.all, 'reports', 'sales', params ?? {}] as const,
   topProducts: (params?: object) => [...adminKeys.all, 'reports', 'top-products', params ?? {}] as const,
   topBranches: (params?: object) => [...adminKeys.all, 'reports', 'top-branches', params ?? {}] as const,
   variantTypes: () => [...adminKeys.all, 'variantTypes'] as const,
-  variantOptions: (typeId: number | string) => [...adminKeys.all, 'variantOptions', typeId] as const,
-  productVariants: (productId: number | string) => [...adminKeys.all, 'productVariants', productId] as const,
-  relatedProducts: (productId: number | string) => [...adminKeys.all, 'relatedProducts', productId] as const,
+  variantOptions: (typeId: number | string) => [...adminKeys.all, 'variantOptions', key(typeId)] as const,
+  productVariants: (productId: number | string) => [...adminKeys.all, 'productVariants', key(productId)] as const,
+  relatedProducts: (productId: number | string) => [...adminKeys.all, 'relatedProducts', key(productId)] as const,
   brands: () => [...adminKeys.all, 'brands'] as const,
 }
 

@@ -33,8 +33,10 @@ export const branchOrderKeys = {
   all: ['branchOrders'] as const,
   list: (params: BranchOrdersParams) =>
     [...branchOrderKeys.all, 'list', params] as const,
+  // Stringified: route params arrive as `"25"` and record ids as `25`, and a
+  // strict key comparison would treat those as two different orders.
   detail: (id: number | string) =>
-    [...branchOrderKeys.all, 'detail', id] as const,
+    [...branchOrderKeys.all, 'detail', String(id)] as const,
 }
 
 export function useBranchOrders(params: BranchOrdersParams = {}) {
