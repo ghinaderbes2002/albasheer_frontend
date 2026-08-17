@@ -538,6 +538,7 @@
       "image": "Category image (large)",
       "icon": "Category icon (small)",
       "seoTitle": "SEO title",
+      "seoAutoNote": "Filled from the Arabic name. Edit it and it stops updating on its own.",
       "seoTitlePlaceholder": "e.g. Best Refrigerators — Al Basheer",
       "metaDescription": "Meta description",
       "metaDescPlaceholder": "Short description shown in Google results (150-160 chars)",

@@ -80,7 +80,7 @@ export function AdminCategoriesPage() {
       ) : !filtered.length ? (
         <EmptyState message={search ? t('catalog.empty') : t('admin.categories.empty')} />
       ) : (
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-xl border border-border overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
@@ -243,7 +243,12 @@ function CategoryFormDialog({
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [iconFile, setIconFile] = useState<File | null>(null)
 
-  const { register, handleSubmit } = useForm({
+  // The SEO title mirrors the Arabic name until someone edits it by hand —
+  // an existing value counts as edited, so saved SEO copy is never
+  // overwritten by a later rename.
+  const [seoTitleEdited, setSeoTitleEdited] = useState(!!category?.seo_title)
+
+  const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
       name: category?.name ?? '',
       name_ar: category?.name_ar ?? '',
@@ -292,7 +297,16 @@ function CategoryFormDialog({
             <Input {...register('name')} required />
           </Field>
           <Field label={t('admin.categories.nameAr')}>
-            <Input {...register('name_ar')} required />
+            <Input
+              {...register('name_ar', {
+                onChange: (e) => {
+                  if (!seoTitleEdited) {
+                    setValue('seo_title', e.target.value.trim())
+                  }
+                },
+              })}
+              required
+            />
           </Field>
           <Field label={t('admin.categories.order')}>
             <Input {...register('order', { valueAsNumber: true })} type="number" min={0} dir="ltr" />
@@ -318,8 +332,16 @@ function CategoryFormDialog({
           <div className="rounded-xl border border-border/60 bg-muted/30 p-3 space-y-3">
             <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">SEO</p>
             <Field label={t('admin.categories.seoTitle')}>
-              <Input {...register('seo_title')} placeholder={t('admin.categories.seoTitlePlaceholder')} />
+              <Input
+                {...register('seo_title', {
+                  onChange: () => setSeoTitleEdited(true),
+                })}
+                placeholder={t('admin.categories.seoTitlePlaceholder')}
+              />
             </Field>
+            <p className="text-xs text-muted-foreground">
+              {t('admin.categories.seoAutoNote')}
+            </p>
             <Field label={t('admin.categories.metaDescription')}>
               <textarea
                 {...register('meta_description')}

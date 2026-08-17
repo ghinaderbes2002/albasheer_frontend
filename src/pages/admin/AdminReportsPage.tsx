@@ -115,7 +115,7 @@ export function AdminReportsPage() {
         ) : !dailyRows.length ? (
           <EmptyState message={t('admin.reports.empty')} />
         ) : (
-          <div className="rounded-xl border border-border overflow-hidden">
+          <div className="rounded-xl border border-border overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr>
@@ -155,7 +155,7 @@ export function AdminReportsPage() {
           ) : !topProducts?.length ? (
             <EmptyState message={t('admin.reports.empty')} />
           ) : (
-            <div className="rounded-xl border border-border overflow-hidden">
+            <div className="rounded-xl border border-border overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
@@ -190,7 +190,7 @@ export function AdminReportsPage() {
           ) : !topBranches?.length ? (
             <EmptyState message={t('admin.reports.empty')} />
           ) : (
-            <div className="rounded-xl border border-border overflow-hidden">
+            <div className="rounded-xl border border-border overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>

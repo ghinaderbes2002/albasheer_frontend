@@ -129,12 +129,11 @@ export function AdminLayout() {
         />
       )}
 
-      {/* Sidebar — mobile drawer */}
+      {/* Sidebar — mobile drawer. Mounted only while open: parked off-screen
+          it widened the page, leaving the whole dashboard side-scrollable. */}
+      {mobileOpen && (
       <aside
-        className={cn(
-          'fixed inset-y-0 inset-s-0 z-50 flex w-64 flex-col border-e border-border bg-background transition-transform duration-200 md:hidden',
-          mobileOpen ? 'translate-x-0' : 'translate-x-full',
-        )}
+        className="fixed inset-y-0 inset-s-0 z-50 flex w-64 flex-col border-e border-border bg-background md:hidden animate-in slide-in-from-start duration-200"
       >
         <div className="flex h-16 items-center justify-between border-b border-border px-4">
           <Logo />
@@ -176,6 +175,7 @@ export function AdminLayout() {
           </Button>
         </div>
       </aside>
+      )}
 
       {/* Main content */}
       <div className="flex flex-1 flex-col min-w-0">

@@ -89,7 +89,7 @@ export function AdminBundlesPage() {
       ) : !data?.length ? (
         <EmptyState message={query ? t('common.noResults') : t('admin.bundles.empty')} />
       ) : (
-        <div className="rounded-xl border border-border overflow-hidden">
+        <div className="rounded-xl border border-border overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-muted/50">
               <tr>
