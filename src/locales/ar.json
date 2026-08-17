@@ -569,6 +569,8 @@
       "brandPlaceholder": "ابحث عن الشركة...",
       "seoTitle": "عنوان SEO",
       "metaDescription": "وصف meta",
+      "seoAutoHint": "يُملأ تلقائياً",
+      "seoAutoNote": "يُملأ الحقلان تلقائياً من الاسم والوصف بالعربي. عدّلهما متى شئت — بعدها لن يتغيّرا تلقائياً.",
       "createdAt": "تاريخ الإنشاء",
       "featured": "مميز",
       "featuredOrder": "ترتيب المميزة",

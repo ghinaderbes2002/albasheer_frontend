@@ -242,7 +242,17 @@ export function ProductFormDialog({
   const create = useCreateAdminProduct()
   const update = useUpdateAdminProduct(initialProduct?.id ?? 0)
 
-  const { register, handleSubmit } = useForm({
+  // SEO fields mirror the Arabic name/description until someone edits them
+  // by hand — an existing value counts as edited, so saved SEO copy is never
+  // overwritten by a later tweak to the product name.
+  const [seoTitleEdited, setSeoTitleEdited] = useState(
+    !!initialProduct?.seo_title,
+  )
+  const [metaEdited, setMetaEdited] = useState(
+    !!initialProduct?.meta_description,
+  )
+
+  const { register, handleSubmit, setValue } = useForm({
     defaultValues: {
       name: initialProduct?.name ?? '',
       name_ar: initialProduct?.name_ar ?? '',
@@ -348,14 +358,32 @@ export function ProductFormDialog({
               <Input {...register('name')} required />
             </Field>
             <Field label={t('admin.products.nameAr')}>
-              <Input {...register('name_ar')} required />
+              <Input
+                {...register('name_ar', {
+                  onChange: (e) => {
+                    if (!seoTitleEdited) {
+                      setValue('seo_title', e.target.value.trim())
+                    }
+                  },
+                })}
+                required
+              />
             </Field>
           </div>
           <Field label={t('admin.products.descEn')}>
             <Textarea {...register('description')} rows={2} />
           </Field>
           <Field label={t('admin.products.descAr')}>
-            <Textarea {...register('description_ar')} rows={2} />
+            <Textarea
+              {...register('description_ar', {
+                onChange: (e) => {
+                  if (!metaEdited) {
+                    setValue('meta_description', toMetaDescription(e.target.value))
+                  }
+                },
+              })}
+              rows={2}
+            />
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label={t('admin.products.price')}>
@@ -379,11 +407,27 @@ export function ProductFormDialog({
           </Field>
 
           <Field label={t('admin.products.seoTitle')}>
-            <Input {...register('seo_title')} dir="auto" />
+            <Input
+              {...register('seo_title', {
+                onChange: () => setSeoTitleEdited(true),
+              })}
+              dir="auto"
+              placeholder={t('admin.products.seoAutoHint')}
+            />
           </Field>
           <Field label={t('admin.products.metaDescription')}>
-            <Textarea {...register('meta_description')} rows={2} dir="auto" />
+            <Textarea
+              {...register('meta_description', {
+                onChange: () => setMetaEdited(true),
+              })}
+              rows={2}
+              dir="auto"
+              placeholder={t('admin.products.seoAutoHint')}
+            />
           </Field>
+          <p className="text-xs text-muted-foreground">
+            {t('admin.products.seoAutoNote')}
+          </p>
 
           <Field label={t('admin.products.stockQuantity')}>
             <Input
@@ -582,6 +626,19 @@ function BrandCombobox({
       )}
     </div>
   )
+}
+
+/** Search engines cut a meta description around here. */
+const META_MAX = 160
+
+/** Collapse a product description into a one-line meta description. */
+function toMetaDescription(description: string) {
+  const flat = description.replace(/\s+/g, ' ').trim()
+  if (flat.length <= META_MAX) return flat
+  // Cut on a word boundary so the snippet doesn't end mid-word.
+  const clipped = flat.slice(0, META_MAX)
+  const lastSpace = clipped.lastIndexOf(' ')
+  return `${(lastSpace > 80 ? clipped.slice(0, lastSpace) : clipped).trimEnd()}…`
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

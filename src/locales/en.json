@@ -566,6 +566,8 @@
       "brandPlaceholder": "Search for a brand...",
       "seoTitle": "SEO title",
       "metaDescription": "Meta description",
+      "seoAutoHint": "Filled automatically",
+      "seoAutoNote": "Both fields are filled from the Arabic name and description. Edit either one and it stops updating on its own.",
       "createdAt": "Created at",
       "featuredOrder": "Featured order",
       "featured": "Featured",
