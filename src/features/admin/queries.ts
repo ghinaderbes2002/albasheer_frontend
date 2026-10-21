@@ -120,6 +120,7 @@ export const adminKeys = {
   productVariants: (productId: number | string) => [...adminKeys.all, 'productVariants', key(productId)] as const,
   relatedProducts: (productId: number | string) => [...adminKeys.all, 'relatedProducts', key(productId)] as const,
   brands: () => [...adminKeys.all, 'brands'] as const,
+  adminBrands: () => [...adminKeys.all, 'adminBrands'] as const,
 }
 
 export function useBrands() {
@@ -127,14 +128,19 @@ export function useBrands() {
 }
 
 export function useAdminBrands() {
-  return useQuery({ queryKey: adminKeys.brands(), queryFn: getAdminBrands })
+  return useQuery({ queryKey: adminKeys.adminBrands(), queryFn: getAdminBrands })
+}
+
+function invalidateBrandQueries(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: adminKeys.brands() })
+  qc.invalidateQueries({ queryKey: adminKeys.adminBrands() })
 }
 
 export function useCreateBrand() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: createBrand,
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.brands() }),
+    onSuccess: () => invalidateBrandQueries(qc),
   })
 }
 
@@ -143,7 +149,7 @@ export function useUpdateAdminBrand() {
   return useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: Parameters<typeof updateAdminBrand>[1] }) =>
       updateAdminBrand(id, payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.brands() }),
+    onSuccess: () => invalidateBrandQueries(qc),
   })
 }
 
@@ -151,7 +157,7 @@ export function useDeleteAdminBrand() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: deleteAdminBrand,
-    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.brands() }),
+    onSuccess: () => invalidateBrandQueries(qc),
   })
 }
 
