@@ -197,16 +197,36 @@ export async function deleteAdminBrand(id: number): Promise<void> {
 }
 
 // ─── Products ─────────────────────────────────────────────────────────
+async function fetchProductPage(
+  url: string,
+  params?: { category?: number | string; search?: string; is_available?: boolean },
+): Promise<AdminProduct[] | PaginatedResponse<AdminProduct>> {
+  const response = await api.get<AdminProduct[] | PaginatedResponse<AdminProduct>>(url, { params })
+  return response.data
+}
+
 export async function getAdminProducts(params?: {
   category?: number | string
   search?: string
   is_available?: boolean
 }): Promise<AdminProduct[]> {
-  const { data } = await api.get<AdminProduct[] | PaginatedResponse<AdminProduct>>(
-    '/api/admin/products/',
-    { params },
-  )
-  return unwrap(data)
+  // The endpoint paginates at 20 per page — follow `next` so the admin list
+  // isn't silently capped to the first page (products beyond it were only
+  // reachable by searching for them by name).
+  const results: AdminProduct[] = []
+  let nextUrl: string | null = '/api/admin/products/'
+  let nextParams = params
+  while (nextUrl !== null) {
+    const page = await fetchProductPage(nextUrl, nextParams)
+    if (Array.isArray(page)) {
+      results.push(...page)
+      break
+    }
+    results.push(...page.results)
+    nextUrl = page.next
+    nextParams = undefined // `next` already encodes the query params
+  }
+  return results
 }
 
 export async function getAdminProduct(id: number | string): Promise<AdminProduct> {
