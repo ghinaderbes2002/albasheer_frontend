@@ -144,9 +144,18 @@ export function AdminProductsPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${p.is_available ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
-                      {p.is_available ? t('admin.products.available') : t('catalog.outOfStock')}
-                    </span>
+                    {p.is_available && p.stock_quantity <= 0 ? (
+                      <span
+                        className="inline-flex rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700"
+                        title={t('admin.products.hiddenNoStock')}
+                      >
+                        {t('admin.products.hiddenNoStock')}
+                      </span>
+                    ) : (
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${p.is_available ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                        {p.is_available ? t('admin.products.available') : t('catalog.outOfStock')}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-end gap-1">

@@ -563,6 +563,7 @@
       "available": "Available",
       "inStock": "Stock",
       "outOfStock": "Out of stock",
+      "hiddenNoStock": "Hidden from customers — zero stock",
       "stockQuantity": "Stock quantity",
       "brand": "Brand",
       "brandPlaceholder": "Search for a brand or type a new one...",
