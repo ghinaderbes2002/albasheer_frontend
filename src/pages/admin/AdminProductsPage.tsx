@@ -20,6 +20,7 @@ import {
   useUpdateAdminProduct,
   useUploadProductImages,
   useBrands,
+  useCreateBrand,
 } from '@/features/admin/queries'
 import type { Brand } from '@/types/api'
 import { uploadProductImages } from '@/api/admin'
@@ -601,14 +602,21 @@ function BrandCombobox({
 }) {
   const { t } = useTranslation()
   const { data: brands = [] } = useBrands()
+  const createBrand = useCreateBrand()
   const [input, setInput] = useState(value?.name_ar ?? '')
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
+  const trimmedInput = input.trim()
   const filtered = brands.filter((b) =>
     b.name_ar.toLowerCase().includes(input.toLowerCase()) ||
     b.name.toLowerCase().includes(input.toLowerCase())
   )
+  const hasExactMatch = brands.some(
+    (b) => b.name_ar.toLowerCase() === trimmedInput.toLowerCase() ||
+      b.name.toLowerCase() === trimmedInput.toLowerCase()
+  )
+  const canCreate = trimmedInput.length > 0 && !hasExactMatch
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -625,6 +633,17 @@ function BrandCombobox({
   }
 
   const handleClear = () => { onChange(null); setInput('') }
+
+  const handleCreate = async () => {
+    if (!canCreate || createBrand.isPending) return
+    try {
+      const created = await createBrand.mutateAsync({ name: trimmedInput, name_ar: trimmedInput })
+      toast.success(t('admin.brands.created'))
+      handleSelect(created)
+    } catch (err) {
+      toast.error(extractApiError(err, t('errors.generic')))
+    }
+  }
 
   return (
     <div ref={ref} className="relative">
@@ -643,7 +662,7 @@ function BrandCombobox({
           </Button>
         )}
       </div>
-      {open && filtered.length > 0 && (
+      {open && (filtered.length > 0 || canCreate) && (
         <div className="absolute z-50 mt-1 w-full rounded-xl border border-border bg-background shadow-lg overflow-hidden">
           {filtered.map((b) => (
             <button
@@ -656,6 +675,17 @@ function BrandCombobox({
               {b.name !== b.name_ar && <span className="ms-2 text-xs text-muted-foreground">{b.name}</span>}
             </button>
           ))}
+          {canCreate && (
+            <button
+              type="button"
+              disabled={createBrand.isPending}
+              className="flex w-full items-center gap-2 border-t border-border px-3 py-2 text-sm text-primary hover:bg-muted/50 text-start disabled:opacity-60"
+              onMouseDown={(e) => { e.preventDefault(); handleCreate() }}
+            >
+              {createBrand.isPending ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+              {t('admin.products.brandAddNew', { name: trimmedInput })}
+            </button>
+          )}
         </div>
       )}
     </div>
