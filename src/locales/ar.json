@@ -566,6 +566,7 @@
       "available": "متاح",
       "inStock": "المخزن",
       "outOfStock": "نفدت الكمية",
+      "hiddenNoStock": "مخفي عن الزبائن — الكمية صفر",
       "stockQuantity": "الكمية في المخزن",
       "brand": "الشركة المصنعة",
       "brandPlaceholder": "ابحث عن الشركة أو اكتب اسم شركة جديدة...",
